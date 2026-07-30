@@ -31,6 +31,17 @@ Without this, the map mislabels the exact places a grass-dominant desert travele
 ## ⚠ Always score off HIS panel, not the local pollen index
 Coconino reads "HIGH" on generic pollen apps (juniper + ragweed) — both **NEGATIVE** for him, so he feels great there. The coloring must be driven by the **user's selected allergens**, and must **suppress the noise** (juniper/ragweed/mold) that dominates public indices but is off a given person's panel. This is the whole point of the tool.
 
+## Coastal moderation (confirmed sub-factor — weight it up)
+Ocean proximity is a **reliable reliever, stronger than first modeled** — confirmed across multiple
+lived data points: the Mediterranean coasts/islands (Greek Isles, Sicily, Athens), Hawaii (fine at
+the beach, sneezed inland), and the Thai islands all ran noticeably kinder near water than raw
+climate predicts. Mechanism: onshore breeze disperses/dilutes pollen; salt air + swimming physically
+rinse it. Apply a downward nudge within a few miles of coast — larger on islands/exposed coast,
+smaller for bays/inland-coastal. **Caveat (keeps it honest):** it does NOT rescue year-round-grass
+subtropics — coastal Florida is still brutal because the grass load overwhelms the breeze. It's a
+modifier, not an override. Also pairs with the Med's **dry-summer** effect (grass spent by peak
+travel season), which compounds the relief.
+
 ## Data flags
 - **Live oak "UT"** (USDA planted-record anomaly, off its Gulf/Atlantic range) — **dropped** from `species-ranges.json`.
 - Weeds are near-ubiquitous → same presence≠severity rule; weight by disturbed-ground + season, and apply the arid-Southwest concentration bump above.

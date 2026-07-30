@@ -35,3 +35,12 @@ An open-source, interactive US map. You pick your allergens (or load an allergy-
 
 ## OSS hygiene
 LICENSE (MIT) · README (what it is + attribution + "not medical advice") · CONTRIBUTING · `.env.example` · data-source attribution + disclaimers throughout.
+
+## Next-phase requirements — architect for these in v1
+This tool is Phase 1 of a multi-dimension livability atlas (see `docs/ROADMAP.md`). **v1 must not box out what's coming:**
+- **Heatmap/overlay-ready engine, not discrete dots.** The map takes a **value-surface + a confidence-surface** per dimension. Build it gradient-capable now; retrofitting dots→heatmap later is a rewrite.
+- **Granularity: county/raster, never state fills.** Intra-state spread is the whole point (NYC ≠ Rochester). The 168-city spine is labeled anchors + validation, not the rendered surface.
+- **Confidence is visible.** Measured cells vs interpolated best-guess cells must look different.
+- **Overlays + composite.** Later dimensions (care, cost, …) layer on the same engine; the composite is a weighted **phase-blend** of normalized surfaces. Keep each dimension's data as its own `data/*.json` on the shared spine.
+- **Transparent + tweakable scoring.** Every score decomposes into components (+ a methodology doc); weights are exposed as **user sliders** and the model is **community-tweakable** (others submit ground-truth + propose weights). Calibrate via A/B against real lived data. No score claimed as truth.
+- **Keep it honest.** Current comps, always include the "stay put" option. Tools-for-others, open source throughout.
