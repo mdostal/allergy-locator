@@ -1,0 +1,9 @@
+run_id: plan-allergy-map-mvp-20260730
+skill: plan
+timestamp: "2026-07-30T00:00:00Z"
+gate_lift_fired: false
+methodology: classic
+methodology_source: hive-config
+story_specs_produced: 10
+nonsensical_defaults: []
+warnings_emitted: 0

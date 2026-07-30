@@ -1,0 +1,95 @@
+id: s8-about-story-pages
+epic: allergy-map-mvp
+title: Tabbed /about page — "My Story" vs "The Project" (2 design variants)
+status: pending
+complexity: medium
+methodology: classic
+depends_on: [s1-scaffold-deploy-skeleton]
+parallel_allowed: true
+parallel_rationale: bounded-slice
+files_to_modify:
+  - file: app/about/page.tsx
+    change: New — tabbed about route.
+  - file: components/about/MyStoryTab.tsx
+    change: New — sources docs/story/MY-STORY.md, WHY-THIS-EXISTS.md, IMMUNOTHERAPY.md content.
+  - file: components/about/ProjectTab.tsx
+    change: New — sources docs/story/ABOUT.md content.
+
+description: |
+  Wire the existing `docs/story/*.md` narrative content into a real, live `/about` route
+  instead of leaving it as repo-only markdown. One route, two tabs: "My Story" (the
+  author's personal journey — MY-STORY.md, WHY-THIS-EXISTS.md, IMMUNOTHERAPY.md) and
+  "The Project" (what the tool is, how the coloring works, disclaimers — ABOUT.md).
+
+  Per the user's explicit request, this story's design work should produce **two layout
+  variants** for the tabbed page via the `/design` delegation (not a single take) so the
+  user can pick a winner or ship both behind a flag. Image placeholders currently in
+  `MY-STORY.md` (`[drop pic here: ...]`) ship as visible placeholder blocks — the user
+  will supply real photos later; this is not a blocker.
+
+  This story has no dependency on the severity-engine/map stories (s2-s7) and is
+  explicitly flagged parallel-eligible at execution time.
+
+acceptance_criteria:
+  - "Given the /about route, when visited, then it shows two tabs and switches between them without a full page reload."
+  - "Given the 'My Story' tab, when viewed, then it renders the content of MY-STORY.md, WHY-THIS-EXISTS.md, and IMMUNOTHERAPY.md (as sub-sections or sub-tabs, per the /design handoff's chosen layout)."
+  - "Given the 'The Project' tab, when viewed, then it renders ABOUT.md's content, including the 'no place cures you' framing and the standard disclaimer."
+  - "Given `/design` produces two layout variants, when this story completes, then both are available for the user to compare (either as a toggle/flag or as two documented options), not just one silently chosen."
+  - "Given MY-STORY.md's image placeholders, when rendered, then they appear as clearly-visible placeholder blocks (not broken image icons, not silently omitted)."
+  - "Given the disclaimer footer (from s1), when this page renders, then it is present exactly as on every other page — no separate/duplicated disclaimer text."
+
+steps:
+  - id: research
+    description: Re-read docs/story/*.md in full to confirm section boundaries for the two tabs.
+    agent: researcher
+  - id: ui-design
+    description: Delegate to /design for wireframes (atomic external call; see skills/design/SKILL.md). Explicitly request 2 layout variants for the tabbed page per the user's A/B request.
+    agent: ui-designer
+    delegates_to: design
+    depends_on: [research]
+  - id: implement
+    description: Build app/about/page.tsx and the two tab components per the chosen (or both) /design variant(s).
+    agent: developer
+    depends_on: [ui-design]
+    inputs:
+      - source: step_output
+        step: ui-design
+        key: wireframe_brief
+  - id: test
+    description: Playwright test asserting tab switching works and both tabs render their expected source content.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm content fidelity to the source markdown and that the disclaimer isn't duplicated or missing.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push to the feature branch.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+    frameworks: [next.js, react, tailwindcss]
+  key_files:
+    - path: docs/story/ABOUT.md
+      purpose: Source content for "The Project" tab.
+    - path: docs/story/MY-STORY.md
+      purpose: Source content for "My Story" tab; contains image placeholders to preserve as-is.
+    - path: docs/story/WHY-THIS-EXISTS.md
+      purpose: Source content for "My Story" tab.
+    - path: docs/story/IMMUNOTHERAPY.md
+      purpose: Source content for "My Story" tab.
+
+design_decisions:
+  - decision: Single /about route with 2 tabs, rather than separate /about + /story routes.
+    rationale: User's explicit round-1 preference; simpler nav, and the two tabs still cleanly separate personal narrative from project explanation.
+  - decision: Produce 2 design variants via /design instead of 1.
+    rationale: Explicit user request to A/B compare rather than commit to a single take up front.
+
+risks:
+  - severity: low
+    description: Producing 2 design variants roughly doubles this story's design/implementation effort.
+    mitigation: Accepted tradeoff, scoped in from the start rather than discovered as scope creep later.

@@ -1,0 +1,67 @@
+id: s9-e2e-hardening-ci
+epic: allergy-map-mvp
+title: Full E2E harness against the complete oracle table + open-source guardrail CI
+status: pending
+complexity: high
+methodology: classic
+depends_on: [s6-turf-arid-weed-data, s7-agent-controllable-url-state, s8-about-story-pages]
+
+description: |
+  Complete the test harness specified in `docs/E2E-TESTING.md`: a full Playwright suite
+  against every place in the oracle table (not just the subset achievable in s2), plus
+  the two open-source non-negotiable guardrails (zero external calls off-origin on the
+  core map, no secrets in the built client bundle), wired into CI so every future push is
+  checked automatically.
+
+acceptance_criteria:
+  - "Given the author's preset, when the full Playwright suite runs against a production build, then all 8 named places in the oracle table (Coconino, Carlsbad, Mesa, Kalispell, Austin, Omaha, WY Black Hills, the AR/OK/TN grass belt) assert their documented band correctly."
+  - "Given per-allergen toggle and timeframe combinations that matter (per s4/s5), when tested, then their specific assertions (e.g. Austin grass-isolated vs. ragweed-isolated; a grass state's peak-vs-off-season score) pass."
+  - "Given a state's click-through, when the author's negative allergens (ragweed, cedar/juniper, oak, elm, mold) are checked, then none of them appear in the 'your hits' list for any place."
+  - "Given the built site, when loaded in the E2E run, then zero network requests leave the origin on the core map path (no external map CDN, no accidental data fetch)."
+  - "Given the built client bundle, when scanned, then no key/token pattern is present (mirrors the `secret_scan` gate in hive.config.yaml)."
+  - "Given a PR is opened, when CI runs, then `pnpm test` and `pnpm test:e2e` both execute against the full suite and a failure blocks merge."
+  - "Given the legend/copy across the map and about pages, when checked, then it never promises a location fully eliminates symptoms ('no place cures you' — the improves-never-gone invariant from docs/E2E-TESTING.md)."
+
+steps:
+  - id: research
+    description: Confirm the full CI workflow (from s1's skeleton) can run a production build + Playwright headless in GitHub Actions within a reasonable time budget.
+    agent: researcher
+  - id: implement
+    description: Write the complete Playwright spec suite; write the zero-external-calls and secret-scan guardrail checks; complete the GitHub Actions workflow.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Run the full suite locally against a production build before relying on CI to catch issues.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm every oracle-table place and both guardrails are actually covered, not just a representative sample.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push; confirm CI runs green on the feature branch before this epic is considered complete.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+    frameworks: [next.js, react]
+  key_files:
+    - path: docs/E2E-TESTING.md
+      purpose: The full oracle table and guardrail spec this story completes.
+    - path: hive.config.yaml
+      purpose: "secret_scan: required — the one hard quality gate this project has."
+
+references:
+  - path: docs/E2E-TESTING.md
+    relevant_excerpt: |
+      Zero external calls on the core map — assert no network request leaves the origin.
+      No secrets in the bundle — grep the built client output for key/token patterns.
+      The map must never color a place pure "safe/cured" green for a grass profile.
+
+risks:
+  - severity: medium
+    description: A full Playwright suite covering 8 places + toggle/timeframe combinations could be slow enough to discourage running it on every PR.
+    mitigation: Keep assertions targeted to the documented oracle table rather than combinatorially testing every possible toggle/timeframe pairing.

@@ -1,0 +1,97 @@
+id: s6-turf-arid-weed-data
+epic: allergy-map-mvp
+title: Source turf/irrigation + arid-weed data; complete the severity model; finalize palette
+status: pending
+complexity: high
+methodology: classic
+depends_on: [s5-timeframe-control]
+parallel_allowed: true
+parallel_rationale: bounded-slice
+files_to_modify:
+  - file: scripts/build-data.ts
+    change: Extend with turf/irrigation + arid-weed sub-layer normalization.
+  - file: data/severity-model.json
+    change: Regenerate with the two new sub-layers.
+  - file: lib/severity/score.ts
+    change: Incorporate turf/arid-weed weighting into the scoring function.
+  - file: lib/severity/palette.ts
+    change: New — finalized colorblind-safe, multi-series color scale.
+  - file: docs/TURF-DATA-SOURCES.md
+    change: Read (external research artifact) and commit alongside this story's own work.
+
+description: |
+  Complete the severity model per `docs/MODEL-NOTES.md`: source (or explicitly
+  approximate) the turf/irrigation and arid-Southwest weed/dust layers that s2 deferred,
+  integrate them into the scoring engine, and finalize the colorblind-safe, multi-series
+  palette now that both combined and per-allergen (s4) views exist to validate against.
+
+  **External input in flight:** a separate research pass is producing
+  `docs/TURF-DATA-SOURCES.md` (verified open sources + a recommended combine rule +
+  anything rejected as not-open), left uncommitted outside this planning session on
+  purpose. Read it first if it has landed by the time this story starts — it may already
+  answer the sourcing half of this story — then commit it alongside this story's own
+  work rather than re-deriving the same survey. If it has not landed yet, do the survey
+  directly (candidates: USDA Cropland Data Layer for irrigated/agricultural land as a
+  turf proxy, NOAA climate normals for an aridity index, EPA AirNow for a dust/air-
+  quality irritant signal — validate license + bake-ability before committing to any).
+  AAAAI/NAB remain reference/QA-only per REQUIREMENTS.md — never embedded regardless of
+  usefulness.
+
+  If no suitable open dataset is found for an axis, ship a documented, explicitly-labeled
+  approximation derived from data already on hand (e.g., a coarse climate-zone proxy for
+  aridity) rather than silently skipping the layer — this is an accepted, planned outcome
+  per design-discussion.md §4 Risk #4, not a blocker.
+
+acceptance_criteria:
+  - "Given Carlsbad NM, when the map renders with the author's panel, then it no longer shows 'fine'/green despite light grass presence — the arid-weed/dust layer produces an elevated result."
+  - "Given Mesa AZ (Phoenix metro), when the map renders, then it shows moderate/elevated due to irrigated/overseeded turf weighting, not just native grass presence."
+  - "Given `docs/TURF-DATA-SOURCES.md` exists (read at story start or landed mid-story), when this story completes, then it is committed to the repo alongside the code changes, not left permanently uncommitted."
+  - "Given no viable open dataset is found for either axis, when that happens, then the shipped approximation is explicitly labeled as such in code comments and/or docs, and the corresponding oracle-table assertion (Carlsbad or Mesa) either passes against the approximation or is documented as a known gap — never silently marked passing without real logic behind it."
+  - "Given the finalized palette (`lib/severity/palette.ts`), when used for both combined and per-allergen (s4) views, then it is colorblind-safe by a validated method (the `dataviz` skill's documented approach), not a naive red-green gradient."
+  - "Given the full E2E oracle table, when the previously-deferred assertions are re-run, then Carlsbad and Mesa now pass (or are documented gaps per the point above), and no previously-passing assertion from s2/s4/s5 regresses."
+
+steps:
+  - id: research
+    description: Read docs/TURF-DATA-SOURCES.md if present; otherwise survey open datasets for turf/irrigation and arid-weed/dust signals; decide source-vs-approximation per axis.
+    agent: researcher
+  - id: implement
+    description: Extend scripts/build-data.ts and lib/severity/score.ts with the two new sub-layers; build lib/severity/palette.ts.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Add the remaining oracle-table assertions (Carlsbad, Mesa, full Kalispell) to tests/severity.test.ts; validate palette colorblind-safety.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm any approximation is explicitly labeled, not silently presented as sourced data; confirm no regression in s2/s4/s5's existing passing assertions.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit docs/TURF-DATA-SOURCES.md alongside the code changes; push to the feature branch.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+  key_files:
+    - path: docs/MODEL-NOTES.md
+      purpose: "Specifies both sub-layers this story implements: 'the arid-Southwest weed+dust layer' and 'planted/irrigated/maintained turf.'"
+    - path: docs/TURF-DATA-SOURCES.md
+      purpose: External research artifact landing separately — read first if present, then commit.
+
+references:
+  - path: docs/MODEL-NOTES.md
+    relevant_excerpt: |
+      The Carlsbad driver isn't grass — it's the desert chenopod/amaranth weed complex...
+      plus dust + bone-dry air as non-pollen irritants. Without this, the model
+      mislabels the exact places a grass-dominant desert traveler actually suffers.
+
+risks:
+  - severity: medium
+    description: Turf/irrigation and arid-weed layers may have no existing dataset baked in — real open-data sourcing risk.
+    mitigation: Dedicated research step; explicit documented-approximation fallback authorized in advance.
+  - severity: medium
+    description: A multi-series (per-allergen) colorblind-safe palette is harder than a single scale.
+    mitigation: Use the dataviz skill's validated palette method rather than inventing one.

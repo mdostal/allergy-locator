@@ -1,0 +1,75 @@
+name: allergy-map-mvp
+title: "Allergy Locator: Interactive Map MVP (v1)"
+description: >
+  Build the first working version of Allergy Locator end-to-end: an interactive,
+  severity-scored US map with per-allergen toggles and a climatological timeframe
+  control, manual/JSON/CSV panel input, agent-controllable URL state, tabbed
+  about/story pages, and a full E2E harness proven against the project owner's own
+  allergy panel. v2 (agentic panel ingestion + verification) and v3 (multiple
+  saved/shared profiles, family overlay) are documented in
+  .pHive/planning/roadmap.md and explicitly out of scope for this epic.
+target_codebase: /Users/mdostal/Code/allergy-locator
+methodology: classic
+version_bump: none
+sidecar_retention: committed
+
+git_flow:
+  base_branch: main
+  branch_strategy: per-epic
+
+planning_team:
+  matched_tags: [greenfield, consumer-app, has-ui, data-pipeline, testing-critical]
+  roster: [researcher, technical-writer, tpm]
+  per_tag_reasoning:
+    greenfield: "No existing app code; full build from research through story decomposition needed."
+    consumer-app: "Public-facing tool per project-profile.yaml; product-brief/UX framing carried through design discussion."
+    has-ui: "Interactive map + picker + about pages require UI-aware planning; ui-designer delegation used at story level (s8) via /design rather than a dedicated planning-team persona, since hive.config.yaml sets planning.collaborative_review: false (solo review)."
+    data-pipeline: "Severity model and build-time data normalization are the highest-risk logic; TPM-led H/V slicing sequenced the engine before UI consumption."
+    testing-critical: "docs/E2E-TESTING.md's author-panel oracle table is the project's core correctness contract; testing sequencing (CI skeleton early, full harness last) was a first-class planning concern."
+  confidence: high
+  gate_decisions:
+    collaborative_review: "disabled (hive.config.yaml planning.collaborative_review: false) — user is the sole review gate; grill (adversarial pass) still ran per Phase A2."
+    hv_gate: "presented and revised twice (round 1: multi-allergen toggle + timeframe + agentic roadmap; round 2: Slice 0 tooling readiness + roadmap.md extraction)"
+    structured_outline_gate: "presented with risk registry + elicitation; user confirmed after seeing the registry inline"
+
+stories:
+  - id: s0-tooling-skill-readiness
+    title: Enable and verify the Claude Code skills/plugins this build needs
+    complexity: low
+    depends_on: []
+  - id: s1-scaffold-deploy-skeleton
+    title: Next.js scaffold, Tailwind, Vercel deploy, disclaimer footer, CI/test skeleton
+    complexity: low
+    depends_on: [s0-tooling-skill-readiness]
+  - id: s2-severity-engine-static-map
+    title: Severity scoring engine + first interactive map render (single hardcoded panel)
+    complexity: high
+    depends_on: [s1-scaffold-deploy-skeleton]
+  - id: s3-profile-input-manual-import
+    title: Manual allergen picker + JSON/CSV panel import (any user, not just the author)
+    complexity: medium
+    depends_on: [s2-severity-engine-static-map]
+  - id: s4-per-allergen-toggle
+    title: Per-allergen toggle layer — isolate and color-code individual allergens
+    complexity: medium
+    depends_on: [s3-profile-input-manual-import]
+  - id: s5-timeframe-control
+    title: Date/timeframe control — climatological seasonal outlook
+    complexity: medium
+    depends_on: [s4-per-allergen-toggle]
+  - id: s6-turf-arid-weed-data
+    title: Source turf/irrigation + arid-weed data; complete the severity model; finalize palette
+    complexity: high
+    depends_on: [s5-timeframe-control]
+  - id: s7-agent-controllable-url-state
+    title: Serialize full map state (panel, toggles, timeframe) to URL query params
+    complexity: low
+    depends_on: [s5-timeframe-control]
+  - id: s8-about-story-pages
+    title: Tabbed /about page — "My Story" vs "The Project" (2 design variants)
+    complexity: medium
+    depends_on: [s1-scaffold-deploy-skeleton]
+  - id: s9-e2e-hardening-ci
+    title: Full E2E harness against the complete oracle table + open-source guardrail CI
+    complexity: high
+    depends_on: [s6-turf-arid-weed-data, s7-agent-controllable-url-state, s8-about-story-pages]

@@ -1,0 +1,73 @@
+id: s0-tooling-skill-readiness
+epic: allergy-map-mvp
+title: Enable and verify the Claude Code skills/plugins this build needs
+status: pending
+complexity: low
+methodology: classic
+depends_on: []
+
+description: |
+  Before any app code is written, identify, enable, and smoke-test the specific Claude
+  Code skills/plugins this build actually needs, so later slices don't stall rediscovering
+  capability gaps mid-build. This is environment setup, not application code — no files
+  under app code paths are touched.
+
+  Candidates (from vertical-plan.md Slice 0, don't expand beyond this list without cause):
+  - Official `anthropics/skills` marketplace: `frontend-design`, `webapp-testing`,
+    `skill-creator` (optional), `mcp-builder` (confirm available, reserved for v2 —
+    do not build anything with it now).
+  - Community (skills.sh): `vercel-react-best-practices`, `shadcn`. Verify current
+    install mechanism live — do not trust a point-in-time research summary.
+  - Already available this session: `dataviz` (feeds the colorblind-safe palette work in
+    s6-turf-arid-weed-data), `run`, `review`/`security-review`, the connected Playwright
+    MCP tools.
+
+acceptance_criteria:
+  - "Given the project has no dedicated skill/plugin inventory, when this story completes, then a `TOOLING.md` (or a new section in `.pHive/CONTEXT.md`) lists every skill/plugin enabled for this repo and why."
+  - "Given each candidate skill above, when evaluated, then a one-line smoke-test result is recorded (loaded and responded to a trivial request) or the skill is explicitly rejected with a stated reason — no skill is left un-evaluated."
+  - "Given the Playwright MCP tools are already connected in this environment, when `webapp-testing` is evaluated, then an explicit decision is recorded on whether to also enable it or rely on the MCP tools alone — never adopt both without a stated reason."
+  - "Given the community skill install mechanism referenced in this epic's research (an `npx`-style installer), when this story runs, then the actual current syntax is verified directly (e.g. against skills.sh's own docs at execution time) rather than assumed from planning-time research."
+
+steps:
+  - id: research
+    description: Confirm current install mechanisms for the official and community skill candidates; check whether `anthropics/skills` marketplace is already added to this Claude Code environment.
+    agent: researcher
+  - id: implement
+    description: Install/enable the chosen skills; write TOOLING.md documenting what was enabled, what was rejected, and why.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Run one trivial smoke-test per newly-enabled skill (e.g., ask frontend-design to review a throwaway component) and record the result.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm TOOLING.md is complete and no candidate was silently skipped.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit TOOLING.md (or the CONTEXT.md update) to the feature branch.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+    frameworks: [next.js, react]
+  key_files:
+    - path: .pHive/CONTEXT.md
+      purpose: Existing domain glossary; may host the tooling inventory instead of a new file.
+
+references:
+  - path: .pHive/epics/allergy-map-mvp/docs/vertical-plan.md
+    relevant_excerpt: |
+      Slice 0 candidate list and the explicit instruction to compare `webapp-testing`
+      against the already-connected Playwright MCP tools before adopting both.
+
+risks:
+  - severity: low
+    description: Picking skills that turn out unnecessary or redundant with existing Playwright MCP tools.
+    mitigation: Smoke-test each enabled skill before relying on it; explicitly compare against Playwright MCP before adopting webapp-testing too.
+  - severity: low
+    description: skills.sh's install mechanism or a candidate's maintenance status may have changed since planning-time research.
+    mitigation: Verify live at execution time rather than trusting the plan's summary.

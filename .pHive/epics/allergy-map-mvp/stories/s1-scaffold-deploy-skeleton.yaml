@@ -1,0 +1,85 @@
+id: s1-scaffold-deploy-skeleton
+epic: allergy-map-mvp
+title: Next.js scaffold, Tailwind, Vercel deploy, disclaimer footer, CI/test skeleton
+status: pending
+complexity: low
+methodology: classic
+depends_on: [s0-tooling-skill-readiness]
+
+description: |
+  Scaffold the Next.js (App Router, TypeScript) application with Tailwind CSS, wire it to
+  Vercel (mdostal's existing hobby-plan account) for auto-deploy on push to `main`, add
+  the `.env.example` documenting the optional Google Pollen key by name only, add a
+  reusable disclaimer footer component ("directional, not medical advice") that every
+  later page will use, and stand up empty test-runner + CI skeletons so later slices are
+  protected by CI from day one rather than bolting it on at the end.
+
+acceptance_criteria:
+  - "Given a fresh clone, when `pnpm install && pnpm dev` is run, then the app starts locally and serves a placeholder home page."
+  - "Given a push to `main`, when Vercel's auto-deploy runs, then a live public URL serves the placeholder page with zero build errors."
+  - "Given `.env.example`, when inspected, then it documents `GOOGLE_POLLEN_API_KEY` by name only with no value, and `.env*` is confirmed gitignored (already true in this repo's `.gitignore`)."
+  - "Given the disclaimer footer component, when rendered on the placeholder page, then it displays the project's standard 'directional, not medical advice' text."
+  - "Given a PR is opened, when CI runs, then an empty/trivial `pnpm test` and `pnpm test:e2e` both complete successfully on GitHub Actions — the pipes exist even before there's real logic to test."
+
+steps:
+  - id: research
+    description: Confirm current `create-next-app` flags for App Router + TypeScript + Tailwind, and current Vercel project-linking steps for an existing hobby account.
+    agent: researcher
+  - id: implement
+    description: Scaffold the app, wire Tailwind, connect Vercel, add .env.example, add DisclaimerFooter, add vitest/playwright config skeletons and a GitHub Actions workflow.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Verify local dev server starts, a trivial unit test passes, and a trivial Playwright test passes against the local build.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Review for secret leakage risk (secret_scan gate) and confirm no key value (only the name) exists anywhere in the diff.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push to the feature branch; confirm Vercel auto-deploy succeeds.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+    frameworks: [next.js, react, tailwindcss]
+    build_tools: [next, pnpm]
+    package_managers: [pnpm]
+  key_files:
+    - path: .pHive/planning/architecture.md
+      purpose: Already-decided stack (Next.js App Router, TypeScript, pnpm, Vercel hobby, key-safety rules).
+    - path: hive.config.yaml
+      purpose: "secret_scan: required quality gate — the one non-negotiable gate for this OSS project."
+
+files_to_modify:
+  - file: package.json
+    change: New — Next.js + Tailwind + pnpm scaffold.
+  - file: app/layout.tsx
+    change: New — root layout including DisclaimerFooter.
+  - file: app/page.tsx
+    change: New — placeholder home page.
+  - file: components/DisclaimerFooter.tsx
+    change: New — reusable disclaimer component.
+  - file: .env.example
+    change: New — documents GOOGLE_POLLEN_API_KEY name only.
+  - file: .github/workflows/ci.yml
+    change: New — runs pnpm test + pnpm test:e2e on push/PR.
+
+design_decisions:
+  - decision: Tailwind CSS for styling.
+    rationale: Confirmed by user round 1 — faster to build a polished UI without hand-rolling a design system. Colorblind-safe coloring remains a separate, later palette decision (s6).
+
+references:
+  - path: .pHive/planning/architecture.md
+    relevant_excerpt: |
+      Framework: Next.js (App Router), TypeScript, React. Package manager: pnpm.
+      Deploy: Vercel hobby, auto-deploy on push to main.
+
+risks:
+  - severity: medium
+    description: No CI existing until this story lands means nothing enforces the guardrails yet — mitigated by building the skeleton now rather than deferring.
+    mitigation: CI skeleton ships in this story; completed with real assertions in s9-e2e-hardening-ci.
