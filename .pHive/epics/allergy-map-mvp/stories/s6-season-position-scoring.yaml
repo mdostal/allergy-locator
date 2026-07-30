@@ -1,0 +1,64 @@
+id: s6-season-position-scoring
+epic: allergy-map-mvp
+title: Season-position scoring — month-indexed severity for every allergen category
+status: pending
+complexity: high
+methodology: classic
+depends_on: [s5-mode2-composite-sliders]
+
+description: |
+  Add a month/date dimension to the severity engine, per the user's explicit "we need
+  to do it by date, season, etc as we have all the data" direction. This is genuinely
+  new modeling work (design-discussion Risk #2/#4), not something that falls out of
+  `allergy-scores.json`'s existing single-point-in-time values for free — requires a
+  dedicated research step operationalizing the season-length literature already cited
+  in `MODEL-NOTES.md` (Anderegg 2021, Zhang-Steiner 2022) plus Köppen-zone seasonality
+  into a real month-indexed curve per pollen category, and mold's curve from Slice 3's
+  humidity-driven model instead.
+
+acceptance_criteria:
+  - "Given a grass-heavy city, when the timeframe moves from peak grass season to off-season, then the severity score visibly and correctly drops, for both Mode 1 and Mode 2."
+  - "Given the mold category, when the timeframe changes, then its score follows a humidity/moisture-driven curve distinct from the pollen categories' bloom-season curve — not the same shape reused incorrectly."
+  - "Given `lib/severity/score.ts` and `composite.ts`, when unit-tested, then both accept a `timeframe: Month` parameter and produce different, defensible values across at least 3 different months for the same city/allergen."
+  - "Given the UI, when the season/date model is described in copy or comments, then it is explicitly labeled a modeled seasonal curve, not live meteorological forecasting."
+
+steps:
+  - id: research
+    description: Operationalize MODEL-NOTES.md's cited season-length sources plus Köppen-zone seasonality into a concrete month-indexed formula per pollen category; define mold's humidity-driven curve separately using Slice 3's model.
+    agent: researcher
+  - id: implement
+    description: Extend lib/severity/score.ts and composite.ts with a timeframe parameter; build components/TimeframeControl.tsx (month selector).
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Unit tests asserting real score changes across months for both pollen and mold categories.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm the season-position model is grounded in the cited literature (not invented), and that mold's curve is genuinely distinct from pollen's.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push to the feature branch.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+  key_files:
+    - path: docs/MODEL-NOTES.md
+      purpose: Cites the season-length literature this story's research step must operationalize into real numbers.
+
+risks:
+  - severity: high
+    description: Season-position modeling may be harder than estimated if the cited literature doesn't support the needed precision.
+    mitigation: Dedicated research step surfaces this as an explicit finding to escalate to the user if it happens, rather than shipping a guessed curve silently.
+
+references:
+  - path: docs/MODEL-NOTES.md
+    relevant_excerpt: |
+      Grass-pollen SEASON LENGTH — long warm-humid (South) vs short cold-winter
+      (North) vs short dry-high (Mountain West). Source: Anderegg 2021 (PNAS),
+      Zhang-Steiner 2022 (Nat. Comms.).

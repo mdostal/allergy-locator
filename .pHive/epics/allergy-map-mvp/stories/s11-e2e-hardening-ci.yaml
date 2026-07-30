@@ -1,0 +1,60 @@
+id: s11-e2e-hardening-ci
+epic: allergy-map-mvp
+title: Full E2E harness (both modes, playback, reports) + open-source guardrail CI
+status: pending
+complexity: high
+methodology: classic
+depends_on: [s8-reports, s9-agent-controllable-url-state, s10-about-story-pages]
+
+description: |
+  Complete the test harness across the full, larger scope: grass ground-truth
+  validation (the rigorous case) across multiple timeframe positions using
+  `MY-ANSWER.md`'s worked table; presence/plausibility checks (not ground-truth) for
+  every other sourced allergen including mold; playback and report generation smoke
+  tests; the two open-source non-negotiable guardrails (zero external calls, no
+  secrets in the bundle); CI wired to run all of it on every push.
+
+acceptance_criteria:
+  - "Given the author's example profile, when the full Playwright suite runs, then grass-driven results match MY-ANSWER.md's documented tiers across at least 3 different timeframe positions (not just 'now')."
+  - "Given any non-grass allergen (weed/tree/mold), when tested, then assertions check plausibility/presence only (e.g. 'toggling it produces a non-crashing, non-nonsensical result'), explicitly not compared against a ground-truth table that doesn't exist for those categories."
+  - "Given year playback, when tested, then pressing play visibly advances the timeframe state over a real time interval and pause halts it."
+  - "Given report generation, when tested, then a report is produced for the author's example profile without error and its content is plausible against MY-ANSWER.md."
+  - "Given the built site, when the E2E run loads it, then zero network requests leave the origin on the core map path."
+  - "Given the built client bundle, when scanned, then no key/token pattern is present."
+  - "Given a PR is opened, when CI runs, then pnpm test and pnpm test:e2e both execute the full suite and a failure blocks merge."
+
+steps:
+  - id: research
+    description: Confirm the full suite (grass ground-truth + plausibility checks + playback + reports) fits within a reasonable CI time budget.
+    agent: researcher
+  - id: implement
+    description: Write the complete Playwright spec suite, guardrail checks, and complete the GitHub Actions workflow.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Run the full suite locally against a production build before relying on CI.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm honest test-coverage scoping — grass gets ground-truth assertions, everything else gets plausibility assertions only, matching the confidence labeling carried through every prior story.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push; confirm CI runs green on the feature branch before this epic is considered complete.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+  key_files:
+    - path: docs/story/MY-ANSWER.md
+      purpose: The grass ground-truth table this story's rigorous assertions are drawn from.
+    - path: hive.config.yaml
+      purpose: "secret_scan: required — the one hard quality gate this project has."
+
+risks:
+  - severity: medium
+    description: A full suite covering two modes, playback, reports, and many allergens could be slow enough to discourage running on every PR.
+    mitigation: Keep ground-truth assertions targeted to the documented oracle; plausibility checks for other allergens stay lightweight (not combinatorial).

@@ -1,93 +1,101 @@
-# Grill Record — allergy-map-mvp
+# Grill Record — allergy-map-mvp (re-plan, round 2 supersedes round 1 below)
 
-**Source draft:** `.pHive/epics/allergy-map-mvp/docs/design-discussion.md`
+**Round 2 pass (against design-discussion v3, post user round-3 direction):**
+- **round_number:** 2
+- **unresolved_count:** 1
+- **Finding (Hidden assumption, H2):** §2 item 2 states season-position modeling uses
+  "season-length/timing data already implicit in `MODEL-NOTES.md`'s cited sources" —
+  but `MODEL-NOTES.md` discusses season length *qualitatively* (long warm-humid vs.
+  short cold-winter), not as numeric month-by-month curves. Framing this as data
+  "already on hand" risks underestimating the modeling task.
+  - **Resolution:** Risk #2 in the design discussion already treats this as unbuilt work
+    requiring its own `research` step (not "falls out for free") — this softens the
+    finding to acceptable-as-flagged rather than requiring a rewrite. Carried forward
+    as an explicit research-step requirement in the structured outline rather than a
+    design-discussion rewrite.
+
+---
+
+# Grill Record — allergy-map-mvp (re-plan, round 1, superseded)
+
+**Source draft:** `.pHive/epics/allergy-map-mvp/docs/design-discussion.md` (v2)
 **CONTEXT.md substrate:** present
-**inconsistency_risk_signals:** absent (research brief does not carry this field — heuristic pass against draft + CONTEXT.md + existing repo docs)
+**inconsistency_risk_signals:** absent (research brief v2 doesn't carry this field — heuristic pass)
 **round_number:** 1
-**unresolved_count:** 3
+**unresolved_count:** 2
 **Generated:** 2026-07-30T00:00:00Z
 
 ## Summary
 
-- Vocabulary mismatches: 1 finding
+- Vocabulary mismatches: clean
 - Hidden assumptions: 1 finding
 - Unresolved tensions: 1 finding
 - Convention violations: clean
-- Posture mismatches: not applicable (planning document, no skill/execution architecture proposed)
+- Posture mismatches: not applicable
 
 ## Vocabulary mismatches
 
-- **V1** — Draft uses "profile" throughout (§2 item 5, §6 Q1/Q2) but `.pHive/CONTEXT.md`'s
-  canonical glossary term is **"Panel"** ("a person's allergy test result; the tool colors
-  the map against the user's selected panel"). `product-brief.md` also uses "profile."
-  Both terms are pre-existing in repo docs, but the draft doesn't pick one as canonical
-  going forward into story-writing, where inconsistent terminology across story YAMLs
-  (`panel` vs `profile` vs the new "multiple named profiles/maps") will make the
-  self-containment rule harder to satisfy cleanly.
-  - Draft location: §2 item 5 ("Profile input"), §6 Q1/Q2
-  - Reference: `.pHive/CONTEXT.md` §Terminology → "Panel"
-  - Question for planner: pick one canonical term (recommend keeping CONTEXT.md's
-    "panel" as the data concept, and using "profile" only for the saved/named UI
-    construct that wraps one or more panels) and state it explicitly so stories inherit
-    consistent vocabulary.
+Clean — no findings. "Panel" (CONTEXT.md's term) is used correctly for the author's real
+data; the new "grass sensitivity" control is introduced as a distinct, new concept rather
+than redefining "panel," so no drift.
 
 ## Hidden assumptions
 
-- **H1** — §2 item 1 recommends Tailwind "fast to get a polished, colorblind-safe UI"
-  without grounding — colorblind-safety is a property of the chosen color **palette**,
-  not of the CSS tooling (Tailwind vs. CSS modules produce identical accessibility
-  outcomes; the palette choice is orthogonal and already separately risk-flagged in §4
-  Risk #5). Bundling them implies Tailwind itself buys accessibility, which it doesn't.
-  - Draft location: §2 item 1
-  - Why this matters: if the styling decision (§6 Q5) is made partly on this false
-    premise, the actual accessibility work (palette selection) could get skipped as
-    "already handled by Tailwind."
-  - Question for planner: decouple the two — state the Tailwind-vs-CSS-modules
-    recommendation on its own developer-ergonomics merits, and keep the colorblind-safe
-    palette as its own explicit story/acceptance-criterion regardless of styling choice.
+- **H1** — §2 item 2 claims "confidence is trivially 'measured' for all 168 (hand-
+  curated, not interpolated) today." `allergy-scoring.md`'s own "Honest limitations"
+  section (cited in the research brief) states the `turf` flag feeding these scores is
+  "a hand-set estimate of cultivated-grass intensity, **not a measured land-cover
+  figure**." The draft conflates "not spatially interpolated between cities" (true —
+  each city gets its own value) with "measured" (overstated — key inputs are curated
+  estimates, not measurements).
+  - Draft location: §2 item 2
+  - Why this matters: if a future confidence-surface UI (per `docs/ROADMAP.md`) reads
+    this epic's data model as "high confidence, measured," it will misrepresent the
+    honest limitation the scoring doc itself already discloses — undermining the
+    project's own "transparent, decomposable, honest about limitations" principle
+    (`docs/ROADMAP.md` §Principles) at the exact layer meant to carry it.
+  - Question for planner: should the per-city confidence value be something more honest
+    than a flat "measured" (e.g., "curated" or a two-tier measured-vs-estimated split
+    reflecting which components are hand-set vs. derived from real climate data), even
+    while the confidence *surface itself* isn't rendered in v1?
 
 ## Unresolved tensions
 
-- **U1** — §2 item 2 (Data pipeline) states "Zero new external calls — everything needed
-  for v1 severity scoring is already committed and verified in `data/`." §4 Risk #4
-  states the opposite for two of the three severity sub-layers: "Turf/irrigation and
-  arid-weed layers have no existing dataset baked in yet... may require additional open-
-  data sourcing... beyond what's currently in `data/`." These two statements directly
-  contradict each other on whether the data pipeline is a pure-normalization job or has
-  an open sourcing dependency.
-  - Draft location: §2 item 2 vs. §4 Risk #4
-  - Tension: is the v1 severity model buildable entirely from already-committed data
-    (grass/weed/tree species-range presence only), or does it require sourcing new
-    open data (irrigated-land / cropland-data-layer, aridity index) before the turf and
-    arid-weed axes described in `docs/MODEL-NOTES.md` can actually be implemented?
-  - Question for planner: reconcile before story-writing — either (a) confirm a v1
-    approximation of turf/arid-weed exists in already-committed data (e.g., derivable
-    from state-level climate proxies without a new dataset) and narrow §4 Risk #4
-    accordingly, or (b) accept that new data sourcing is required and correct §2 item 2's
-    "zero new external calls" claim to scope it to the *presence* layer only, with the
-    turf/arid-weed sourcing carved out as its own explicit research-bearing story.
+- **U1** — §0/§1 still cite the project's north star verbatim: "given MY allergens,
+  where in the US is best/worst for me" (general, any allergen) as the unchanged
+  success bar. §2 item 1 then recommends narrowing v1 to grass-primary scoring, with
+  weed/tree as presence-only and explicitly "not blended into the color score." The
+  draft doesn't state whether this narrowing is understood to **temporarily** serve the
+  general north star (grass now, other categories later, same tool) or represents a
+  **permanent** re-scope of what "the tool" means. Both are defensible, but the
+  document asserts the north star is unchanged while measurably shrinking what v1
+  delivers against it, without saying which framing is intended.
+  - Draft location: §0 NORTH STAR vs. §2 item 1
+  - Tension: is grass-primary a *phase* of the general-panel vision, or a *redefinition*
+    of the vision's near-term scope?
+  - Question for planner: state explicitly in the revision — e.g., "grass-primary is
+    v1's phase-1-of-the-tool, not a reduced final vision" — so a future reader (or a
+    future epic) doesn't have to infer it.
 
 ## Convention violations
 
-Clean — no findings. The draft's non-negotiables (§7) correctly restate the project's
-existing hard constraints (zero cost, zero secrets, no login/accounts/tracking,
-state-level only, severity-not-presence, "no place cures you," directional-not-medical)
-without contradicting `hive.config.yaml` or `REQUIREMENTS.md`.
+Clean — no findings. The draft's non-negotiables (§7) correctly carry forward the
+project's existing hard constraints without contradicting `hive.config.yaml` or
+`REQUIREMENTS.md`.
 
 ## Posture mismatches
 
-Not applicable — this is a product design discussion, not a skill/architecture proposal;
-no atomic-skill or composability posture is implicated.
+Not applicable — planning document, no skill/architecture posture implicated.
 
 ## Notes
 
-The draft is unusually well-grounded for a first-pass design discussion because most of
-the underlying research (data sourcing, coloring model, E2E oracle) was already done and
-verified in a prior session, before this epic existed. The three findings above are real
-but narrow — none invalidate the overall approach or scale assessment (Large stands).
+This re-plan draft is unusually well-grounded because it's reconciling against already-
+validated, already-documented parallel research rather than greenfield speculation. Both
+findings are real but narrow, consistent with a second-pass draft rather than a first
+one — neither invalidates the overall approach.
 
 ## Out of scope (this pass)
 
 Grill does not propose solutions, score quality, gate work, or prioritize findings. Each
-finding above ends with a question for the planner; resolving V1/H1/U1 is the technical
+finding above ends with a question for the planner; resolving H1/U1 is the technical
 writer's job before this document is presented to the user.

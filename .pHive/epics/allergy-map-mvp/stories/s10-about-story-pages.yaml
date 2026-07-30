@@ -1,0 +1,91 @@
+id: s10-about-story-pages
+epic: allergy-map-mvp
+title: "Tabbed /about page — both ABOUT copy variants behind an in-page toggle"
+status: pending
+complexity: medium
+methodology: classic
+depends_on: [s1-scaffold-deploy-skeleton]
+parallel_allowed: true
+parallel_rationale: bounded-slice
+files_to_modify:
+  - file: app/about/page.tsx
+    change: New — tabbed about route.
+  - file: components/about/MyStoryTab.tsx
+    change: New — sources docs/story/MY-STORY.md, WHY-THIS-EXISTS.md, IMMUNOTHERAPY.md, MY-ANSWER.md content.
+  - file: components/about/ProjectTab.tsx
+    change: New — renders BOTH ABOUT.md and ABOUT-v2.md content behind an in-page toggle.
+
+description: |
+  Wire the existing story content into a real, live `/about` route. One route, two
+  tabs: "My Story" (personal journey + the new `MY-ANSWER.md` ground-truth validation)
+  and "The Project" (what the tool is, how it works). Per the user's explicit
+  instruction — "ship about 1 and 2 with a toggle and I'll choose" — the Project tab
+  ships **both** `ABOUT.md` and `ABOUT-v2.md` content behind an in-page toggle, not a
+  single planner-chosen variant. `/design` delegation still produces the tab layout
+  itself (a separate, still-valid two-variant layout exploration from round 1).
+
+acceptance_criteria:
+  - "Given the /about route, when visited, then it shows two tabs and switches between them without a full page reload."
+  - "Given the 'My Story' tab, when viewed, then it renders MY-STORY.md, WHY-THIS-EXISTS.md, IMMUNOTHERAPY.md, and MY-ANSWER.md content."
+  - "Given the 'The Project' tab, when viewed, then it shows an in-page toggle that switches between ABOUT.md's and ABOUT-v2.md's content live, without navigating away."
+  - "Given `/design`'s two-variant layout exploration, when this story completes, then both layout variants are available for the user to compare (separate from the content-toggle, which is a fixed requirement not a design choice)."
+  - "Given image placeholders in MY-STORY.md, when rendered, then they appear as visible placeholder blocks (user will supply real photos later)."
+  - "Given the disclaimer footer, when this page renders, then it is present exactly as on every other page."
+
+steps:
+  - id: research
+    description: Confirm section boundaries across all four "My Story" source docs and both "Project" copy variants.
+    agent: researcher
+  - id: ui-design
+    description: Delegate to /design for wireframes (atomic external call; see skills/design/SKILL.md). Request 2 layout variants for the tabbed page; hand in the both-ABOUT-variants-with-toggle requirement as fixed content, not a design choice.
+    agent: ui-designer
+    delegates_to: design
+    depends_on: [research]
+  - id: implement
+    description: Build app/about/page.tsx and the tab components per the chosen (or both) /design variant(s), including the ABOUT.md/ABOUT-v2.md in-page toggle.
+    agent: developer
+    depends_on: [ui-design]
+    inputs:
+      - source: step_output
+        step: ui-design
+        key: wireframe_brief
+  - id: test
+    description: Playwright test asserting tab switching works, both tabs render expected content, and the ABOUT-variant toggle switches copy live.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm content fidelity to source markdown and no duplicated/missing disclaimer.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push to the feature branch.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+    frameworks: [next.js, react, tailwindcss]
+  key_files:
+    - path: docs/story/ABOUT.md
+      purpose: "Project\" tab content, variant 1."
+    - path: docs/story/ABOUT-v2.md
+      purpose: "Project\" tab content, variant 2 — ships alongside variant 1 behind a toggle, not instead of it."
+    - path: docs/story/MY-STORY.md
+      purpose: "My Story\" tab content."
+    - path: docs/story/MY-ANSWER.md
+      purpose: "My Story\" tab content — ground-truth validation against the new scoring model."
+    - path: docs/story/WHY-THIS-EXISTS.md
+      purpose: "My Story\" tab content."
+    - path: docs/story/IMMUNOTHERAPY.md
+      purpose: "My Story\" tab content."
+
+design_decisions:
+  - decision: Ship both ABOUT.md and ABOUT-v2.md behind an in-page toggle rather than picking one.
+    rationale: Explicit user instruction — they want to compare live, not from a mockup or a planner's choice.
+
+risks:
+  - severity: low
+    description: Two ABOUT variants plus two layout variants could be confused with each other.
+    mitigation: Keep them explicitly separate in the story — content toggle is fixed scope; layout variants are /design's exploration.

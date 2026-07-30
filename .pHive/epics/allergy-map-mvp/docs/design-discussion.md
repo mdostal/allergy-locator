@@ -1,258 +1,233 @@
-# Design Discussion — Allergy Locator: Interactive Map MVP
+# Design Discussion v3 — Allergy Locator: Interactive Map (re-plan, round 3)
 
-**Status:** revised after user review round 1 — user has signed off to proceed
-("I think we're good to begin"). This revision folds in real scope changes from that
-round (toggleable multi-allergen layers, current/forecast time dimension, agentic panel
-ingestion + verification, and a corrected roadmap), not just cosmetic edits.
+**Status: supersedes v2.** Round 2 review rejected v2's grass-primary scope narrowing
+and its timeframe deferral, then further corrected round 3's own initial framing:
+this is a comprehensive, data-driven, generic allergen map — every allergen there's
+sourceable data for, not a curated list — with two map modes and a full time
+dimension, all as v1 scope. The v1/v2 epic docs are preserved in git history
+(`f4171bc`) for reference but are obsolete.
 
 ## §0 Prelude
-No prior KG decisions found (`/hive:why` not run — no cycle-state/decision history exists
-yet for this greenfield project; this is epic #1). No PRIOR DECISIONS section.
+No prior KG decisions system in use for this project (no `/hive:why` history). No
+PRIOR DECISIONS section.
 
-**NORTH STAR** (from `.pHive/project-profile.yaml`):
-- **Goal:** An open-source interactive US map that answers "given MY allergens, where in
-  the US is best/worst for me?" — the reverse of every "pollen near me now" tool.
-- **Audience:** Anyone with an allergy panel choosing where to live; primary worked
-  example is the author (grass-dominant profile). Public, no login.
-- **Scale:** Low — static site, hobby plan. Directional tool, not high-concurrency SaaS.
-- **Pain points:** Presence ≠ severity — a naive presence map is a useless red rectangle;
-  coloring must be severity-based.
-- **Success:** A public URL where picking allergens recolors the map, click-through works,
-  $0 cost, fully open, no secrets.
-- **Avoid:** Any secret in repo/client. Presence-only coloring. Runtime data-fetch for the
-  core map. Scope creep beyond a state-level US map.
+**NORTH STAR** (from `.pHive/project-profile.yaml`, still current): reverse "pollen
+near me now" tool → "given MY allergens, where in the US is best/worst for me?" Public,
+no login. Now understood as Phase 1 of a larger livability atlas (`docs/ROADMAP.md`),
+but this epic's own success bar is unchanged: ship the working allergy tool.
 
 ## §1 Goal
-Build the first working version of Allergy Locator end-to-end: a static, interactive
-US map (Next.js/Vercel, zero-cost, zero-key) covering **50 states + DC (51 geographic
-units total** — not 51 states; corrected after round 1) that colors each unit on a
-green→red **severity** scale, per allergen, for a user-selected or user-provided panel,
-across a **selectable date/timeframe** (current season position → seasonal outlook), lets
-the user click a state to see what's driving its color and when in the year it matters,
-and tells the project's own origin story on real site pages. The user's own 2013→2026
-allergy-panel history and road-trip reactions are the literal, falsifiable QA oracle for
-whether the coloring is right, per `docs/E2E-TESTING.md`.
+Ship a comprehensive, data-driven, general-purpose interactive allergy map with two
+modes, built on the 168-city spine (`data/cities.json`) and the already-validated
+grass-severity methodology (`data/allergy-scores.json` / `allergy-scoring.md`) as the
+reference implementation and flagship worked example — not as a ceiling on scope.
+Per the user's direction across three rounds of correction (verbatim, quoted below):
 
-This is not a new idea-generation exercise — `REQUIREMENTS.md`, `.pHive/planning/
-architecture.md`, `docs/MODEL-NOTES.md`, and `docs/E2E-TESTING.md` already specify the
-core product and coloring algorithm; this design discussion adds the round-1 expansions
-(multi-allergen toggles, time dimension, agentic ingestion) on top. This epic's job is to
-**build the v1 slice of it** — see §1b roadmap for what's in this epic vs. deferred.
+- **Mode 1 — Allergen overlay map (build first).** *"The first version is just to turn
+  on and off overlays on a map of what the allergens are — ex: ragweed toggled on as
+  dark green gradients, bluegrass toggled on as a blueish gradient, cedar toggled on as
+  a reddish gradient etc."* A raw, unpersonalized view: toggle any allergen there's
+  data for — on/off, each its own gradient overlay across the 168 cities. Not about any
+  one person's sensitivity yet — this is "what's out there."
+- **Mode 2 — Personalized composite (build second).** *"Then we build sensitivity
+  sliders for YOU to see YOUR overlay with them and then we can make the chart that
+  goes from green to red purely on YOUR allergies."* A slider per allergen combines the
+  selected allergens' Mode-1 values into one green→red composite score, personalized.
+  The author's real, mostly-grass panel loads as the flagship example/default (*"MINE
+  is mostly grass... however this is a general tool for anyone"*).
+- **Comprehensive, data-driven scope — not a curated list.** *"Not 15 known allergens,
+  ALL KNOWN — we want mold, we want everything that we have data for... this is a
+  GENERIC ALLERGEN MAP."* And, more emphatically: *"MY TEST had more than 15, I just
+  wasn't reactive to them all — WE PULL ALL ALLERGY DATA WE HAVE — PERIOD — WE PUT THEM
+  ALL ON THERE... don't hardcode, just loop through allergy toggles for shit in data."*
+  This is a binding product AND architecture requirement — see §2 item 1.
+- **Time dimension — not deferred.** *"We need to do it by date, season, etc as we have
+  all the data and you want to be able to play out areas over time... even a 'play the
+  year' button... to see the highs and lows... You may find the best time and area for
+  YOU is mid summer in Florida or YOU may do best in winter in Alaska."* Both modes need
+  a date/season control, plus a **year-playback** animation and **reports**
+  ("by the END of this") summarizing best time+place for a given sensitivity profile.
 
-## §1a Terminology (resolves grill-record V1)
-- **Panel** — the underlying allergen dataset (CONTEXT.md's canonical term): which
-  allergens someone reacts to, at what severity, per their actual test results.
-- **Profile** — the named, saved UI construct that wraps one panel (e.g., "mine,"
-  "partner's"). v1 has exactly one active profile at a time (no save/switch); saving
-  and holding multiple profiles is v3 (see roadmap).
+## §2 Proposed approach
 
-All stories and story YAMLs use "panel" for the data concept and "profile" only for the
-(future) saved/named container around it.
+### 1. Comprehensive, data-driven allergen scope (the central correction this round)
+`species-ranges.json`'s current 15 species are the author's own curated *reactive*
+subset (his 2013 full panel tested far more — trees, grasses, weeds, molds — he just
+wasn't positive on most of them), not the full allergen universe. Two binding decisions
+follow directly:
 
-**"Static" (clarified, round 3)** describes two specific things and nothing else: (1) the
-**data pipeline** — severity inputs are baked at build time, zero runtime fetch; and
-(2) the **rendering technique** — an inlined SVG (vector paths recolored via CSS/JS), not
-a server-rendered raster/canvas image. It does **not** describe the user experience. From
-the user's perspective the map is a fully **dynamic, interactive heatmap**: colors
-recompute client-side in real time as they toggle allergens, move the timeframe control,
-or load a different panel — it just never makes a network call to do it, and the color
-values themselves are pixels/paths on an SVG rather than a live raster tile layer.
-"Slice 2 — static severity map" (vertical-plan.md) is named for using one *hardcoded*
-profile, not for being non-interactive — its map still recolors correctly if you swap
-which allergens the hardcoded panel contains; the toggle/timeframe *controls* just don't
-exist as UI yet until Slices 4-5.
+- **Data scope: pull and include every allergen there's sourceable data for** — trees,
+  grasses, weeds, mold, full stop. Not a curated "standard tracked set" chosen by the
+  planner; whatever the research/data-sourcing step can find open data for gets
+  included. No allergen excluded for seeming minor or regional.
+- **Architecture: the allergen list is data-driven, never hardcoded in UI/engine code.**
+  Toggles, sliders, palette assignment, and click-through all iterate over whatever
+  allergens exist in the sourced data (e.g., loop over a data file's keys/entries) —
+  adding a new allergen to the data must require zero UI code changes. Binding for
+  every story touching Mode 1/Mode 2 UI (also listed in §7).
 
-## §1b Roadmap (locked with the user, round 1)
-This epic (`allergy-map-mvp`) decomposes stories for **v1 only**. v2 and v3 are real,
-intended, and documented here so v1's architecture doesn't box them out — but they are
-**not** decomposed into stories in this epic; they become their own future epics once v1
-ships and is validated against the author's panel.
+**Mold is a special call-out** — it doesn't fit the pollen model at all: spore-based,
+driven by humidity/moisture/decay, not a bloom season, needing its own data source and
+severity model. **Real conflict to flag:** the standard mold-count source (NAB station
+network) is the same source `REQUIREMENTS.md` already flags as "reference/QA only —
+NOT embedded (reuse restricted)." Finding an open, embeddable mold data source (or an
+honest modeled proxy from humidity/climate data, labeled as such) is a genuine open
+research question, not a formality — its own risk (§4) and its own early story in the
+vertical plan.
 
-- **v1 (this epic):** interactive severity map, per-allergen toggle + color-coding,
-  current-position + seasonal-outlook time dimension, manual allergen picker + preset +
-  JSON/CSV panel import (single active profile, no save), about/story pages, full E2E
-  harness. Architecture is agent-controllable by design (state is serializable) so v2
-  doesn't require a rewrite, but no chat UI or LLM calls ship in v1.
-- **v2 (future epic):** agentic panel ingestion — user pastes/uploads a raw report, an
-  LLM parses it into the exact same panel schema v1's JSON import already uses, a
-  **second, independent LLM pass verifies** the extraction against the source (checking
-  for fabricated allergens/values before anything renders), and only a verified panel
-  populates the map. Also: a documented, agent-friendly control API/tool surface (so an
-  external agent — Claude Desktop via MCP, a script, etc. — can drive the map without
-  the in-app chat).
-- **v3 (future epic):** multiple named, saved profiles; save/share; overlay multiple
-  profiles at once (the family use case — e.g. a parent and child's panels shown
-  together).
+**Honesty requirement, unchanged in spirit from earlier rounds:** grass keeps its
+rigorous ground-truth fit (MAE 2.3); every other allergen is a good-faith modeled
+extension without an equivalent ground-truth fit yet. A `confidence: validated |
+modeled` flag per allergen carries this honestly rather than flattening it.
 
-## §2 Proposed approach (v1)
-Eight layers (expanded from 6 after round-1 feedback), sequenced as vertical slices in
-`vertical-plan.md`:
+- **Mode 1 (overlay map):** each allergen's per-city severity value renders as its own
+  colored gradient (distinct hue per allergen, per the user's example — ragweed dark
+  green, bluegrass blue-ish, cedar reddish; exact palette is a `dataviz`-skill task, not
+  a design-discussion decision).
+- **Mode 2 (personalized composite):** a sensitivity slider per allergen (0-100 or
+  none/mild/moderate/severe) weights that allergen's Mode-1 value into a single
+  composite score per city, colored green→red. The author's real panel is the loadable
+  flagship example — one valid slider configuration among all possible ones, not a
+  special code path.
 
-1. **App scaffold.** Next.js (App Router, TypeScript) + pnpm, deployed to Vercel hobby,
-   auto-deploy on push to `main`. Styling: **Tailwind CSS** (confirmed by user, round 1).
-   Tailwind is a developer-ergonomics choice only — it does not by itself deliver
-   accessibility; colorblind-safe coloring is a separate palette decision (Risk #5).
-2. **Data pipeline (build-time, zero runtime fetch for the baked core).**
-   `scripts/build-data.ts` normalizes `data/species-ranges.json` + season/climate inputs
-   into `data/severity-model.json`. Presence + grass-season/climate layers need zero new
-   external calls. Turf/irrigation + arid-weed layers, and any additional open datasets
-   from the round-1 "deep dive" ask (see item 7 below), are a separate, explicit sourcing
-   task — see Risk #4.
-3. **Severity scoring engine.** Presence gates which allergens list on a state; severity
-   (season length × intensity × climate + irrigated/planted-turf weighting + arid-
-   Southwest weed/dust layer) drives the color, computed **per selected allergen** (not
-   only a single blended score — see item 4) so individual allergens can be toggled and
-   viewed independently. Pure function, unit-tested against the E2E oracle table before
-   the UI consumes it.
-4. **Interactive map UI — multi-layer + time-aware (expanded, round 1).** Inlined SVG,
-   no external map CDN. Two round-1 additions beyond the original single-score map:
-   - **Per-allergen toggle layers.** The user can turn individual allergens on/off and
-     see each one's own color-coded severity, not just a combined score. Combined
-     ("your whole panel") remains the default view; toggling isolates one allergen at a
-     time for "which specific thing is driving this."
-   - **Date/timeframe control.** A control (e.g. a month/date selector) re-scores the
-     map for a chosen point in the year, so a user can ask "what does this look like in
-     April vs. August" for trip/move planning. **Scope decision for v1 (proposed):**
-     this is a **climatological/seasonal outlook** — computed from the already-planned
-     season-length/intensity data (the same inputs driving the static severity model),
-     NOT live day-by-day weather-service pollen forecasting. True meteorological
-     forecasts come from commercial providers (Ambee, IQVIA/Pollen.com, Google Pollen)
-     that are rate-limited/paid at any real scale, which conflicts with the $0/no-key
-     hard constraint. "Current conditions right now" stays the existing **optional**
-     Google-Pollen live toggle (still off by default, still server-proxied). This
-     reconciles "current AND forecast" with the cost constraint; flagged for iteration
-     per the user ("we'll have to play with this iteratively") rather than treated as
-     final.
-   Click a state → panel with allergens present + season window + plain-English "why,"
-   sourced from the same severity engine (no duplicated logic).
-5. **Profile input (v1 scope, corrected round 1).** Manual allergen picker (grasses/
-   weeds/trees checklist) + a load-a-preset shortcut for the author's own panel (doubles
-   as the E2E fixture) + a structured **JSON/CSV panel import**. Correction from round 1:
-   nobody uploads a pre-made "allergy map" — the import is raw allergen/severity data
-   (from a test panel), and the app builds the map from it. No save, no multiple
-   profiles, no overlay in v1 (that's v3).
-6. **Story/about pages + disclaimers (resolved, round 1).** A single `/about` route with
-   two tabs: **"My Story"** (the author's personal journey — MY-STORY.md /
-   WHY-THIS-EXISTS.md / IMMUNOTHERAPY.md content) and **"The Project"** (what the tool is,
-   how the coloring works, "not medical advice"). This is a UI story and auto-detected
-   for `/design` delegation (step 16) — per the user's suggestion, the delegated design
-   pass should produce **2 layout variants** for the tabbed page so the user can pick a
-   winner (or ship both behind a flag), rather than a single take. Placeholder images
-   ship as visible placeholders (user will supply real photos later — confirmed, no
-   action needed now).
-7. **Agent-controllable surface (new, round 1 — v1 groundwork only).** Full map state
-   (active panel/selected allergens, toggle states, date/timeframe) is serializable to
-   URL query params from day one. This is the only v1-scoped piece of the "agentic tools/
-   API" ask: it makes the map already scriptable/shareable-by-URL without any LLM
-   involved, and it's the foundation v2's in-app agent and any external agent (MCP tool,
-   script) will target later without a rewrite. **Explicitly deferred to v2:** the in-app
-   chat agent, LLM-based panel parsing, the verification-agent pass, and any published
-   MCP/tool-spec wrapper — none of those ship in this epic.
-8. **Data deep-dive (new, round 1).** A research task to survey additional open, freely-
-   embeddable US datasets beyond USDA/GBIF for the turf/arid-weed severity sub-layers and
-   any other severity inputs — see Risk #4 and §6 decisions.
+### 2. Time dimension: season/date control + year playback + reports
+Not deferred (reverses v2's deferral). Three layered pieces, sequenced simplest-first
+in the vertical plan:
+- **Season-position scoring.** Extend each allergen's severity formula with a month/
+  date parameter, using the season-length/timing data already implicit in
+  `MODEL-NOTES.md`'s cited sources (Anderegg 2021, Zhang-Steiner 2022) and Köppen-zone
+  seasonality — a modeling extension of data already on hand, not a new external
+  data-sourcing task. Both Mode 1 and Mode 2 read from this.
+- **Year playback.** A "play the year" control that animates the map through month-by-
+  month (or finer, if the underlying season model supports it) positions, so a user
+  watches a city's (or their personalized composite's) severity rise and fall — this is
+  what surfaces "mid-summer Florida vs. winter Alaska" for a given sensitivity profile.
+- **Reports.** A generated summary (best time + place for the active sensitivity
+  profile, worst-avoid list, notable seasonal windows) — the concrete "by the END of
+  this" deliverable. Format (on-page panel vs. exportable doc) is a structured-outline
+  detail, not resolved here.
 
-Cross-cutting: E2E test harness per `docs/E2E-TESTING.md` (unit scoring tests, per-
-allergen toggle correctness, data-integrity checks, Playwright ground-truth assertions),
-CI wiring, and the `secret_scan` / zero-external-calls guardrails as non-negotiable gates
-on every PR.
+**Explicit honesty note (unchanged):** this is a **modeled seasonal curve**, not live
+meteorological forecasting. "Play the year" plays through the *model*, not a real-time
+weather feed.
+
+### 3. Map rendering — 168-city point map, multi-layer, engine kept clean for later upgrade
+Render `data/cities.json`'s 168 cities as color-coded markers on a US base map.
+Multi-layer: Mode 1 shows N allergen overlays (toggleable, each own gradient), Mode 2
+shows one composite overlay (green→red). Click a city → full component breakdown
+(reusing `allergy-scores.json`'s existing decomposition pattern, generalized per-
+allergen) as a plain-English "why," including the active season/date position.
+
+Per-city confidence is **"validated"** for grass, **"modeled"** for every other
+allergen (§2 item 1) — carried forward honestly, never flattened. Data model stays a
+`{location, value, confidence}` shape per allergen per timeframe so `docs/ROADMAP.md`'s
+later county/raster upgrade extends rather than replaces it — a cheap, one-way-door-
+avoiding step, not scope creep in itself (this round's real scope growth is the
+allergen/time expansion the user asked for directly, not this data-model line).
+
+### 4. Panel/sensitivity input
+Per-allergen sensitivity sliders (§2 item 1, Mode 2), rendered by looping over the
+sourced allergen data (never a hardcoded slider list) + a "load the author's example"
+shortcut (flagship panel, doubles as the E2E fixture). JSON/CSV import for a full
+slider-set remains a reasonable v1 feature, covering the full comprehensive allergen
+list.
+
+### 5. Story/about pages — ship both, user picks live
+*"Ship about 1 and 2 with a toggle and I'll choose."* `/about` ships **both** `ABOUT.md`
+and `ABOUT-v2.md` content behind an in-page toggle (not an either/or content decision,
+not deferred to `/design`) — the user compares live rather than from a mockup. Layout
+(tabs: "My Story" vs. "The Project", per round 1) still goes through `/design`
+delegation; the copy-variant toggle is a concrete requirement handed to that delegation,
+not an open question for it to resolve.
+
+### 6. Agent-controllable URL state
+Serialize the active view (mode, all allergen sliders/toggles, active date/timeframe) to
+URL query params. State shape scales with however many allergens the data-sourcing step
+produces (§2 item 1) — likely a compressed/encoded param rather than one per allergen —
+but the principle is unchanged from prior rounds: no chat/LLM in this epic; the full v2
+agentic-ingestion plan stays in `.pHive/planning/roadmap.md`.
+
+### 7. Tooling readiness
+Unchanged — still needs to happen, still never completed (the background teammate
+failed before the session restart, per `.pHive/agent-complete/aed3d23d0f44c776a/
+complete.json`'s `verdict: failure`). Re-run as the epic's first story.
+
+Cross-cutting: E2E harness validates grass (the rigorous case) against `MY-ANSWER.md`'s
+ground-truth table across multiple timeframe positions (not just "now"), and validates
+every other allergen overlay only for presence/plausibility (no ground-truth table
+exists for those yet — honestly scoped test coverage, matching §2 item 1's confidence
+labeling). `secret_scan` / zero-external-calls guardrails unchanged.
 
 ## §3 Scale assessment
-**Large — unchanged, but larger within Large after round 1.** Reasoning:
-- Eight distinct layers now (was six): build pipeline, per-allergen severity engine,
-  time-aware multi-layer map UI, profile/import, about/story content with a two-variant
-  design pass, an agent-controllable state surface, a dataset deep-dive, plus the full
-  test harness.
-- Zero existing application code — from-scratch build.
-- Cross-stack: TypeScript build tooling, data normalization/research, SVG/React
-  rendering with new toggle + time-control UI, URL-state serialization, CI.
-- Long-horizon and correctness-critical: the severity model (now per-allergen, not just
-  blended) is judged against a falsifiable human answer key across 8+ named places.
-- v2/v3 are real and documented (§1b) but explicitly **out** of this epic's story
-  decomposition — kept out to stop the vertical-slice invariant ("every story leaves a
-  working product state") from being violated by half-building an LLM feature.
+**Still Large, and larger with each round** — the user has consistently asked for more
+real scope (all allergens comprehensively, not a curated list; full time dimension, not
+deferred), not less. Reasoning:
+- Mode 1 and Mode 2 are two real, distinct rendering/interaction modes, not one map
+  with a toggle.
+- Comprehensive, data-sourced allergen coverage (including a from-scratch mold data/
+  model question) is real new data-sourcing + modeling work, not a UI change.
+- Time dimension adds a genuine new modeling task (season-position scoring) plus a
+  playback UI plus a reporting deliverable — three sub-slices, not one.
+- The user asked explicitly for "vision and iteration on deferring things and doing
+  simplest first" — i.e., trusted this plan to find the right thin-first sequencing
+  across a genuinely larger true scope, which is exactly what H/V planning does.
 
-**Recommendation:** run full H/V planning + structured outline (Phase B2 + B3) — proceeding
-now per user sign-off.
+**Recommendation:** re-run H/V planning + structured outline (Phase B2 + B3) against
+this larger, locked scope.
 
 ## §4 Key risks
-1. **Severity formula is genuinely unvalidated code.** Mitigation: build the E2E oracle
-   table from `docs/E2E-TESTING.md` as literal unit-test fixtures alongside the scoring
-   engine, now including per-allergen assertions (toggle one allergen → does the isolated
-   color match expectation), not just blended-score assertions.
-2. **Scope discipline across a 3-phase roadmap.** Mitigation: §1b's explicit v1/v2/v3
-   split, restated in every H/V and outline artifact, so "agentic" and "multi-profile"
-   asks don't silently creep into v1 stories.
-3. **PDF/report upload is explicitly v1-out** (unchanged from round 1's Q1 answer: v1
-   ships JSON/CSV import; report/PDF ingestion becomes v2's *agentic* path, not a v1
-   parser). Mitigation: no PDF/OCR dependency anywhere in this epic.
-4. **Turf/irrigation, arid-weed, and "deep dive" data may require new open-data
-   sourcing.** Only grass/weed/tree species-range presence is committed today. Mitigation:
-   an explicit `research` story surveys open, freely-embeddable US datasets (candidates
-   to validate, not assume: USDA Cropland Data Layer for irrigated/agricultural land as a
-   turf proxy, NOAA climate normals for an aridity index, EPA AirNow for a dust/air-
-   quality irritant signal, CDC environmental public health tracking). AAAAI/NAB remain
-   explicitly reference/QA-only per `REQUIREMENTS.md` — not embeddable regardless of how
-   useful they'd be.
-5. **Colorblind-safe, multi-series color scale.** Now harder than round 1's single
-   green→red scale: per-allergen toggle views need colors that stay distinguishable from
-   each other **and** colorblind-safe individually. Mitigation: use the `dataviz` skill's
-   documented palette method rather than inventing one.
-6. **No CI exists yet.** Mitigation: CI wiring is an explicit, early story.
-7. **"Current AND forecast" data cost/licensing (new, round 1).** True real-time/forecast
-   pollen data from commercial providers is not free at scale and would reintroduce a
-   paid-key dependency into what's meant to be a $0 tool. Mitigation: v1 ships a
-   climatological/seasonal-outlook timeframe control (derived from already-baked season
-   data, no new key), and treats true live/forecast conditions as the existing optional,
-   off-by-default Google-Pollen toggle — explicitly flagged as an area to iterate on
-   rather than a final decision (user's own framing).
-8. **Agentic ingestion (v2) reintroduces a cost/key dependency if built naively (new,
-   round 1).** An LLM parse+verify pipeline is not free per-call and a project-held API
-   key would violate the zero-secrets/zero-cost constraints. Mitigation (recorded now so
-   v1's architecture doesn't foreclose it): v2 should use a **bring-your-own-key** model —
-   the user supplies their own LLM provider key, held only in their own browser, used
-   either for direct client→provider calls or through a stateless proxy that never logs
-   or stores it. Not built in v1; recorded here because it constrains v1's state model to
-   stay clean/serializable (§2 item 7) so v2 can be added without a rewrite.
+1. **Non-grass severity formulas are new, unvalidated modeling work**, not a data-
+   sourcing task like turf/arid-weed was. Mitigation: explicit `confidence: validated |
+   modeled` labeling (§2 item 1); ship as directional, not silently equal to grass's
+   rigor.
+2. **Season-position modeling is new work on top of existing data**, not a new external
+   source — but it's still unbuilt. Mitigation: sequence it as its own slice with a
+   `research` step that operationalizes the season-length literature already cited in
+   `MODEL-NOTES.md`, rather than assuming it falls out of the existing per-city scores
+   for free.
+3. **"Play the year" + reports could balloon scope** if treated as one monolithic
+   feature. Mitigation: three explicit sub-slices (season-position scoring → playback UI
+   → reports), each independently shippable, per §2 item 2.
+4. **A comprehensive-allergen × slider × timeframe state space is much bigger than a
+   single grass value.** Mitigation: still URL-param serialization (§2 item 6), just a
+   larger/encoded schema; no architecture change.
+5. **Mold sourcing conflicts with an existing hard constraint.** The standard mold-count
+   source (NAB) is already documented in `REQUIREMENTS.md` as reference/QA-only, not
+   embeddable. Mitigation: dedicated research story (vertical-plan Slice 2b) to find an
+   open, embeddable mold data source or build an honestly-labeled modeled proxy from
+   humidity/climate data — do not silently skip mold or silently violate the reuse
+   restriction to get it.
+6. **"All allergens there's data for" could expand indefinitely** if the data-sourcing
+   step has no bound. Mitigation: the research story scopes to what real open sources
+   actually cover (USDA PLANTS species range data, NAB-alternative mold sources, etc.),
+   not an unbounded search — bounded by data availability, not by planner curation.
+7. **168-city granularity still reads as "thin"** for users expecting their exact town.
+   Mitigation unchanged: honest "nearest of 168 reference cities" framing.
+8. **Re-litigating settled ground.** Tailwind, tooling list, about-page routing/layout
+   remain unchanged from prior rounds — this revision only touches allergen scope, time
+   dimension, and the about-copy decision.
 
 ## §5 Dependencies
-- Vercel account + hobby-plan project connected to `mdostal/allergy-locator` (external,
-  user-owned).
-- No new external API dependency for v1's core map. The optional Google-Pollen live
-  toggle remains explicitly optional/off-by-default and out of the critical path.
-- Item 8's data deep-dive may introduce a new open-data dependency — must meet the same
-  bar as USDA/GBIF: free, attributable, bakeable at build time, no runtime key.
-- v2 (future epic) will depend on a user-supplied LLM API key (BYO-key) — not a v1
-  dependency, recorded for architectural continuity only.
+- No new external API dependency — all scoring stays build-time/static, computed from
+  data already in the repo plus newly-sourced open data (comprehensive allergen list,
+  mold), not a runtime fetch.
+- `/design` delegation for the about-page layout pass (§2 item 5), with the
+  both-variants-with-toggle requirement handed in explicitly.
+- Reports (§2 item 2) depend on Mode 2 (personalized composite) and season-position
+  scoring both existing first — naturally sequenced late in the vertical plan.
+- The comprehensive-allergen data-sourcing story (§2 item 1) blocks Mode 1's full
+  buildout (beyond the grass proof-of-pipeline) — sequenced early in the vertical plan.
 
-## §6 Decisions locked with the user (round 1 — supersedes round-1 open questions)
-1. **Upload scope:** JSON/CSV structured panel import ships in v1. Agentic (LLM parse +
-   independent LLM verify) is v2, explicitly deferred.
-2. **"Upload allergy maps" — corrected:** nobody uploads a finished map; users upload/
-   enter their raw panel (allergens + severity from their tests) and the app builds the
-   map. Save/share/multiple-profile-overlay is v3, for family use.
-3. **Time/season surface:** confirmed — the map must support changing date/timeframe and
-   viewing allergen amounts over it, with the explicit understanding this will be
-   iterated on rather than nailed down in one pass. v1 ships the climatological/seasonal-
-   outlook version (§2 item 4, §4 Risk #7).
-4. **Turf/irrigation + arid-weed data:** no dataset already in hand beyond what's
-   committed — deep-dive additional open US pollen/allergy/land-use datasets as part of
-   this epic (§2 item 8, §4 Risk #4).
-5. **Styling:** Tailwind CSS — confirmed.
-6. **About/story routing:** one `/about` route, tabbed ("My Story" vs. "The Project").
-   The `/design` delegation for this story should produce 2 layout variants for the user
-   to choose between (or ship both) rather than a single take.
-7. **Story-page images:** ship visible placeholders; user will supply real photos later.
-   No action needed in this epic beyond not blocking on missing images.
+## §6 Open questions for the user
+None blocking — this round's direction was explicit enough to proceed. Noted for the
+record rather than asked as a gate: mold and non-grass severity will be **modeled, not
+ground-truth-validated**, since no panel/lived-reaction data exists for those categories
+the way it does for grass — flag if you have ground-truth data for other allergens.
 
-No blocking open questions remain for Phase B2. Any further refinement on the time/
-timeframe UX (item 3) and the exact deep-dive dataset picks (item 4) will surface as
-elicitation answers in the structured outline and/or as findings in their own stories'
-`research` steps — both are explicitly iterative by the user's own framing, not gates on
-starting.
-
-## §7 Non-negotiables carried into every story (do not re-litigate per-story)
-- Zero cost, zero secrets, zero runtime data-fetch for the v1 core map, no login/
-  accounts/tracking in v1, state-level resolution only, severity-not-presence coloring
-  (now per-allergen too), "no place cures you" as a content invariant, directional-not-
-  medical-advice disclaimers throughout, v2/v3 features stay out of this epic's stories.
+## §7 Non-negotiables carried into every story
+Zero cost, zero secrets, zero runtime data-fetch, no login/accounts/tracking, "no place
+cures you" content invariant, directional-not-medical-advice disclaimers throughout
+(including the season-model-not-forecast distinction), **the allergen list is always
+data-driven, never hardcoded in UI/engine code** (new this round, binding), v2/v3
+features (agentic ingestion, multi-profile, full raster engine, multi-dimension
+overlays) stay out of this epic's stories.

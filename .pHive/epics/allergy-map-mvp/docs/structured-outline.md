@@ -1,215 +1,180 @@
-# Structured Outline — Allergy Locator: Interactive Map MVP (v1)
+# Structured Outline v2 — Allergy Locator (re-plan, round 3, comprehensive-allergen scope)
 
-Builds on `design-discussion.md`, `horizontal-plan.md`, and `vertical-plan.md`
-(10 slices, 0-9, after round-2 revisions). This is the detailed execution plan story
-decomposition (Phase C) will map onto.
+Supersedes the v1 structured outline. Builds on `design-discussion.md` v3,
+`horizontal-plan.md` v2, `vertical-plan.md` v3 (12 slices, 0-11).
 
 ## Part 1 — Scope recap
-v1 only. v2 (agentic ingestion + verify, agent API) and v3 (multi-profile/family) are
-fully specified in `.pHive/planning/roadmap.md` and explicitly **not** decomposed into
-stories here.
+Comprehensive, data-driven, general-purpose allergy map. Two modes (raw overlay,
+personalized composite), full time dimension (season scoring, year playback, reports).
+Grass is the flagship validated example; every other sourced allergen (including mold)
+is modeled, honestly labeled. Allergen list is always data-driven, never hardcoded.
 
 ## Part 2 — Detailed approach per slice
 
-### Slice 0 — Tooling & skill readiness
-No app code. Output is a short `TOOLING.md` (or a section in `.pHive/CONTEXT.md`) listing:
-enabled skills (from `anthropics/skills` + skills.sh candidates in `vertical-plan.md`),
-why each was picked, and one smoke-test result per skill. Decision: prefer the
-already-connected Playwright MCP over a separate `webapp-testing` skill unless the skill
-adds something the MCP tools don't (evaluate at execution time, don't install both
-redundantly).
+**Slice 0 (tooling), Slice 1 (scaffold):** unchanged from prior rounds — see prior
+story files' detail; re-run as-is (Slice 0's teammate previously failed mid-run).
 
-### Slice 1 — Scaffold + deploy skeleton
-`create-next-app` (App Router, TypeScript, Tailwind, `src/` layout, ESLint). Connect to
-Vercel (user's existing hobby account) with auto-deploy on push to `main`. Add
-`.env.example` documenting `GOOGLE_POLLEN_API_KEY` (name only, no value, matches existing
-architecture.md decision). Add a global disclaimer footer component now — every later
-page/slice reuses it, so it should not be re-invented per page. Add empty `vitest`
-(or `jest`) + Playwright config so CI has something to run from Slice 1 onward, even
-before there's app logic worth testing.
+**Slice 2 — Mode 1, grass-only, data-driven loop.** `lib/allergens/registry.ts` defines
+a typed but data-populated structure (e.g. an array/map loaded from a JSON file, not
+inline enum literals) with exactly one entry (grass) to start. `components/
+AllergenToggleList.tsx` renders by mapping over the registry — never a hardcoded
+`<Toggle label="Grass">`. `lib/severity/gate.ts` + `score.ts` reuse `allergy-scores.json`
+directly for this one entry. `components/UsMap.tsx` renders the 168-city point map,
+color bound to the active toggle's values. This slice's real deliverable is proving the
+loop-based pattern holds end to end, not the grass feature itself (already done in
+`allergy-scores.json`).
 
-### Slice 2 — Static severity map, one hardcoded profile
-`lib/severity/` — pure TS module: `gate(panel, state) -> Allergen[]` and
-`score(panel, state) -> number` (blended only, this slice). Consumes
-`data/severity-model.json` (produced by a first, presence/season/climate-only pass of
-`scripts/build-data.ts`). `components/UsMap.tsx` renders `data/us_states.svg` paths,
-colored via the severity score through a chosen color-scale function (placeholder scale
-this slice; Slice 6's palette work replaces it with the validated colorblind-safe one).
-`data/presets/author.json` is created here — the derived panel from `docs/E2E-TESTING.md`
-(allergen selections + notes only, no raw medical documents, per that doc's explicit
-privacy boundary). Unit tests for `lib/severity/` are table-driven directly from the
-`docs/E2E-TESTING.md` oracle table's core assertions (the ones not requiring turf/arid-
-weed data yet).
+**Slice 3 — Comprehensive allergen + mold data sourcing.** Own `research` step:
+survey open sources for (a) expanded grass/weed/tree species beyond the current 15
+(USDA PLANTS covers this — same source as `species-ranges.json`, just query more
+species), and (b) mold — spore/humidity data. Candidates to validate, not assume:
+NOAA/EPA humidity and climate normals as a modeled-proxy input (mold growth correlates
+with humidity + temperature + precipitation), academic mold-aerobiology literature for
+a general model shape, university extension service spore-count publications (check
+license before treating as embeddable — many mirror NAB restrictions). If no open
+mold-count dataset is embeddable, build a documented, labeled proxy model from
+humidity/climate data rather than leaving mold out. Output: an extended
+`data/allergens.json` (or extension of `species-ranges.json`) with every sourced
+allergen, each carrying a `confidence: validated | modeled` field and a `category:
+grass | weed | tree | mold` field.
 
-### Slice 3 — Profile input
-`components/AllergenPicker.tsx` (checklist by category: grass/weed/tree).
-`lib/panel-schema.ts` defines the canonical panel JSON shape (this is the schema v2's
-agentic parsing will target later — keep it clean and documented, per roadmap.md).
-`lib/panel-import.ts` parses + validates uploaded JSON/CSV, rejecting malformed input
-with a specific, user-facing error (never silently guessing a value). App state
-(`lib/app-state.ts`, React context or a small store) holds the single active panel.
+**Slice 4 — Mode 1, all sourced allergens.** Extend `lib/allergens/registry.ts` to load
+from Slice 3's full dataset. `AllergenToggleList` needs no changes (already loop-based
+from Slice 2) — this is the pattern paying off. `lib/severity/score.ts` generalizes
+`gen_spine.py`'s method per category (grass: reuse validated formula; weed/tree: same
+presence×season×climate principle, modeled; mold: humidity/climate-driven formula from
+Slice 3's research). Palette: one distinct hue per allergen via the `dataviz` skill,
+scalable to however many allergens exist (don't hand-pick N colors for a fixed N).
 
-### Slice 4 — Per-allergen toggle
-Extend `lib/severity/score` to `scoreByAllergen(panel, state) -> Record<Allergen,
-number>`. `components/AllergenToggle.tsx` — per-allergen on/off, drives which score(s)
-`UsMap` renders (combined vs. isolated). Unit tests add per-allergen assertions (e.g.
-"grass-only toggle in TX scores high; ragweed-only toggle in TX for the author's negative
-profile scores near-zero, matching the Austin case in the oracle table").
+**Slice 5 — Mode 2, personalized composite.** `components/SensitivitySliders.tsx`
+loops over the same registry as Slice 4's toggles. `lib/severity/composite.ts`:
+`compositeFor(sensitivities: Record<AllergenId, number>, city, timeframe) -> number`,
+weighting each active allergen's Slice-4 value. Author's-example loader populates the
+sliders from a preset matching the original grass-dominant panel (now expressed as
+slider values, not a hardcoded profile object).
 
-### Slice 5 — Date/timeframe control
-Extend the severity function signature with a `timeframe` (month or date) parameter,
-scored against season-window data already implied by `data/severity-model.json`.
-`components/TimeframeControl.tsx` (a month slider or select). This is explicitly the
-climatological-outlook interpretation (design-discussion §4 Risk #7) — no new external
-data source.
+**Slice 6 — Season-position scoring.** Own `research` step: operationalize
+`MODEL-NOTES.md`'s cited season-length sources (Anderegg 2021, Zhang-Steiner 2022) plus
+Köppen-zone seasonality into a month-indexed curve per category; mold's curve comes
+from Slice 3's humidity-driven model instead. Extend `severityFor`/`compositeFor` with
+a `timeframe: Month` parameter. `components/TimeframeControl.tsx`: a month selector.
 
-### Slice 6 — Turf/irrigation + arid-weed data integration
-Research sub-step first (own `research` step in the story): read `docs/TURF-DATA-SOURCES.md`
-if it has landed by then (a separate research pass, in flight as of this outline,
-producing verified open sources + a recommended combine rule + rejected non-open
-candidates — left uncommitted until this slice picks it up, per round-3 discussion);
-otherwise validate candidate open datasets directly (USDA Cropland Data Layer, NOAA
-climate normals, EPA AirNow) for license + bake-ability. Pick one approach per axis
-(source new data, or a documented coarse approximation — design-discussion §4 Risk #4
-gives both options explicit sign-off).
-Extend `scripts/build-data.ts` and `lib/severity/score` with the two new sub-layers.
-Extend unit tests with the remaining oracle-table assertions that specifically require
-this layer (Carlsbad, Mesa). This is also where the colorblind-safe, multi-series palette
-(design-discussion Risk #5) gets finalized, using the `dataviz` skill's method, since by
-now the map needs to render both combined and per-allergen views clearly.
+**Slice 7 — Year playback.** `components/YearPlayback.tsx`: steps `TimeframeControl`
+through all 12 months on an interval, re-rendering `UsMap` each step. Play/pause/speed
+controls. No new scoring logic — pure UI animation over Slice 6's data.
 
-### Slice 7 — Agent-controllable URL state
-`lib/url-state.ts` — serialize/deserialize `{panel, toggles, timeframe}` to/from URL
-query params (e.g. `?panel=...&allergens=grass,ragweed&t=2026-04`). Wire `AllergenPicker`,
-`AllergenToggle`, and `TimeframeControl` to read/write this on change, so the URL is
-always a live mirror of the current view (shareable link "for free").
+**Slice 8 — Reports.** `lib/reports/generate.ts`: given the active composite
+configuration, compute best month+city, worst month+city, and notable seasonal windows
+across all 168 cities × 12 months. `components/ReportPanel.tsx` renders it.
 
-### Slice 8 — About/story pages
-`/about` route with two tabs, sourced from `docs/story/ABOUT.md` (general/project) and
-`docs/story/MY-STORY.md` + `WHY-THIS-EXISTS.md` + `IMMUNOTHERAPY.md` (personal journey).
-Delegates to `/design` (per plan's UI-detection step) to produce **2 layout variants**
-for the tabs (per user's A/B request) — user picks the winner, or both ship behind a
-simple query-param/flag. Image placeholders (`[drop pic here: ...]`) render as visible
-placeholder blocks, not silently dropped.
+**Slice 9 — Agent-controllable URL state.** `lib/url-state.ts`: serialize `{mode,
+allergenState: Record<AllergenId, number|boolean>, timeframe}` — encode as a compact
+string (not one query param per allergen) since the allergen count is now open-ended.
+Parallel-eligible against Slices 7-8 (bounded-slice: `lib/url-state.ts` +
+control-wiring only).
 
-### Slice 9 — Full E2E hardening + CI
-Complete Playwright suite: load author preset → assert fill colors match the full oracle
-table's bands; per-allergen toggle assertions; timeframe assertions; click-through content
-assertions (no ragweed/cedar/mold listed as "your hits" for the author's negative
-allergens). Guardrail tests: zero network requests off-origin on the core map path;
-`secret_scan` grep across the built client bundle. GitHub Actions workflow running
-`pnpm test` + `pnpm test:e2e` on every push, matching `docs/E2E-TESTING.md`'s stated plan.
+**Slice 10 — About/story pages.** `/about` route, tabbed, both `ABOUT.md`/`ABOUT-v2.md`
+behind an in-page toggle component. `/design` delegation for the layout pass (2
+variants of the tab layout itself, per the original round-1 ask — separate from the
+content-toggle, which is now a fixed requirement, not a design choice).
 
-## Part 3 — File manifest (proposed)
+**Slice 11 — E2E hardening + CI.** Playwright: grass ground-truth (multi-timeframe) from
+`MY-ANSWER.md`; presence/plausibility checks for every other allergen; playback smoke
+test; report-generation smoke test; guardrails (zero external calls, `secret_scan`);
+CI on every push.
+
+## Part 3 — File manifest (proposed, additive to prior rounds' shape)
 
 ```
 allergy-locator/
 ├── app/
-│   ├── page.tsx                    # main map view (Slices 2-7)
-│   ├── about/page.tsx               # Slice 8
-│   └── api/pollen/route.ts          # optional live toggle (pre-existing scope, untouched by this epic unless requested)
+│   ├── page.tsx                       # main map view (Slices 2-9)
+│   ├── about/page.tsx                  # Slice 10
+│   └── api/pollen/route.ts             # pre-existing optional scope, untouched
 ├── components/
-│   ├── UsMap.tsx                    # Slice 2, extended through 4/5
-│   ├── AllergenPicker.tsx           # Slice 3
-│   ├── AllergenToggle.tsx           # Slice 4
-│   ├── TimeframeControl.tsx         # Slice 5
-│   ├── StateDetailPanel.tsx         # Slice 2 (click-through)
-│   └── DisclaimerFooter.tsx         # Slice 1
+│   ├── UsMap.tsx                       # Slice 2, extended through 9
+│   ├── AllergenToggleList.tsx          # Slice 2 (data-driven loop), extended Slice 4
+│   ├── SensitivitySliders.tsx          # Slice 5
+│   ├── TimeframeControl.tsx            # Slice 6
+│   ├── YearPlayback.tsx                # Slice 7
+│   ├── ReportPanel.tsx                 # Slice 8
+│   ├── StateDetailPanel.tsx            # Slice 2 (click-through)
+│   └── DisclaimerFooter.tsx            # Slice 1
 ├── lib/
+│   ├── allergens/
+│   │   └── registry.ts                 # Slice 2 (one entry) → Slice 4 (all sourced)
 │   ├── severity/
-│   │   ├── gate.ts                  # Slice 2
-│   │   ├── score.ts                 # Slice 2 → 4 → 5 → 6
-│   │   └── palette.ts               # Slice 6 (colorblind-safe, multi-series)
-│   ├── panel-schema.ts              # Slice 3 (also v2's future target schema)
-│   ├── panel-import.ts              # Slice 3
-│   ├── app-state.ts                 # Slice 3
-│   └── url-state.ts                 # Slice 7
+│   │   ├── gate.ts                     # Slice 2
+│   │   ├── score.ts                    # Slice 2 → 4 → 6 (timeframe param)
+│   │   ├── composite.ts                # Slice 5
+│   │   └── palette.ts                  # Slice 4 (dataviz-driven, scalable)
+│   ├── reports/generate.ts             # Slice 8
+│   └── url-state.ts                    # Slice 9
 ├── scripts/
-│   └── build-data.ts                # Slice 2, extended in Slice 6
+│   ├── gen_spine.py                    # existing, grass-only — untouched
+│   └── source_allergens.py (or .ts)    # Slice 3, new — comprehensive sourcing
 ├── data/
-│   ├── severity-model.json          # generated, Slice 2 + 6
-│   └── presets/author.json          # Slice 2 (derived panel, no raw medical docs)
+│   ├── cities.json                     # existing — untouched
+│   ├── allergy-scores.json             # existing grass scores — untouched
+│   ├── allergens.json                  # Slice 3 — comprehensive dataset, new
+│   └── presets/author.json             # Slice 5 — slider-based flagship preset
 ├── tests/
-│   ├── severity.test.ts             # Slices 2, 4, 5, 6
-│   ├── data-integrity.test.ts       # Slice 1 skeleton, filled Slice 2+
-│   └── e2e/*.spec.ts                # Slice 9
-└── .github/workflows/ci.yml         # Slice 1 skeleton, completed Slice 9
+│   ├── severity.test.ts                # Slices 2, 4, 5, 6
+│   ├── data-integrity.test.ts          # Slice 1 skeleton, filled Slice 3+
+│   └── e2e/*.spec.ts                   # Slice 11
+└── .github/workflows/ci.yml            # Slice 1 skeleton, completed Slice 11
 ```
-
-Existing, untouched-by-this-epic files: `REQUIREMENTS.md`, `README.md`,
-`.pHive/planning/*.md`, `docs/*.md`, `data/species-ranges.json`,
-`data/allergen-map-data.md`, `data/us_states.svg`, `data/us_state_paths.json`,
-`data/dataset2_tilegrid.json`, `LICENSE`.
 
 ## Part 4 — Risk Registry
 
-| # | Risk | Severity | Likelihood | Mitigation | Story/slice |
+| # | Risk | Severity | Likelihood | Mitigation | Slice |
 |---|---|---|---|---|---|
-| R1 | Severity formula is unvalidated, novel logic | High | High | Table-driven unit tests from the E2E oracle, built alongside (not after) the engine | Slice 2, 4, 5, 6 |
-| R2 | Scope creep across a 3-phase roadmap | Medium | Medium | v1/v2/v3 split restated in every artifact; v2/v3 kept out of this epic's stories | All (process) |
-| R3 | Turf/irrigation/arid-weed data may not exist in an open, embeddable form | Medium | Medium | Dedicated research step in Slice 6; explicit fallback to a documented approximation if no dataset is found | Slice 6 |
-| R4 | Colorblind-safe, multi-series (per-allergen) palette is harder than a single scale | Medium | Low | Use `dataviz` skill's validated palette method, finalized once toggle views exist | Slice 6 |
-| R5 | No CI until late would let regressions accumulate silently | Medium | Low (mitigated by sequencing) | CI skeleton lands in Slice 1, completed in Slice 9 — not built from scratch at the end | Slice 1, 9 |
-| R6 | Climatological-outlook interpretation of "forecast" may not match user's mental model once they see it | Medium | Medium | Explicitly flagged as iterative in design-discussion §6 item 3; user has already accepted "we'll have to play with this" | Slice 5 |
-| R7 | Panel schema (Slice 3) becomes a de facto contract for v2's agentic parsing | Medium | Medium | Document the schema explicitly and treat changes to it as breaking, even though v2 doesn't exist yet | Slice 3 |
-| R8 | Tooling readiness (Slice 0) picks skills that turn out unnecessary or redundant with existing Playwright MCP | Low | Medium | Smoke-test each enabled skill before relying on it; explicitly compare `webapp-testing` skill vs. existing Playwright MCP before adopting both | Slice 0 |
-| R9 | `/design`'s two-variant A/B request for the about page doubles that story's effort | Low | High (by design) | Accepted tradeoff — user explicitly asked for 2 variants; scope the story for it up front rather than treating it as scope creep later | Slice 8 |
-| R10 | Community (skills.sh) skill install mechanism/maintenance status may have changed since this plan's research pass | Low | Medium | Verify live at Slice 0 execution time rather than trusting this plan's point-in-time summary | Slice 0 |
+| R1 | Non-grass severity formulas are new, unvalidated modeling work | High | High | `confidence: validated\|modeled` labeling; honest E2E scope (Slice 11) | 4, 6 |
+| R2 | Mold has no open, embeddable count-data source (NAB restricted) | High | Medium | Dedicated research step (Slice 3); documented humidity-proxy fallback | 3 |
+| R3 | "All allergens there's data for" scope could expand indefinitely | Medium | Medium | Bounded by real open-source availability, not planner curation (Slice 3 research step has a defined output, not an open-ended search) | 3 |
+| R4 | Season-position modeling is new work, not free from existing data | High | High | Dedicated research step (Slice 6); don't assume it falls out of `allergy-scores.json` | 6 |
+| R5 | Data-driven-loop architecture (§7) regresses if a later slice hardcodes a shortcut | Medium | Medium | Slice 2 proves the pattern first with one entry; code review checklist item across Slices 4-9 | 2, 4-9 |
+| R6 | Comprehensive allergen × slider × timeframe state is large for URL serialization | Medium | Medium | Compact/encoded param scheme (Slice 9), not one param per allergen | 9 |
+| R7 | "Play the year" + reports scope creep if built as one feature | Medium | Low | Three independent sub-slices (6, 7, 8), each shippable alone | 6-8 |
+| R8 | Palette needs to scale to an unknown allergen count, not a fixed N | Low | Medium | `dataviz`-skill-driven scalable palette generation (Slice 4), not N hand-picked colors | 4 |
+| R9 | 168-city granularity reads as "thin" to users expecting their exact town | Low | Medium | Honest "nearest of 168 reference cities" framing (unchanged from prior rounds) | 4 |
+| R10 | Tooling readiness (Slice 0) fails again the way it did before the restart | Medium | Low | Re-run with the same scoped candidate list; verify actual completion (TOOLING.md exists + committed) before marking done | 0 |
 
 ## Part 5 — Elicitation (team stress-test)
 
-**Q1: Is Slice 2 (static map, hardcoded profile) actually deployable/demoable, or is it
-"fake done"?**
-A: Deployable. It's a real Next.js page reading real baked data through a real scoring
-function — the only simplification is a hardcoded panel instead of user input, which
-Slice 3 removes. This satisfies the vertical-slice invariant.
+**Q1: Is Slice 2's "grass-only, but data-driven loop" actually worth a whole slice, or
+is it padding?**
+A: Worth it. The user's core correction this round was architectural (data-driven,
+never hardcoded), not just "add more allergens." Proving the loop pattern holds at N=1
+before Slice 3/4 add potentially dozens of entries is cheap insurance against having to
+retrofit the UI later — exactly the mistake the user caught in round 3's toggle scoping.
 
-**Q2: Does sequencing turf/arid-weed data (Slice 6) after toggle/timeframe (Slices 4-5)
-risk having to redo those slices once the fuller model lands?**
-A: Low risk — `lib/severity/score` is designed from Slice 2 as a function of
-`(panel, state, timeframe) -> per-allergen scores`; Slice 6 adds new *inputs* to that
-function's internals, not a new signature. Toggle/timeframe UI (Slices 4-5) consume the
-function's output shape, which doesn't change.
+**Q2: What happens if Slice 3's research finds NO viable open mold data and no
+reasonable humidity-proxy either?**
+A: Not currently authorized as an acceptable outcome to silently drop mold — the design
+discussion treats finding *a* path (real source or documented proxy) as the
+expectation. If Slice 3 genuinely exhausts both options, that's a finding to bring back
+to the user, not a silent scope cut.
 
-**Q3: Is it safe to build Slice 7 (URL state) before Slice 6 (full data model) lands?**
-A: Yes — Slice 7 depends on Slice 5 (full state shape: panel + toggles + timeframe), not
-on Slice 6's data completeness. Serializing "what's selected" doesn't require the
-severity numbers themselves to be final.
+**Q3: Does Slice 6 (season-position) risk being harder than estimated, given Risk #4
+rates it high-severity/high-likelihood?**
+A: Real risk, appropriately flagged, not resolved by wishful thinking. The mitigation
+(own research step, don't assume free) is the correct response at planning time; if the
+research step comes back saying the literature doesn't support a numeric monthly curve
+at the needed precision, that's a legitimate mid-execution escalation back to the user,
+same as Q2.
 
-**Q4: What happens if the Slice 6 research step finds no usable open dataset for turf/
-irrigation?**
-A: Design-discussion §4 Risk #4 already authorizes a fallback: a documented, explicitly-
-labeled approximation derived from data already on hand (e.g., a coarse climate-zone
-proxy). This is a real, planned outcome, not a blocker — the story's acceptance criteria
-should accept either resolution.
-
-**Q5: Does the "two design variants" request for Slice 8 conflict with `/design`'s
-normal one-variant handoff contract?**
-A: No — `/design` can be asked to produce multiple variants in one delegation; this is
-recorded as an explicit instruction on that story (R9), not a deviation from the atomic
-`/design` boundary.
-
-**Q6: Is there a risk the E2E oracle table itself is wrong (i.e., the "answer key" has an
-error), and the team just builds to match a bug?**
-A: Real risk, but mitigated by construction: the oracle table comes from the project
-owner's own lived, dated reactions (`docs/E2E-TESTING.md`), not a derived or guessed
-source — it's ground truth by definition for this project's stated purpose. If a
-computed score doesn't match, the fix is almost always the model, not the oracle;
-this should still be sanity-checked case-by-case, not assumed automatically in either
-direction.
-
-**Q7: Does Slice 0's tooling work risk becoming its own mini-epic (evaluating dozens of
-skills.sh candidates)?**
-A: Scoped down deliberately — the vertical-plan and this outline name a short, specific
-candidate list (frontend-design, webapp-testing, dataviz already-available, shadcn,
-vercel-react-best-practices) rather than "survey the whole ecosystem." The story should
-timebox evaluation, not exhaustively try every candidate on skills.sh.
+**Q4: Is 12 slices (vs. the original 10) still "simplest first" as the user asked?**
+A: Yes — slice *count* isn't the measure of simplicity; each slice is still a thin,
+independently-working increment, and the two new/split slices (comprehensive data
+sourcing; the mold-aware season model) exist specifically *because* folding them into
+larger slices would have hidden real risk rather than surfacing it early.
 
 ## Part 6 — Decisions for sign-off
-1. **Slice order** (0 tooling → 1 scaffold → 2 static map → 3 profile input → 4 toggle →
-   5 timeframe → 6 turf/arid-weed → 7 URL state → 8 about pages → 9 E2E hardening) —
-   affirm or reorder?
-2. **Slice 8 parallelizable** alongside Slices 2-7 at execution time — affirm?
-3. **Risk Registry** (Part 4) — any risk under- or over-stated?
-4. **Elicitation answers** (Part 5) — any answer you'd push back on?
-5. Ready to proceed to story decomposition (Phase C) on this basis?
+1. **Slice order** (0 tooling → 1 scaffold → 2 grass/loop-proof → 3 data sourcing → 4
+   all-allergens → 5 composite/sliders → 6 season → 7 playback → 8 reports → 9 URL
+   state → 10 about → 11 E2E) — affirm?
+2. **Mold fallback policy** (Q2): if no open data exists, build and clearly label a
+   humidity-proxy model rather than dropping mold — affirm?
+3. **Risk registry** — anything under/overstated?
+4. Ready to proceed to story decomposition?

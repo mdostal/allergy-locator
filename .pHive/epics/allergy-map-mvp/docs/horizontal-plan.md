@@ -1,116 +1,109 @@
-# Horizontal Plan — Allergy Locator: Interactive Map MVP (v1)
+# Horizontal Plan v2 — Allergy Locator (re-plan, round 3 scope)
 
-Maps every architectural layer this epic touches and the cross-layer dependencies between
-them. Scope is v1 only per `design-discussion.md` §1b — v2 (agentic ingestion) and v3
-(multi-profile/family) are referenced for continuity but not built here.
+Supersedes the v1 horizontal plan. Reflects the general all-allergen, two-mode,
+time-dimensioned scope locked in `design-discussion.md` v3.
 
 ## Layers
 
 ### L1 — Infra/tooling
-Next.js (App Router, TypeScript) scaffold, pnpm, Tailwind CSS config, Vercel project
-wiring (hobby plan, auto-deploy on push to `main`), `.env.example` (documents the
-optional `GOOGLE_POLLEN_API_KEY` var name with no value). Foundation every other layer
-sits on. No cross-layer dependency — this ships first.
+Unchanged from v1: Next.js (App Router, TS) + Tailwind + pnpm + Vercel + CI/test
+skeleton + tooling-skill readiness (Slice 0, still incomplete from the prior attempt).
 
-### L2 — Data pipeline (build-time)
-`scripts/build-data.ts`: normalizes `data/species-ranges.json` + season/climate inputs
-from `data/allergen-map-data.md`, plus any newly-sourced open datasets from the L2b
-deep-dive, into one baked `data/severity-model.json`. Zero runtime fetch for the core.
-Depends on: L1 (build tooling exists). Feeds: L3 (severity engine consumes the baked
-JSON).
+### L2 — Data & modeling foundation
+`data/species-ranges.json` (15 species, the author's curated reactive subset — already
+exists), `data/cities.json` + `data/allergy-scores.json` + `data/allergy-scoring.md`
+(168-city spine + validated grass formula — already exists, do not rebuild). **New in
+this round (comprehensive-scope correction):** a data-sourcing task to pull every
+allergen there's open data for — expanded grass/weed/tree species beyond the current
+15, plus **mold** as its own category (spore-based, humidity/moisture-driven, not
+bloom-season; the standard NAB source is reuse-restricted per `REQUIREMENTS.md`, so
+this needs an open alternative or an honestly-labeled modeled proxy). A generalized
+per-allergen severity model extends the grass methodology to every sourced allergen
+(modeled, not ground-truth-validated — confidence labeled honestly per design-
+discussion §2 item 1), plus a season-position model (month/date-indexed severity curve
+per allergen category, per design-discussion §2 item 2 — genuinely new modeling work).
+**Architecture constraint binding on this layer and everything downstream:** the
+allergen list is data-driven — L2's output is consumed as a loopable data structure,
+never a hardcoded enum/list in L3/L4/L6 code. Feeds: L3.
 
-**L2b — Data deep-dive (research sub-layer).** Survey open, freely-embeddable US
-datasets for the turf/irrigation and arid-weed severity sub-layers (candidates: USDA
-Cropland Data Layer, NOAA climate normals, EPA AirNow — validate licensing before
-committing to any). Output feeds L2's normalization script. AAAAI/NAB stay reference-
-only, never embedded, per `REQUIREMENTS.md`.
+### L3 — Severity/scoring engine
+Pure functions: `severityFor(allergen, city, timeframe) -> {value, confidence}`
+(per-allergen, per-city, per-timeframe) and `compositeFor(sensitivities, city,
+timeframe) -> value` (Mode 2's weighted aggregation across all toggled/weighted
+allergens). No UI, no I/O. Depends on: L2. Feeds: L4 (rendering), L5 (time control
+reads/writes the timeframe parameter this layer consumes), L9 (test target).
 
-### L3 — Severity scoring engine (domain logic)
-Pure functions: presence gate (per allergen, per state) + severity score (season length ×
-intensity × climate + turf weighting + arid-weed/dust layer), computed **per allergen**
-so toggle views work, plus a **timeframe parameter** (month/date) that re-scores against
-the seasonal-outlook data rather than a single static score. No UI, no I/O — testable in
-total isolation against the `docs/E2E-TESTING.md` oracle table. Depends on: L2 (baked
-data). Feeds: L4 (map UI), L6 (state/API layer reads engine outputs to validate imported
-panels).
+### L4 — Map rendering (multi-mode)
+Mode 1: N toggleable per-allergen gradient overlays on the 168-city point map. Mode 2:
+one composite green→red overlay driven by sensitivity sliders. Click-through detail
+panel (per-allergen or composite breakdown + plain-English why, timeframe-aware).
+Depends on: L3 (values to render), L6 (active sliders/toggles), L5 (active timeframe).
+Feeds: nothing (leaf/presentation layer).
 
-### L4 — Map rendering + interaction UI
-Inlined SVG map (`data/us_states.svg` / `us_state_paths.json`), color scale bound to L3's
-output for the active panel + active toggle/timeframe selection. Per-allergen toggle
-controls, date/timeframe control, click-through detail panel (allergens present + season
-window + plain-English why). Depends on: L3 (scores to render), L5 (active panel/state
-to render for), L6 (reads/writes UI state). Feeds: nothing (leaf/presentation layer).
+### L5 — Time control
+Month/date selector (feeds L3's timeframe parameter) + year-playback animation (steps
+through L3's outputs across months) + report generation (best time+place summary,
+worst-avoid list, depends on L3 + L6's active sensitivity state). Depends on: L3.
+Feeds: L4 (UI controls), L7 (timeframe is part of serialized state).
 
-### L5 — Profile/panel input
-Manual allergen picker, load-the-author-preset shortcut, JSON/CSV panel import +
-validation (reject malformed/incomplete panels with a clear error, never silently guess).
-Produces one canonical panel object. Depends on: L3 (needs the known-allergen list/schema
-the engine expects). Feeds: L6 (the active panel is part of app state), L4 (UI reads the
-active panel to know what's selected).
+### L6 — Sensitivity/panel input
+Per-allergen sensitivity sliders (Mode 2), allergen toggle set (Mode 1), author's-
+example loader (flagship preset), JSON/CSV import for a full slider-set. Depends on:
+L2 (needs the known-allergen list). Feeds: L3 (composite input), L4, L7.
 
-### L6 — App state + agent-controllable surface
-Single source of truth for: active panel, active allergen toggles, active timeframe.
-Serializes cleanly to URL query params (v1's only "agentic" deliverable — see
-design-discussion §2 item 7). No chat agent, no LLM call, no MCP server in v1 — this
-layer's job is only to keep state clean enough that v2 can add those without a rewrite.
-Depends on: L5 (panel shape), L3 (toggle/timeframe vocabulary). Feeds: L4 (UI renders from
-this state), URL bar (shareable links).
+### L7 — App state + agent-controllable URL state
+Single source of truth: active mode, per-allergen toggles/sliders, active timeframe.
+Serializes to URL query params. Depends on: L5, L6. Feeds: L4, shareable links. Kept
+thin — no chat/LLM in this epic (see `.pHive/planning/roadmap.md` for v2's agentic
+plan, unchanged).
 
-### L7 — Content/story pages
-`/about` route, tabbed ("My Story" / "The Project"), sourced from `docs/story/*.md`
-content, plus the "not medical advice" / "no place cures you" disclaimer rendered
-consistently across map, click-through, and about pages. Two design variants produced via
-`/design` delegation (user picks or both ship). Depends on: L1 only (Tailwind/Next.js
-routing) — **no dependency on L2-L6**, so this layer's stories can run in parallel with
-the severity-engine/map-UI work rather than waiting on it.
+### L8 — Content/story pages
+`/about` route, tabbed ("My Story" / "The Project"), **both** `ABOUT.md` and
+`ABOUT-v2.md` content behind an in-page toggle (user's explicit round-3 ask — ship both,
+not a `/design`-resolved single choice). Depends on: L1 only — **no dependency on
+L2-L7**, same as v1/v2's about-page independence.
 
-### L8 — Quality/test harness
-Unit tests (severity engine, table-driven from the E2E oracle, including per-allergen and
-per-timeframe assertions), data-integrity tests (schema/gate checks on `data/*.json`),
-Playwright E2E (author-preset ground-truth assertions + the zero-external-calls and
-no-secrets-in-bundle guardrails), GitHub Actions CI wiring. Depends on: L2-L6 existing
-enough to have something to test against — but the harness's *scaffolding* (test runner
-config, CI skeleton) should land early (see vertical plan Slice 0/1) so later slices are
-protected by it rather than bolted on at the end.
+### L9 — Quality/test harness
+Unit tests for L3 (grass validated against `MY-ANSWER.md`'s ground-truth table across
+multiple timeframe positions; weed/tree tested for plausibility/presence only, not
+ground truth — honestly scoped per design-discussion §2 item 1). Data-integrity checks.
+Playwright E2E (both modes, playback, reports, guardrails: zero external calls,
+`secret_scan`). CI wiring. Depends on: L2-L7 existing enough to test; scaffolding should
+land early (Slice 1) so later slices are protected, per the v1 plan's same reasoning.
 
 ## Cross-layer dependency graph
 
 ```mermaid
 graph LR
-  accTitle: Horizontal layer dependencies
-  accDescr: Data flows from infra and data pipeline through the severity engine into the UI, with content and quality as semi-independent layers
-  L1[Infra/tooling] --> L2[Data pipeline]
-  L2b[Data deep-dive] --> L2
-  L2 --> L3[Severity engine]
-  L3 --> L4[Map UI]
-  L3 --> L5[Profile input]
-  L5 --> L6[App state]
-  L3 --> L6
+  accTitle: Horizontal layer dependencies (round 3 scope)
+  accDescr: Data and modeling feed the severity engine, which feeds rendering and time control; sensitivity input and time control feed app state; content and quality are semi-independent
+  L1[Infra/tooling] --> L2[Data & modeling foundation]
+  L2 --> L3[Severity/scoring engine]
+  L3 --> L4[Map rendering multi-mode]
+  L3 --> L5[Time control]
+  L2 --> L6[Sensitivity/panel input]
+  L6 --> L3
   L6 --> L4
-  L1 --> L7[Content/story pages]
-  L2 --> L8[Quality harness]
-  L3 --> L8
-  L4 --> L8
-  L5 --> L8
-  L6 --> L8
+  L5 --> L4
+  L5 --> L7[App state / URL]
+  L6 --> L7
+  L7 --> L4
+  L1 --> L8[Content/story pages]
+  L2 --> L9[Quality harness]
+  L3 --> L9
+  L4 --> L9
+  L5 --> L9
 ```
 
-## Note (round 2)
-Vertical slicing adds a **Slice 0 — tooling & skill readiness** ahead of L1 scaffold work:
-confirming the right Claude Code skills/plugins (frontend design, webapp testing, dataviz
-palette work; `mcp-builder` reserved for v2) are enabled before any of the layers below
-are built. See `vertical-plan.md` Slice 0. This isn't a horizontal *application* layer —
-it's environment setup — so it isn't numbered L0 here, but it gates everything below.
-
 ## Notes for vertical slicing
-- L7 (content/story pages) has no real dependency on the severity engine or map — it can
-  be pulled forward or run in parallel without blocking the riskier data/logic work.
-- L3 (severity engine) is the highest-risk, highest-value layer and should be built and
-  proven against the E2E oracle **before** the UI layers that consume it, so mistakes are
-  caught in fast unit tests, not slow end-to-end debugging.
-- L2b (data deep-dive) is a research task that can start immediately and in parallel with
-  L1 scaffold work — it doesn't block infra, only blocks the *complete* L2 pipeline
-  (turf/arid-weed sub-layers specifically; the presence/season/climate portion of L2 has
-  no such dependency and can proceed immediately on already-committed data).
-- L6 (app state / agent-controllable surface) is deliberately thin in v1 — it exists so v2
-  isn't a rewrite, not because v1 needs URL-state for its own sake. Don't over-build it.
+- L3 (severity engine) is still the highest-risk layer, but now has two distinct
+  sub-risks: generalizing beyond grass (modeling risk, not data-sourcing risk — the
+  data needed already exists) and adding the timeframe dimension (genuinely new
+  modeling work per design-discussion Risk #2). Sequence grass-only-and-current-only
+  first to prove the pipeline before compounding both risks at once.
+- L8 (content/story pages) remains fully independent of L2-L7, same as prior rounds —
+  parallel-eligible.
+- L5's three pieces (season-position scoring, playback, reports) have a natural internal
+  order: scoring must exist before playback can animate through it, and reports need
+  both scoring and the composite (L3 Mode 2) to summarize. Don't build playback or
+  reports before season-position scoring is real.
