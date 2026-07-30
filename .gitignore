@@ -12,3 +12,5 @@ build/
 coverage/
 .turbo/
 .claude/settings.local.json
+.pHive/interrupts/
+.pHive/agent-complete/
