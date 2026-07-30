@@ -1,0 +1,35 @@
+project_name: "allergy-locator"
+type: greenfield
+discovered: "2026-07-30"
+source: "REQUIREMENTS.md + operator (Mathew Dostal)"
+
+project_type: consumer-app
+has_ui: true
+
+ship_target:
+  kind: vercel
+  notes: "mdostal Vercel hobby plan; auto-deploy on push to main. Cost target ~$0 (static SSG; optional serverless /api/pollen only)."
+
+tech_stack:
+  languages: [typescript]
+  frameworks: [next.js, react, d3-geo]
+  build_tools: [next]
+  package_managers: [pnpm]
+
+# Recommended linters (greenfield — configure at scaffold):
+code_quality_recommendation: "ESLint + Prettier (TS). Configure at scaffold to set standards early."
+
+north_star:
+  goal: "An open-source interactive US map that answers 'given MY allergens, where in the US is best/worst for me?' — the reverse of every existing 'pollen near me now' tool. A real, underused relocation filter."
+  audience: "Anyone with an allergy panel choosing where to live; primary worked example is the author (grass-dominant profile). Public, no login."
+  expected_scale: "Low — static site, hobby plan. Directional tool, not high-concurrency SaaS."
+  pain_points: "Presence != severity: the author's grass allergens grow in ~all 51 states, so a naive presence map is a useless red rectangle. Coloring MUST be severity-based (season length x intensity x climate + planted/irrigated turf). See docs/MODEL-NOTES.md."
+  success: "Ship a public URL where you pick allergens and the map colors good->bad for YOU, click a state to see its allergens + season + why. $0 cost. Fully open, no secrets in repo or client."
+  avoid: "Any secret in the repo or client bundle. Presence-only coloring. Runtime data-fetch for the core map. Scope creep beyond a state-level US map."
+
+hard_constraints:
+  - "Fully open source (MIT), public repo github.com/mdostal/allergy-locator — assume every file is public, no secrets ever."
+  - "Zero keys for the core map (static open data baked at build time, committed to data/)."
+  - "The only optional key (Google Pollen, live-conditions toggle) lives ONLY as a Vercel env var, read only by a serverless proxy /api/pollen; never shipped to browser, never committed."
+  - "Cost ~= $0 (static SSG on Vercel hobby; serverless only on optional toggle, daily-cached)."
+  - "Directional, not medical advice — disclaim throughout."
