@@ -8,6 +8,7 @@ import { CompositeMap } from "@/components/CompositeMap";
 import { StateDetailPanel } from "@/components/StateDetailPanel";
 import { TimeframeControl } from "@/components/TimeframeControl";
 import { YearPlayback } from "@/components/YearPlayback";
+import { ReportPanel } from "@/components/ReportPanel";
 import authorPreset from "@data/presets/author.json";
 
 type Mode = "overlay" | "composite";
@@ -78,11 +79,14 @@ export function MapView() {
         {mode === "overlay" ? (
           <AllergenToggleList active={active} onToggle={toggleAllergen} />
         ) : (
-          <SensitivitySliders
-            sensitivities={sensitivities}
-            onChange={setSensitivity}
-            onLoadPreset={loadAuthorPreset}
-          />
+          <>
+            <SensitivitySliders
+              sensitivities={sensitivities}
+              onChange={setSensitivity}
+              onLoadPreset={loadAuthorPreset}
+            />
+            <ReportPanel sensitivities={sensitivities} />
+          </>
         )}
 
         <StateDetailPanel
