@@ -10,6 +10,7 @@ interface Props {
   mode: "overlay" | "composite";
   activeAllergenIds: string[];
   sensitivities: Record<string, number>;
+  month: number | null;
 }
 
 const COMPONENT_LABELS: Record<string, string> = {
@@ -20,7 +21,7 @@ const COMPONENT_LABELS: Record<string, string> = {
   coastal_nudge: "Coastal moderation",
 };
 
-export function StateDetailPanel({ cityId, mode, activeAllergenIds, sensitivities }: Props) {
+export function StateDetailPanel({ cityId, mode, activeAllergenIds, sensitivities, month }: Props) {
   if (!cityId) {
     return (
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
@@ -33,7 +34,7 @@ export function StateDetailPanel({ cityId, mode, activeAllergenIds, sensitivitie
   if (!city) return null;
 
   if (mode === "composite") {
-    const composite = getComposite(sensitivities, cityId);
+    const composite = getComposite(sensitivities, cityId, month ?? undefined);
     return (
       <div className="rounded-lg border border-zinc-200 p-4 text-sm dark:border-zinc-800">
         <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">
@@ -83,7 +84,7 @@ export function StateDetailPanel({ cityId, mode, activeAllergenIds, sensitivitie
       <div className="mt-2 flex flex-col gap-4">
         {activeAllergenIds.map((allergenId) => {
           const allergen = getAllergen(allergenId);
-          const severity = getSeverity(allergenId, cityId);
+          const severity = getSeverity(allergenId, cityId, month ?? undefined);
           if (!allergen) return null;
 
           return (

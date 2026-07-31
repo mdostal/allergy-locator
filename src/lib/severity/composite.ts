@@ -24,6 +24,7 @@ export interface CompositeResult {
 export function getComposite(
   sensitivities: Record<string, number>,
   cityId: string,
+  month?: number,
 ): CompositeResult | null {
   let survivalProduct = 1;
   const contributions: CompositeResult["contributions"] = [];
@@ -31,7 +32,7 @@ export function getComposite(
   for (const allergen of ALLERGENS) {
     const sensitivity = sensitivities[allergen.id] ?? 0;
     if (sensitivity <= 0) continue;
-    const severity = getSeverity(allergen.id, cityId);
+    const severity = getSeverity(allergen.id, cityId, month);
     if (!severity) continue;
     const weight = sensitivity / 100;
     const risk = weight * (severity.value / 100);

@@ -6,6 +6,7 @@ import { SensitivitySliders } from "@/components/SensitivitySliders";
 import { UsMap } from "@/components/UsMap";
 import { CompositeMap } from "@/components/CompositeMap";
 import { StateDetailPanel } from "@/components/StateDetailPanel";
+import { TimeframeControl } from "@/components/TimeframeControl";
 import authorPreset from "@data/presets/author.json";
 
 type Mode = "overlay" | "composite";
@@ -15,6 +16,7 @@ export function MapView() {
   const [active, setActive] = useState<Set<string>>(new Set());
   const [sensitivities, setSensitivities] = useState<Record<string, number>>({});
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
+  const [month, setMonth] = useState<number | null>(null);
 
   function toggleAllergen(id: string) {
     setActive((prev) => {
@@ -87,20 +89,26 @@ export function MapView() {
           mode={mode}
           activeAllergenIds={Array.from(active)}
           sensitivities={sensitivities}
+          month={month}
         />
       </div>
-      <div className="flex-1">
+      <div className="flex flex-1 flex-col gap-3">
+        <div className="flex justify-end">
+          <TimeframeControl month={month} onChange={setMonth} />
+        </div>
         {mode === "overlay" ? (
           <UsMap
             active={active}
             onSelectCity={setSelectedCityId}
             selectedCityId={selectedCityId}
+            month={month}
           />
         ) : (
           <CompositeMap
             sensitivities={sensitivities}
             onSelectCity={setSelectedCityId}
             selectedCityId={selectedCityId}
+            month={month}
           />
         )}
       </div>

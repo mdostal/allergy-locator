@@ -10,6 +10,7 @@ interface Props {
   active: Set<string>;
   onSelectCity: (cityId: string) => void;
   selectedCityId: string | null;
+  month: number | null;
 }
 
 /**
@@ -24,7 +25,7 @@ interface Props {
  * detail for every active allergen at the selected city is still in
  * StateDetailPanel, unabbreviated.
  */
-export function UsMap({ active, onSelectCity, selectedCityId }: Props) {
+export function UsMap({ active, onSelectCity, selectedCityId, month }: Props) {
   const activeIds = Array.from(active);
 
   return (
@@ -42,7 +43,7 @@ export function UsMap({ active, onSelectCity, selectedCityId }: Props) {
         if (activeIds.length === 1) {
           const allergenId = activeIds[0];
           const allergen = getAllergen(allergenId);
-          const severity = getSeverity(allergenId, point.city.id);
+          const severity = getSeverity(allergenId, point.city.id, month ?? undefined);
           return (
             <CityMarker
               point={point}
@@ -62,7 +63,7 @@ export function UsMap({ active, onSelectCity, selectedCityId }: Props) {
           <>
             {activeIds.map((allergenId, i) => {
               const allergen = getAllergen(allergenId);
-              const severity = getSeverity(allergenId, point.city.id);
+              const severity = getSeverity(allergenId, point.city.id, month ?? undefined);
               const r = Math.max(1.5, baseRadius - i * step);
               const fill =
                 severity && allergen ? intensityColor(allergen.color, severity.value) : NO_DATA_COLOR;
