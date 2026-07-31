@@ -1,37 +1,41 @@
 /**
  * Per-allergen palette. Per the dataviz skill's rule ("assign categorical hues in
  * fixed order, never cycled... a 9th series is never a generated hue — it folds
- * into small multiples") this app never asks a user to visually distinguish 20
- * simultaneous hues on one map. Instead:
- *   - Each allergen gets its own SEQUENTIAL ramp (one hue, light→dark = magnitude)
- *     — this is exactly what the skill prescribes for a magnitude encoding, and it
- *     needs no cross-allergen distinguishability at all.
- *   - When more than one allergen is active at once, the map renders as small
- *     multiples (one mini-map per allergen, each self-labeled with its name) —
- *     see components/UsMap.tsx. Identity comes from the label, not from picking 20
- *     mutually-distinguishable hues, which isn't achievable past ~8 series anyway.
+ * into small multiples") this app can't guarantee all ~28 allergens are mutually
+ * distinguishable by hue alone — 360°/28 ≈ 12.9° apart, well under the ~25-30°
+ * separation CVD-safe distinguishability needs. That's a real, accepted limit at
+ * this scale, not a bug to chase to zero: color is a visual accent, not the
+ * source of truth — StateDetailPanel always lists the exact allergen name + tier
+ * + value in text for every active allergen, which is what actually disambiguates
+ * when two rings land on similar hues.
  *
- * Hue assignment uses a golden-angle rotation (≈137.5°) keyed by each allergen's
- * fixed position in the registry, so adding a 21st allergen never reshuffles the
- * first 20 and never requires hand-picking a color — a color is DATA, derived from
- * position, matching the epic's "never hardcode per-allergen anything" rule.
+ * Given that limit, hues are spaced EVENLY around the full circle (360° / count)
+ * rather than via a golden-angle walk — for a known, fixed count this gives
+ * strictly better worst-case separation than golden angle's pseudo-random spread
+ * (verified: a golden-angle sequence from grass's hue put a later allergen only
+ * ~10° from grass, a visually-confirmed near-collision; even spacing guarantees
+ * every pair is at least 360/N degrees apart). The tradeoff, accepted knowingly:
+ * adding a 29th allergen reshuffles every hue rather than only appending one —
+ * acceptable since no allergen's color is a memorized identity anywhere in this
+ * app; the registry's `id`/`label` are the stable identifiers, not the color.
  */
 
-const GOLDEN_ANGLE = 137.508;
 const BASE_SATURATION = 68;
 const BASE_LIGHTNESS = 45;
 
 /** Grass is pinned to its established green (hue 142) for visual continuity with
- * the original validated-formula work; every other allergen rotates from there. */
+ * the original validated-formula work; every other allergen spaces out from
+ * there once the total count is known. */
 const GRASS_HUE = 142;
 
-export function hueForIndex(index: number): number {
+export function hueForIndex(index: number, total: number): number {
   if (index === 0) return GRASS_HUE;
-  return (GRASS_HUE + GOLDEN_ANGLE * index) % 360;
+  const step = 360 / Math.max(total, 1);
+  return (GRASS_HUE + step * index) % 360;
 }
 
-export function baseColorForIndex(index: number): string {
-  const hue = hueForIndex(index);
+export function baseColorForIndex(index: number, total: number): string {
+  const hue = hueForIndex(index, total);
   return `hsl(${hue.toFixed(1)} ${BASE_SATURATION}% ${BASE_LIGHTNESS}%)`;
 }
 

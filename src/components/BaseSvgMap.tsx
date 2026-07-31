@@ -1,8 +1,8 @@
 "use client";
 
+import type { ReactNode } from "react";
 import statePaths from "@data/us_state_paths.json";
 import cities from "@data/cities.json";
-import { NO_DATA_COLOR } from "@/lib/severity/palette";
 import { projectLatLon } from "@/lib/geo/projection";
 
 const { viewBox, paths } = statePaths as {
@@ -18,29 +18,25 @@ export const CITY_POINTS = cities
   })
   .filter((p): p is { city: (typeof cities)[number]; x: number; y: number } => p !== null);
 
+export type CityPoint = (typeof CITY_POINTS)[number];
+
 interface Props {
   ariaLabel: string;
-  colorForCity: (cityId: string) => string | undefined;
-  tooltipForCity: (cityId: string) => string | undefined;
+  /** Full control over how one city renders — a single dot (Mode 1 with one
+   * allergen, Mode 2's composite) or a stack of rings (Mode 1 with several
+   * allergens active at once, all on this same map). */
+  renderMarker: (point: CityPoint, isSelected: boolean) => ReactNode;
   onSelectCity: (cityId: string) => void;
   selectedCityId: string | null;
-  compact?: boolean;
 }
 
 /**
- * The shared US map surface (state outlines + 168 city markers). Mode 1's
- * per-allergen ramp and Mode 2's green->red composite ramp both render through
- * this one component, supplying only a color/tooltip function per city — the map
- * geometry and interaction logic live in exactly one place.
+ * The shared US map surface: state outlines + 168 city positions. Every mode
+ * (Mode 1 single/multi-allergen, Mode 2 composite) renders through this one
+ * component so the map geometry, projection, and click wiring live in exactly one
+ * place — only the per-city marker differs.
  */
-export function BaseSvgMap({
-  ariaLabel,
-  colorForCity,
-  tooltipForCity,
-  onSelectCity,
-  selectedCityId,
-  compact,
-}: Props) {
+export function BaseSvgMap({ ariaLabel, renderMarker, onSelectCity, selectedCityId }: Props) {
   return (
     <svg viewBox={viewBox} role="img" aria-label={ariaLabel} className="h-auto w-full">
       <g
@@ -54,31 +50,16 @@ export function BaseSvgMap({
         ))}
       </g>
       <g>
-        {CITY_POINTS.map(({ city, x, y }) => {
-          const fill = colorForCity(city.id) ?? NO_DATA_COLOR;
-          const isSelected = selectedCityId === city.id;
-          const radius = compact ? (isSelected ? 4 : 2.5) : isSelected ? 6 : 4;
-          const tooltip = tooltipForCity(city.id);
-
+        {CITY_POINTS.map((point) => {
+          const isSelected = selectedCityId === point.city.id;
           return (
-            <circle
-              key={city.id}
-              cx={x}
-              cy={y}
-              r={radius}
-              fill={fill}
-              stroke={isSelected ? "#111827" : "white"}
-              strokeWidth={isSelected ? 1.5 : 0.6}
-              onClick={() => onSelectCity(city.id)}
+            <g
+              key={point.city.id}
+              onClick={() => onSelectCity(point.city.id)}
               className="cursor-pointer"
-              role="button"
-              aria-label={`${city.city}, ${city.state}${tooltip ? ` — ${tooltip}` : ""}`}
             >
-              <title>
-                {city.city}, {city.state}
-                {tooltip ? ` — ${tooltip}` : ""}
-              </title>
-            </circle>
+              {renderMarker(point, isSelected)}
+            </g>
           );
         })}
       </g>

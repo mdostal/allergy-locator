@@ -28,12 +28,14 @@ export interface AllergenDef {
   color: string;
 }
 
+const TOTAL_COUNT = allergensData.allergens.length + 1; // +1 for grass
+
 const GRASS: AllergenDef = {
   id: "grass",
   label: "Grass",
   category: "grass",
   confidence: "validated",
-  color: baseColorForIndex(0),
+  color: baseColorForIndex(0, TOTAL_COUNT),
 };
 
 const COMPREHENSIVE: AllergenDef[] = allergensData.allergens.map((a, i) => ({
@@ -42,8 +44,9 @@ const COMPREHENSIVE: AllergenDef[] = allergensData.allergens.map((a, i) => ({
   category: a.category as AllergenCategory,
   confidence: a.confidence as AllergenConfidence,
   // +1 so grass keeps index 0's pinned hue and every sourced allergen still gets
-  // a stable, order-preserving hue derived from its fixed position in the data file.
-  color: baseColorForIndex(i + 1),
+  // an order-preserving hue derived from its fixed position in the data file,
+  // evenly spaced around the full circle given the known total count.
+  color: baseColorForIndex(i + 1, TOTAL_COUNT),
 }));
 
 export const ALLERGENS: AllergenDef[] = [GRASS, ...COMPREHENSIVE];
