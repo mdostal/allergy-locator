@@ -53,3 +53,18 @@ export function intensityColor(baseColor: string, value: number): string {
 }
 
 export const NO_DATA_COLOR = "hsl(0 0% 88%)";
+
+/**
+ * Mode 2's composite scale: green (good/low) -> red (bad/high). This is a single
+ * continuous ramp (hue interpolates 142->0 as value rises), not a categorical
+ * palette, so the dataviz skill's categorical-hue-count rule doesn't apply here —
+ * per the skill's own scope note, a sequential/ramp scale is checked for lightness
+ * monotonicity, which this satisfies (92% -> 32% as value rises, same as every
+ * per-allergen ramp).
+ */
+export function compositeColor(value: number): string {
+  const clamped = Math.max(0, Math.min(100, value));
+  const hue = GRASS_HUE - (GRASS_HUE / 100) * clamped; // 142 -> 0
+  const lightness = 90 - (clamped / 100) * 55;
+  return `hsl(${hue.toFixed(1)} 72% ${lightness.toFixed(1)}%)`;
+}

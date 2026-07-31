@@ -1,0 +1,18 @@
+{
+  "_note": "The author's real, derived allergen sensitivity profile (allergen selections only — no raw medical records/test PDFs, per docs/E2E-TESTING.md's privacy boundary). Doubles as the E2E ground-truth fixture. Source: docs/story/MY-STORY.md, docs/E2E-TESTING.md.",
+  "label": "Author's example (grass-dominant)",
+  "sensitivities": {
+    "grass": 85,
+    "pigweed": 45,
+    "lambsquarters": 45,
+    "plantain": 40,
+    "boxelder": 15,
+    "ragweed": 0,
+    "live-oak": 0,
+    "american-elm": 0,
+    "cedar-juniper": 0,
+    "river-birch": 0,
+    "cladosporium": 0,
+    "alternaria": 0
+  }
+}

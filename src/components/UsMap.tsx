@@ -1,25 +1,10 @@
 "use client";
 
 import { useMemo } from "react";
-import statePaths from "@data/us_state_paths.json";
-import cities from "@data/cities.json";
+import { BaseSvgMap } from "@/components/BaseSvgMap";
 import { getAllergen } from "@/lib/allergens/registry";
 import { getSeverity } from "@/lib/severity/score";
-import { intensityColor, NO_DATA_COLOR } from "@/lib/severity/palette";
-import { projectLatLon } from "@/lib/geo/projection";
-
-const { viewBox, paths } = statePaths as {
-  viewBox: string;
-  paths: Record<string, string>;
-};
-
-const POINTS = cities
-  .map((city) => {
-    const xy = projectLatLon(city.lat, city.lon);
-    if (!xy) return null;
-    return { city, x: xy[0], y: xy[1] };
-  })
-  .filter((p): p is { city: (typeof cities)[number]; x: number; y: number } => p !== null);
+import { intensityColor } from "@/lib/severity/palette";
 
 interface SingleMapProps {
   allergenId: string | null;
@@ -43,59 +28,22 @@ function SingleAllergenMap({
   const allergen = allergenId ? getAllergen(allergenId) : undefined;
 
   return (
-    <svg
-      viewBox={viewBox}
-      role="img"
-      aria-label={
-        allergen ? `${allergen.label} severity map` : "US allergen severity map"
-      }
-      className="h-auto w-full"
-    >
-      <g
-        fill="none"
-        stroke="currentColor"
-        strokeWidth={0.5}
-        className="text-zinc-300 dark:text-zinc-700"
-      >
-        {Object.entries(paths).map(([code, d]) => (
-          <path key={code} d={d} />
-        ))}
-      </g>
-      <g>
-        {POINTS.map(({ city, x, y }) => {
-          const severity = allergenId ? getSeverity(allergenId, city.id) : null;
-          const fill =
-            severity && allergen
-              ? intensityColor(allergen.color, severity.value)
-              : NO_DATA_COLOR;
-          const isSelected = selectedCityId === city.id;
-          const radius = compact ? (isSelected ? 4 : 2.5) : isSelected ? 6 : 4;
-
-          return (
-            <circle
-              key={city.id}
-              cx={x}
-              cy={y}
-              r={radius}
-              fill={fill}
-              stroke={isSelected ? "#111827" : "white"}
-              strokeWidth={isSelected ? 1.5 : 0.6}
-              onClick={() => onSelectCity(city.id)}
-              className="cursor-pointer"
-              role="button"
-              aria-label={`${city.city}, ${city.state}${
-                severity ? ` — ${severity.tier}` : ""
-              }`}
-            >
-              <title>
-                {city.city}, {city.state}
-                {severity ? ` — ${severity.tier} (${severity.value})` : ""}
-              </title>
-            </circle>
-          );
-        })}
-      </g>
-    </svg>
+    <BaseSvgMap
+      ariaLabel={allergen ? `${allergen.label} severity map` : "US allergen severity map"}
+      onSelectCity={onSelectCity}
+      selectedCityId={selectedCityId}
+      compact={compact}
+      colorForCity={(cityId) => {
+        if (!allergenId || !allergen) return undefined;
+        const severity = getSeverity(allergenId, cityId);
+        return severity ? intensityColor(allergen.color, severity.value) : undefined;
+      }}
+      tooltipForCity={(cityId) => {
+        if (!allergenId) return undefined;
+        const severity = getSeverity(allergenId, cityId);
+        return severity ? `${severity.tier} (${severity.value})` : undefined;
+      }}
+    />
   );
 }
 

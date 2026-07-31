@@ -3,10 +3,13 @@
 import cities from "@data/cities.json";
 import { getAllergen } from "@/lib/allergens/registry";
 import { getSeverity } from "@/lib/severity/score";
+import { getComposite } from "@/lib/severity/composite";
 
 interface Props {
   cityId: string | null;
+  mode: "overlay" | "composite";
   activeAllergenIds: string[];
+  sensitivities: Record<string, number>;
 }
 
 const COMPONENT_LABELS: Record<string, string> = {
@@ -17,7 +20,7 @@ const COMPONENT_LABELS: Record<string, string> = {
   coastal_nudge: "Coastal moderation",
 };
 
-export function StateDetailPanel({ cityId, activeAllergenIds }: Props) {
+export function StateDetailPanel({ cityId, mode, activeAllergenIds, sensitivities }: Props) {
   if (!cityId) {
     return (
       <p className="text-sm text-zinc-500 dark:text-zinc-400">
@@ -28,6 +31,44 @@ export function StateDetailPanel({ cityId, activeAllergenIds }: Props) {
 
   const city = cities.find((c) => c.id === cityId);
   if (!city) return null;
+
+  if (mode === "composite") {
+    const composite = getComposite(sensitivities, cityId);
+    return (
+      <div className="rounded-lg border border-zinc-200 p-4 text-sm dark:border-zinc-800">
+        <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">
+          {city.city}, {city.state}
+        </h3>
+        {!composite && (
+          <p className="mt-2 text-zinc-500 dark:text-zinc-400">
+            Set at least one sensitivity slider above zero to see your personalized score.
+          </p>
+        )}
+        {composite && (
+          <div className="mt-2 space-y-2">
+            <p className="text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+              Your score: {composite.value}/100
+            </p>
+            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+              Weighted by your sensitivity sliders. Never zero for a &ldquo;cure&rdquo;
+              — places only tax you more or less.
+            </p>
+            <ul className="mt-2 space-y-0.5 text-xs text-zinc-500 dark:text-zinc-400">
+              {composite.contributions.map((c) => {
+                const allergen = getAllergen(c.allergenId);
+                return (
+                  <li key={c.allergenId}>
+                    {allergen?.label ?? c.allergenId}: severity {c.severity}, your
+                    sensitivity {c.sensitivity}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-lg border border-zinc-200 p-4 text-sm dark:border-zinc-800">
