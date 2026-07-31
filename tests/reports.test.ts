@@ -49,6 +49,29 @@ describe("report generation (story s8)", () => {
     expect(avoidStates).toContain("FL");
   });
 
+  it("the full ranking covers every city with data, not a top-N excerpt", () => {
+    const report = generateReport(authorPreset.sensitivities);
+    expect(report).not.toBeNull();
+    // Per explicit user feedback: the report needed "not just the core
+    // cities but ALL" of them, not a trimmed top-5 list.
+    expect(report!.fullRanking.length).toBe(168);
+    const ids = new Set(report!.fullRanking.map((c) => c.cityId));
+    expect(ids.size).toBe(168);
+  });
+
+  it("the full ranking is sorted best-average-first", () => {
+    const report = generateReport(authorPreset.sensitivities);
+    expect(report).not.toBeNull();
+    for (let i = 1; i < report!.fullRanking.length; i++) {
+      expect(report!.fullRanking[i].average).toBeGreaterThanOrEqual(report!.fullRanking[i - 1].average);
+    }
+    // Best-average and best-single-month use different criteria (see the
+    // tie-break comment in generate.ts) and aren't guaranteed to agree in
+    // general -- for the author's actual profile they do agree, a useful
+    // empirical sanity check, not a claimed logical invariant.
+    expect(report!.fullRanking[0].cityId).toBe(report!.bestTimePlace.cityId);
+  });
+
   it("seasonal windows are labeled with real month ranges, not raw month numbers", () => {
     const report = generateReport(authorPreset.sensitivities);
     expect(report).not.toBeNull();

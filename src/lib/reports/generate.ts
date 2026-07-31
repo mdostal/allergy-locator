@@ -36,10 +36,23 @@ export interface SeasonalWindow {
   highWindow: string | null; // e.g. "Aug" -- months genuinely rough
 }
 
+export interface CityRanking {
+  cityId: string;
+  city: string;
+  state: string;
+  average: number;
+  best: { month: number; value: number };
+  worst: { month: number; value: number };
+}
+
 export interface Report {
   bestTimePlace: CityMonthScore;
   worstAvoid: Array<{ cityId: string; city: string; state: string; floor: number }>;
   seasonalWindows: SeasonalWindow[];
+  /** Every city with data (not just a top-N excerpt), best-average first --
+   * the actual matrix behind the summary above, per explicit user feedback
+   * that the report needed "not just the core cities but ALL" of them. */
+  fullRanking: CityRanking[];
 }
 
 function monthRangeLabel(months: number[]): string | null {
@@ -156,6 +169,17 @@ export function generateReport(sensitivities: Record<string, number>, topN = 5):
       };
     });
 
+  const fullRanking = [...profiles]
+    .sort((a, b) => a.average - b.average)
+    .map((p) => ({
+      cityId: p.cityId,
+      city: p.city,
+      state: p.state,
+      average: Math.round(p.average),
+      best: p.best,
+      worst: p.worst,
+    }));
+
   return {
     bestTimePlace: {
       cityId: bestTimePlace.cityId,
@@ -166,5 +190,6 @@ export function generateReport(sensitivities: Record<string, number>, topN = 5):
     },
     worstAvoid,
     seasonalWindows,
+    fullRanking,
   };
 }
