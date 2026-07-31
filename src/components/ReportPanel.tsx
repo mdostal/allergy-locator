@@ -16,6 +16,7 @@ interface Props {
  */
 export function ReportPanel({ sensitivities }: Props) {
   const [report, setReport] = useState<Report | null>(null);
+  const [showFullRanking, setShowFullRanking] = useState(false);
   const hasSensitivities = Object.values(sensitivities).some((v) => v > 0);
 
   return (
@@ -86,6 +87,45 @@ export function ReportPanel({ sensitivities }: Props) {
                 </li>
               ))}
             </ul>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              onClick={() => setShowFullRanking((v) => !v)}
+              className="text-xs font-medium uppercase tracking-wide text-blue-600 hover:underline dark:text-blue-400"
+            >
+              {showFullRanking ? "Hide" : "Show"} full ranking (all {report.fullRanking.length} cities)
+            </button>
+
+            {showFullRanking && (
+              <div className="mt-2 max-h-64 overflow-y-auto rounded-md border border-zinc-200 dark:border-zinc-800">
+                <table className="w-full table-fixed text-left text-[11px]">
+                  <thead className="sticky top-0 bg-zinc-50 dark:bg-zinc-900">
+                    <tr className="text-zinc-500 dark:text-zinc-400">
+                      <th className="w-6 px-1.5 py-1 font-medium">#</th>
+                      <th className="px-1.5 py-1 font-medium">City</th>
+                      <th className="w-9 px-1.5 py-1 font-medium">Avg</th>
+                      <th className="w-16 px-1.5 py-1 font-medium">Range</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {report.fullRanking.map((c, i) => (
+                      <tr key={c.cityId} className="border-t border-zinc-100 dark:border-zinc-800">
+                        <td className="px-1.5 py-1 text-zinc-400 dark:text-zinc-500">{i + 1}</td>
+                        <td className="truncate px-1.5 py-1 text-zinc-700 dark:text-zinc-300">
+                          {c.city}, {c.state}
+                        </td>
+                        <td className="px-1.5 py-1 text-zinc-700 dark:text-zinc-300">{c.average}</td>
+                        <td className="whitespace-nowrap px-1.5 py-1 text-zinc-500 dark:text-zinc-400">
+                          {c.best.value}–{c.worst.value}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
 
           <p className="text-xs italic text-zinc-500 dark:text-zinc-400">
