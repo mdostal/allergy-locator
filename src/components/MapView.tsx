@@ -7,6 +7,7 @@ import { UsMap } from "@/components/UsMap";
 import { CompositeMap } from "@/components/CompositeMap";
 import { StateDetailPanel } from "@/components/StateDetailPanel";
 import { TimeframeControl } from "@/components/TimeframeControl";
+import { YearPlayback } from "@/components/YearPlayback";
 import authorPreset from "@data/presets/author.json";
 
 type Mode = "overlay" | "composite";
@@ -93,7 +94,8 @@ export function MapView() {
         />
       </div>
       <div className="flex flex-1 flex-col gap-3">
-        <div className="flex justify-end">
+        <div className="flex items-center justify-end gap-3">
+          <YearPlayback month={month} onMonthChange={setMonth} />
           <TimeframeControl month={month} onChange={setMonth} />
         </div>
         {mode === "overlay" ? (
