@@ -1,0 +1,53 @@
+id: s8-reports
+epic: allergy-map-mvp
+title: Reports — best time+place summary for the active sensitivity profile
+status: pending
+complexity: medium
+methodology: classic
+depends_on: [s7-year-playback]
+
+description: |
+  Generate the concrete "by the END of this" deliverable the user asked for: a report
+  summarizing, for the active sensitivity profile (Mode 2), the best time+place, a
+  worst-avoid list, and notable seasonal windows — computed across all 168 cities × 12
+  months using Slices 5 and 6's composite + season-position scoring.
+
+acceptance_criteria:
+  - "Given an active sensitivity profile, when a report is generated, then it names the single best city+month combination and the single worst, computed from the actual composite scores across all 168 cities × 12 months — not a hardcoded or approximated subset."
+  - "Given the author's example profile is loaded, when a report is generated, then its best-city recommendation is plausible against `MY-ANSWER.md`'s documented lived experience (e.g. high-dry-West / cold-North regions ranking well)."
+  - "Given a report, when rendered, then it includes at least: best time+place, worst-avoid list, and notable seasonal windows (e.g. 'X is great April-June but rough in August') — matching the design discussion's stated report contents."
+  - "Given the report's framing, when read, then it is clearly labeled as based on the modeled data (not medical advice, not a guarantee) consistent with the project's disclaimer conventions."
+
+steps:
+  - id: research
+    description: Decide report format (on-page panel vs. exportable doc) and the exact ranking/summary algorithm across the full city×month matrix.
+    agent: researcher
+  - id: implement
+    description: Build lib/reports/generate.ts and components/ReportPanel.tsx.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Unit test that generate.ts produces plausible results against the author's example profile; smoke test that report generation completes in reasonable time across the full matrix.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm the report doesn't overstate certainty and carries the standard disclaimer.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push to the feature branch.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+  key_files:
+    - path: docs/story/MY-ANSWER.md
+      purpose: Ground-truth sanity check for the author's example profile's report output.
+
+risks:
+  - severity: low
+    description: Computing across the full 168-city × 12-month matrix on every slider change could be slow.
+    mitigation: Report generation can be triggered explicitly (a button) rather than recomputed on every slider tick.

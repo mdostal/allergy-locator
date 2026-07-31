@@ -1,0 +1,62 @@
+id: s4-mode1-all-allergens
+epic: allergy-map-mvp
+title: Mode 1 — toggle overlays for every sourced allergen, scalable palette
+status: pending
+complexity: high
+methodology: classic
+depends_on: [s3-comprehensive-allergen-mold-sourcing]
+
+description: |
+  Extend Slice 2's data-driven allergen registry to load Slice 3's full comprehensive
+  dataset (`data/allergens.json`). `AllergenToggleList.tsx` requires no changes — this
+  is the loop-based architecture from Slice 2 paying off. Generalize
+  `lib/severity/score.ts` to compute severity per allergen per category (grass reuses
+  the validated formula unchanged; weed/tree/mold use the modeled formulas from Slice
+  3's methodology). Each allergen gets its own distinct gradient color via a scalable
+  palette (not N hand-picked colors for a fixed N).
+
+acceptance_criteria:
+  - "Given `data/allergens.json`'s full comprehensive list, when the app loads, then every entry appears as its own toggle in `AllergenToggleList.tsx` with zero changes to that component's code (proves Slice 2's architecture)."
+  - "Given any allergen is toggled on, when the map renders, then it shows that allergen's own distinct gradient color, sourced from a palette generator (`dataviz` skill) that scales to the actual allergen count, not a hardcoded color list."
+  - "Given grass is toggled, when its severity is computed, then it exactly matches `allergy-scores.json`'s existing validated values — no regression from generalizing the engine."
+  - "Given a mold or other modeled (non-grass) allergen is toggled, when the click-through detail is shown, then it is explicitly labeled `confidence: modeled`, distinct from grass's `validated` labeling."
+  - "Given multiple allergens are toggled on simultaneously, when the map renders, then each renders as its own distinct overlay (not blended) — Mode 1 is explicitly not the personalized composite (that's Slice 5)."
+
+steps:
+  - id: research
+    description: Confirm the palette-generation approach from the dataviz skill scales cleanly to an open-ended allergen count.
+    agent: researcher
+  - id: implement
+    description: Extend lib/allergens/registry.ts to load data/allergens.json; generalize lib/severity/score.ts per category; build lib/severity/palette.ts.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Regression test that grass's values are unchanged; plausibility tests for weed/tree/mold overlays (no ground-truth table exists for these yet).
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm confidence labeling is correct and visible per allergen, and no hardcoded allergen-specific UI was introduced.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push to the feature branch.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+  key_files:
+    - path: lib/allergens/registry.ts
+      purpose: Created in Slice 2 with one entry — this story is its real stress test.
+    - path: data/allergens.json
+      purpose: Slice 3's comprehensive dataset — this story's primary new input.
+
+risks:
+  - severity: low
+    description: Palette needs to scale to an unknown allergen count.
+    mitigation: Use the dataviz skill's scalable generation method, not a fixed hand-picked color list.
+  - severity: medium
+    description: Generalizing the engine could accidentally regress grass's validated values.
+    mitigation: Explicit regression test comparing against allergy-scores.json's existing output.

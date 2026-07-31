@@ -1,0 +1,62 @@
+id: s9-agent-controllable-url-state
+epic: allergy-map-mvp
+title: Serialize full state (mode, all allergen sliders/toggles, timeframe) to URL
+status: pending
+complexity: medium
+methodology: classic
+depends_on: [s6-season-position-scoring]
+parallel_allowed: true
+parallel_rationale: bounded-slice
+files_to_modify:
+  - file: lib/url-state.ts
+    change: New — compact/encoded serialization of {mode, allergenState, timeframe}.
+  - file: components/AllergenToggleList.tsx
+    change: Wire toggle changes to sync with URL state (read/write only).
+  - file: components/SensitivitySliders.tsx
+    change: Wire slider changes to sync with URL state.
+  - file: components/TimeframeControl.tsx
+    change: Wire timeframe changes to sync with URL state.
+
+description: |
+  Make the full map configuration (active mode, every allergen's toggle/slider state,
+  active timeframe) round-trip through the URL. State is larger now than in prior plans
+  (an open-ended allergen count instead of a single grass value), so this needs a
+  compact/encoded param scheme rather than one query param per allergen. Still the only
+  "agentic" deliverable in this epic — no chat, no LLM, no MCP server ships here.
+
+acceptance_criteria:
+  - "Given a fully configured view (mode + any number of allergen toggles/sliders + timeframe), when the URL is copied and opened in a new tab, then the exact same view renders."
+  - "Given the allergen count from Slice 3/4 could be dozens, when state is serialized, then it uses a compact encoding (not one literal query param per allergen) that stays a reasonable URL length."
+  - "Given a URL with no state params, when loaded, then the app falls back to sensible defaults without crashing."
+  - "Given a malformed or partial state param, when loaded, then the app falls back gracefully for the invalid portion rather than crashing."
+
+steps:
+  - id: research
+    description: Choose a compact encoding scheme (e.g. bit-packed toggle set + slider values, base64/URL-safe encoded) given the open-ended allergen count.
+    agent: researcher
+  - id: implement
+    description: Build lib/url-state.ts; wire the toggle list, sliders, and timeframe control to read/write it.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Unit tests for serialize/deserialize round-tripping at various allergen counts, including malformed-input fallback.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm the encoding stays compact as the allergen count grows and doesn't silently truncate data.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push to the feature branch.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+
+risks:
+  - severity: medium
+    description: A naive one-param-per-allergen encoding would produce unwieldy URLs at scale.
+    mitigation: Compact/encoded scheme chosen explicitly in the research step, not a literal per-allergen param list.

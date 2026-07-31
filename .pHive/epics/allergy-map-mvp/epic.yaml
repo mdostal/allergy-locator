@@ -1,0 +1,90 @@
+name: allergy-map-mvp
+title: "Allergy Locator: Comprehensive Interactive Allergen Map (v1, round 3 re-plan)"
+description: >
+  Build a comprehensive, data-driven, general-purpose interactive US allergy map:
+  Mode 1 (toggle any sourced allergen — including mold — as its own gradient overlay
+  across a 168-city spine) and Mode 2 (personalized composite from sensitivity sliders
+  across all allergens, using the author's real panel as the flagship validated
+  example). Full time dimension: season-position scoring, year playback, and reports.
+  The allergen list is data-driven end to end — never hardcoded. Built on the
+  already-validated grass-severity engine (data/allergy-scores.json, MAE 2.3) as the
+  reference implementation, generalized honestly (confidence: validated|modeled per
+  allergen) rather than silently flattened. v2 (agentic panel ingestion +
+  verification) and v3 (multiple saved/shared profiles, family overlay) are documented
+  in .pHive/planning/roadmap.md; the full multi-dimension livability atlas
+  (care access, cost, etc.) is documented in docs/ROADMAP.md — both explicitly out of
+  scope for this epic.
+target_codebase: /Users/mdostal/Code/allergy-locator
+methodology: classic
+version_bump: none
+sidecar_retention: committed
+
+git_flow:
+  base_branch: main
+  branch_strategy: per-epic
+
+planning_team:
+  matched_tags: [greenfield, consumer-app, has-ui, data-pipeline, testing-critical, re-plan]
+  roster: [researcher, technical-writer, tpm]
+  per_tag_reasoning:
+    greenfield: "No existing app code; full build from research through story decomposition needed."
+    consumer-app: "Public-facing tool per project-profile.yaml; product-brief/UX framing carried through design discussion."
+    has-ui: "Two map modes + sliders + playback + about pages require UI-aware planning; ui-designer delegation used at story level (s10) via /design, since hive.config.yaml sets planning.collaborative_review: false (solo review)."
+    data-pipeline: "Comprehensive allergen/mold data sourcing (s3) and the generalized severity + season-position engine (s4, s6) are the highest-risk work; TPM-led H/V slicing sequenced the data-driven architecture proof (s2) before scaling it."
+    testing-critical: "MY-ANSWER.md's ground-truth table is the project's core correctness contract for grass; every other allergen is honestly scoped to plausibility-only testing."
+    re-plan: "This epic was re-planned twice after initial execution began: round 1 discovered a parallel livability-atlas research effort (docs/ROADMAP.md, validated city-spine scoring) that superseded the original state-fill architecture; round 2 corrected an over-narrow grass-primary/deferred-timeframe recommendation into the current comprehensive, data-driven, two-mode, full-time-dimension scope per direct user correction."
+  confidence: high
+  gate_decisions:
+    collaborative_review: "disabled (hive.config.yaml planning.collaborative_review: false) — user is the sole review gate; grill (adversarial pass) ran on every design-discussion revision (3 rounds total)."
+    hv_gate: "re-run twice this round: first against the livability-atlas-reconciled scope, then again after the user rejected grass-primary scoping and timeframe deferral in favor of comprehensive all-allergen + full time-dimension scope"
+    structured_outline_gate: "presented with risk registry + elicitation covering the comprehensive-allergen and time-dimension risks; user proceeded directly to story decomposition"
+
+stories:
+  - id: s0-tooling-skill-readiness
+    title: Enable and verify the Claude Code skills/plugins this build needs
+    complexity: low
+    depends_on: []
+  - id: s1-scaffold-deploy-skeleton
+    title: Next.js scaffold, Tailwind, Vercel deploy, disclaimer footer, CI/test skeleton
+    complexity: low
+    depends_on: [s0-tooling-skill-readiness]
+  - id: s2-mode1-grass-loop-proof
+    title: "Mode 1 proof-of-pipeline: grass overlay via a data-driven allergen loop"
+    complexity: medium
+    depends_on: [s1-scaffold-deploy-skeleton]
+  - id: s3-comprehensive-allergen-mold-sourcing
+    title: Source comprehensive allergen data (all categories) plus mold, honestly confidence-labeled
+    complexity: high
+    depends_on: [s2-mode1-grass-loop-proof]
+  - id: s4-mode1-all-allergens
+    title: Mode 1 — toggle overlays for every sourced allergen, scalable palette
+    complexity: high
+    depends_on: [s3-comprehensive-allergen-mold-sourcing]
+  - id: s5-mode2-composite-sliders
+    title: "Mode 2: personalized composite via sensitivity sliders across all allergens"
+    complexity: high
+    depends_on: [s4-mode1-all-allergens]
+  - id: s6-season-position-scoring
+    title: Season-position scoring — month-indexed severity for every allergen category
+    complexity: high
+    depends_on: [s5-mode2-composite-sliders]
+  - id: s7-year-playback
+    title: "\"Play the year\" — animated playback through season-position scoring"
+    complexity: medium
+    depends_on: [s6-season-position-scoring]
+  - id: s8-reports
+    title: Reports — best time+place summary for the active sensitivity profile
+    complexity: medium
+    depends_on: [s7-year-playback]
+  - id: s9-agent-controllable-url-state
+    title: Serialize full state (mode, all allergen sliders/toggles, timeframe) to URL
+    complexity: medium
+    depends_on: [s6-season-position-scoring]
+  - id: s10-about-story-pages
+    title: Tabbed /about page — both ABOUT copy variants behind an in-page toggle
+    complexity: medium
+    depends_on: [s1-scaffold-deploy-skeleton]
+  - id: s11-e2e-hardening-ci
+    title: Full E2E harness (both modes, playback, reports) + open-source guardrail CI
+    complexity: high
+    depends_on: [s8-reports, s9-agent-controllable-url-state, s10-about-story-pages]

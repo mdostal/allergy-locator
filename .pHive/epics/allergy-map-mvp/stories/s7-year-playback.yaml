@@ -1,0 +1,55 @@
+id: s7-year-playback
+epic: allergy-map-mvp
+title: "\"Play the year\" — animated playback through season-position scoring"
+status: pending
+complexity: medium
+methodology: classic
+depends_on: [s6-season-position-scoring]
+
+description: |
+  Add a "play the year" control that animates the map through all 12 months on an
+  interval, so a user watches a city's (or their personalized composite's) severity
+  rise and fall through the year — surfacing findings like "mid-summer Florida vs.
+  winter Alaska" for a given sensitivity profile, per the user's explicit ask. Pure UI
+  animation over Slice 6's data — no new scoring logic.
+
+acceptance_criteria:
+  - "Given the play button is pressed, when active, then the map steps through all 12 months on a fixed interval, updating colors each step, without requiring the user to manually move the month selector."
+  - "Given playback is active, when the user clicks pause, then it stops on the current month and can be resumed or scrubbed manually via the existing TimeframeControl."
+  - "Given a playback speed control (if included), when changed, then the interval between month-steps changes accordingly."
+  - "Given playback completes a full year, when it reaches December, then it stops (or loops, per implementation choice) rather than erroring or freezing."
+
+steps:
+  - id: research
+    description: Confirm a smooth animation approach compatible with the existing map re-render performance (168 cities × N allergens recomputing per frame).
+    agent: researcher
+  - id: implement
+    description: Build components/YearPlayback.tsx, wiring play/pause/speed controls into TimeframeControl's state.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Playwright test that pressing play advances the month state over time and pause halts it.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Confirm no new scoring logic was introduced here — purely UI animation over Slice 6.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push to the feature branch.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+    frameworks: [next.js, react]
+  key_files:
+    - path: components/TimeframeControl.tsx
+      purpose: Created in Slice 6 — this story drives its state programmatically instead of only via manual selection.
+
+risks:
+  - severity: low
+    description: Re-rendering the full map (all toggled allergens, all 168 cities) on every animation frame could be slow.
+    mitigation: Profile during implementation; throttle re-render rate independently of the playback interval if needed.

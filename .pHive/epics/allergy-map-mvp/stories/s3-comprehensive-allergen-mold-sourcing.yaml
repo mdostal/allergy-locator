@@ -1,0 +1,82 @@
+id: s3-comprehensive-allergen-mold-sourcing
+epic: allergy-map-mvp
+title: Source comprehensive allergen data (all categories) plus mold, honestly confidence-labeled
+status: pending
+complexity: high
+methodology: classic
+depends_on: [s2-mode1-grass-loop-proof]
+
+description: |
+  Research and build a comprehensive allergen dataset — every allergen there's open,
+  sourceable data for (expanded grasses/weeds/trees beyond the current 15 species, plus
+  mold as its own category) — per the user's explicit, repeated correction: "not 15
+  known allergens, ALL KNOWN... WE PULL ALL ALLERGY DATA WE HAVE — PERIOD." Mold does
+  not fit the pollen model (spore-based, humidity/moisture-driven, not a bloom season)
+  and needs its own data source and severity model. The standard mold-count source
+  (NAB station network) is already documented in `REQUIREMENTS.md` as reference/QA-only
+  — NOT embeddable — so this story must find an open, embeddable alternative, or build
+  and clearly label a modeled proxy from humidity/climate data. Every allergen entry
+  produced here carries a `confidence: validated | modeled` flag (only grass is
+  `validated`) and a `category: grass | weed | tree | mold` flag.
+
+acceptance_criteria:
+  - "Given USDA PLANTS (the source already used for `species-ranges.json`), when queried for additional grass/weed/tree species beyond the current 15, then the expanded list is documented with sources and added to the allergen dataset."
+  - "Given the mold research, when complete, then either (a) an open, embeddable mold-count or mold-risk dataset is identified and used, with its license verified as compatible with a public MIT repo, or (b) a documented, explicitly-labeled humidity/climate-based proxy model is built instead — mold is never silently dropped."
+  - "Given `data/allergens.json` (or an extended `species-ranges.json`), when inspected, then every entry has `id`, `category`, `confidence`, and presence/severity-input fields consistent with what `lib/allergens/registry.ts` (Slice 2) expects to consume."
+  - "Given the NAB reuse restriction in `REQUIREMENTS.md`, when this story's data sources are reviewed, then none of them violate it — NAB itself is never embedded, only referenced if at all."
+  - "Given the resulting dataset, when counted, then it demonstrably exceeds the original 15-species list (the acceptance bar is 'comprehensive per available open data,' not a specific number)."
+
+steps:
+  - id: research
+    description: Survey open data sources for expanded grass/weed/tree species (USDA PLANTS, GBIF) and for mold specifically (NOAA/EPA humidity and climate normals as a proxy input candidate, academic aerobiology literature for model shape, university extension spore-count publications — verify license before treating any as embeddable). Document what was found, what was rejected as not-open, and the chosen mold approach (real source vs. proxy).
+    agent: researcher
+  - id: implement
+    description: Build the data-sourcing script (extends scripts/gen_spine.py's pattern or a new scripts/source_allergens.py) and produce data/allergens.json with confidence and category flags per entry.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Data-integrity tests — every entry has required fields, no orphan state/city codes, confidence values are only validated|modeled, mold entries are clearly flagged.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Verify no reuse-restricted source (NAB) was embedded, and that the mold approach (real source or proxy) is explicitly documented, not silently assumed.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push to the feature branch, including a methodology doc (mirroring allergy-scoring.md's format) for the new entries.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [python, typescript]
+  key_files:
+    - path: data/species-ranges.json
+      purpose: Existing 15-species presence data — the base to extend, not replace.
+    - path: scripts/gen_spine.py
+      purpose: Existing grass-only generator — pattern to extend for other categories, not to modify directly (grass stays validated and untouched).
+    - path: data/allergy-scoring.md
+      purpose: Documents the grass methodology this story's honesty-labeling convention (validated vs. modeled) extends.
+    - path: REQUIREMENTS.md
+      purpose: "Contains the hard constraint this story must respect: 'AAAAI/NAB — reference/QA only — NOT embedded (reuse restricted).'"
+
+design_decisions:
+  - decision: Mold gets its own data source/model, not a bolt-on to the pollen formula.
+    rationale: Mold is biologically and environmentally distinct (spores, humidity-driven) from pollen (season-driven) — modeling it the same way would be dishonest and likely wrong.
+  - decision: Every allergen is confidence-labeled (validated vs. modeled), never silently flattened to look equally rigorous.
+    rationale: Carried forward from every prior planning round — grass has a real MAE-2.3 ground-truth fit; nothing else does yet.
+
+risks:
+  - severity: high
+    description: No open, embeddable mold-count data source may exist.
+    mitigation: Documented humidity/climate-proxy fallback is pre-authorized by the design discussion — not a blocker, but must be clearly labeled as a proxy, not real count data.
+  - severity: medium
+    description: "\"All allergens there's data for\" could expand indefinitely without a bound."
+    mitigation: Bounded by real open-source availability surveyed in the research step, not by open-ended searching.
+
+references:
+  - path: REQUIREMENTS.md
+    relevant_excerpt: |
+      Reference/QA only — NOT embedded (reuse restricted): AAAAI/NAB, BONAP. Link,
+      don't ship.

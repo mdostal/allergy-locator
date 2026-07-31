@@ -1,0 +1,1045 @@
+{
+  "_meta": {
+    "generated": "2026-07",
+    "us_avg_col_index": 100,
+    "national_anchors_2025_2026": {
+      "median_home_price": 370000,
+      "median_rent_3br": 2050,
+      "median_toddler_childcare_mo": 1100
+    },
+    "fields": {
+      "col_index": "Composite cost-of-living index, US avg = 100 (BestPlaces/C2ER-style, directional).",
+      "median_rent_3br": "Monthly rent, 3-bedroom.",
+      "median_home_price": "Typical home value (Zillow ZHVI-style).",
+      "est_toddler_childcare_mo": "Full-time center-based toddler (age 2-3) childcare, monthly."
+    },
+    "methodology": "Priority cities (verified:true) use verified 2025-2026 numbers from Zillow ZORI/ZHVI, Census ACS, Child Care Aware. All OTHER cities are DIRECTIONAL ESTIMATES: median_home_price = 360000*(col/100)^1.6; median_rent_3br = 2050*(col/100)^1.15; childcare = state/regional band. Use verified cities for decisions; treat the rest as order-of-magnitude.",
+    "sources": [
+      "Zillow ZORI/ZHVI 2025-2026",
+      "US Census ACS",
+      "Child Care Aware of America 2025 Price & Supply",
+      "BestPlaces / C2ER COL indices",
+      "World Population Review child care by state 2025-2026"
+    ],
+    "verified_cities": [
+      "austin-tx",
+      "omaha-ne",
+      "rapid-city-sd"
+    ],
+    "childcare_scope_note": "est_toddler_childcare_mo for austin-tx is CENTRAL-CITY-specific and AVAILABILITY-ADJUSTED (2025-2026): it reflects branded toddler centers actually open to enroll in core Austin (Mueller, downtown, East Austin, near-UT, SoCo/South-Central, near-work tech corridors) - e.g. Primrose ~$1,991 for a 2-yr-old, Bright Horizons ~$2,000 unsubsidized (cheaper ONLY with an employer subsidy, and 6+ month waitlist), Stepping Stone (Mueller), Guidepost Montessori ~$1,800-2,000. Listed metro/state 'averages' (~$1,150-1,450 toddler) are MISLEADINGLY LOW because they blend in cheap far suburbs (Round Rock ~$1,200), rural TX (Tyler ~$750, Whitewright ~$500 home-based), and low-cost slots that are NOT realistically available (UT Child Development Center, Extend-A-Care YMCA, church/co-op programs - all UT-affiliated, part-day, or 3-9 month waitlisted). A cheap-but-waitlisted center is not a real option, so the availability-adjusted central floor is ~$1,800-2,000, NOT the blended ~$1,300. LIMITATION: only austin-tx has been corrected this way; every OTHER city's est_toddler_childcare_mo is still metro/state-blended and NOT central-city or availability-adjusted - treat those as order-of-magnitude only."
+  },
+  "cities": {
+    "new-york-ny": {
+      "col_index": 187,
+      "median_rent_3br": 4200,
+      "median_home_price": 1007000,
+      "est_toddler_childcare_mo": 1400
+    },
+    "los-angeles-ca": {
+      "col_index": 173,
+      "median_rent_3br": 3850,
+      "median_home_price": 889000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "chicago-il": {
+      "col_index": 107,
+      "median_rent_3br": 2225,
+      "median_home_price": 412000,
+      "est_toddler_childcare_mo": 1250
+    },
+    "houston-tx": {
+      "col_index": 94,
+      "median_rent_3br": 1900,
+      "median_home_price": 335000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "phoenix-az": {
+      "col_index": 108,
+      "median_rent_3br": 2250,
+      "median_home_price": 418000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "philadelphia-pa": {
+      "col_index": 104,
+      "median_rent_3br": 2150,
+      "median_home_price": 394000,
+      "est_toddler_childcare_mo": 1150
+    },
+    "san-antonio-tx": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "san-diego-ca": {
+      "col_index": 160,
+      "median_rent_3br": 3525,
+      "median_home_price": 785000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "dallas-tx": {
+      "col_index": 103,
+      "median_rent_3br": 2125,
+      "median_home_price": 388000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "san-jose-ca": {
+      "col_index": 214,
+      "median_rent_3br": 4925,
+      "median_home_price": 1250000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "austin-tx": {
+      "col_index": 103,
+      "median_rent_3br": 2300,
+      "median_home_price": 510000,
+      "est_toddler_childcare_mo": 1900,
+      "childcare_basis": "central-city, availability-adjusted (see _meta.childcare_scope_note)",
+      "verified": true
+    },
+    "jacksonville-fl": {
+      "col_index": 95,
+      "median_rent_3br": 1925,
+      "median_home_price": 341000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "fort-worth-tx": {
+      "col_index": 101,
+      "median_rent_3br": 2075,
+      "median_home_price": 376000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "columbus-oh": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "charlotte-nc": {
+      "col_index": 98,
+      "median_rent_3br": 2000,
+      "median_home_price": 358000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "san-francisco-ca": {
+      "col_index": 244,
+      "median_rent_3br": 5725,
+      "median_home_price": 1542000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "indianapolis-in": {
+      "col_index": 88,
+      "median_rent_3br": 1775,
+      "median_home_price": 302000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "seattle-wa": {
+      "col_index": 160,
+      "median_rent_3br": 3525,
+      "median_home_price": 785000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "denver-co": {
+      "col_index": 128,
+      "median_rent_3br": 2725,
+      "median_home_price": 549000,
+      "est_toddler_childcare_mo": 1400
+    },
+    "washington-dc": {
+      "col_index": 152,
+      "median_rent_3br": 3325,
+      "median_home_price": 723000,
+      "est_toddler_childcare_mo": 2000
+    },
+    "boston-ma": {
+      "col_index": 162,
+      "median_rent_3br": 3575,
+      "median_home_price": 801000,
+      "est_toddler_childcare_mo": 2100
+    },
+    "el-paso-tx": {
+      "col_index": 85,
+      "median_rent_3br": 1700,
+      "median_home_price": 285000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "nashville-tn": {
+      "col_index": 106,
+      "median_rent_3br": 2200,
+      "median_home_price": 406000,
+      "est_toddler_childcare_mo": 950
+    },
+    "oklahoma-city-ok": {
+      "col_index": 84,
+      "median_rent_3br": 1675,
+      "median_home_price": 280000,
+      "est_toddler_childcare_mo": 850
+    },
+    "las-vegas-nv": {
+      "col_index": 112,
+      "median_rent_3br": 2325,
+      "median_home_price": 444000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "detroit-mi": {
+      "col_index": 88,
+      "median_rent_3br": 1775,
+      "median_home_price": 302000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "portland-or": {
+      "col_index": 130,
+      "median_rent_3br": 2775,
+      "median_home_price": 563000,
+      "est_toddler_childcare_mo": 1300
+    },
+    "memphis-tn": {
+      "col_index": 83,
+      "median_rent_3br": 1650,
+      "median_home_price": 275000,
+      "est_toddler_childcare_mo": 950
+    },
+    "louisville-ky": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 900
+    },
+    "milwaukee-wi": {
+      "col_index": 95,
+      "median_rent_3br": 1925,
+      "median_home_price": 341000,
+      "est_toddler_childcare_mo": 1150
+    },
+    "baltimore-md": {
+      "col_index": 113,
+      "median_rent_3br": 2350,
+      "median_home_price": 450000,
+      "est_toddler_childcare_mo": 1250
+    },
+    "albuquerque-nm": {
+      "col_index": 95,
+      "median_rent_3br": 1925,
+      "median_home_price": 341000,
+      "est_toddler_childcare_mo": 950
+    },
+    "tucson-az": {
+      "col_index": 95,
+      "median_rent_3br": 1925,
+      "median_home_price": 341000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "fresno-ca": {
+      "col_index": 110,
+      "median_rent_3br": 2275,
+      "median_home_price": 431000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "sacramento-ca": {
+      "col_index": 128,
+      "median_rent_3br": 2725,
+      "median_home_price": 549000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "mesa-az": {
+      "col_index": 107,
+      "median_rent_3br": 2225,
+      "median_home_price": 412000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "kansas-city-mo": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 950
+    },
+    "atlanta-ga": {
+      "col_index": 102,
+      "median_rent_3br": 2100,
+      "median_home_price": 382000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "omaha-ne": {
+      "col_index": 91,
+      "median_rent_3br": 1900,
+      "median_home_price": 299000,
+      "est_toddler_childcare_mo": 1100,
+      "verified": true
+    },
+    "colorado-springs-co": {
+      "col_index": 106,
+      "median_rent_3br": 2200,
+      "median_home_price": 406000,
+      "est_toddler_childcare_mo": 1400
+    },
+    "raleigh-nc": {
+      "col_index": 100,
+      "median_rent_3br": 2050,
+      "median_home_price": 370000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "long-beach-ca": {
+      "col_index": 150,
+      "median_rent_3br": 3275,
+      "median_home_price": 708000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "virginia-beach-va": {
+      "col_index": 103,
+      "median_rent_3br": 2125,
+      "median_home_price": 388000,
+      "est_toddler_childcare_mo": 1200
+    },
+    "miami-fl": {
+      "col_index": 123,
+      "median_rent_3br": 2600,
+      "median_home_price": 515000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "oakland-ca": {
+      "col_index": 168,
+      "median_rent_3br": 3725,
+      "median_home_price": 849000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "minneapolis-mn": {
+      "col_index": 106,
+      "median_rent_3br": 2200,
+      "median_home_price": 406000,
+      "est_toddler_childcare_mo": 1350
+    },
+    "tulsa-ok": {
+      "col_index": 83,
+      "median_rent_3br": 1650,
+      "median_home_price": 275000,
+      "est_toddler_childcare_mo": 850
+    },
+    "bakersfield-ca": {
+      "col_index": 105,
+      "median_rent_3br": 2175,
+      "median_home_price": 400000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "wichita-ks": {
+      "col_index": 80,
+      "median_rent_3br": 1575,
+      "median_home_price": 259000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "arlington-tx": {
+      "col_index": 101,
+      "median_rent_3br": 2075,
+      "median_home_price": 376000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "aurora-co": {
+      "col_index": 122,
+      "median_rent_3br": 2575,
+      "median_home_price": 509000,
+      "est_toddler_childcare_mo": 1400
+    },
+    "tampa-fl": {
+      "col_index": 103,
+      "median_rent_3br": 2125,
+      "median_home_price": 388000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "new-orleans-la": {
+      "col_index": 95,
+      "median_rent_3br": 1925,
+      "median_home_price": 341000,
+      "est_toddler_childcare_mo": 850
+    },
+    "cleveland-oh": {
+      "col_index": 80,
+      "median_rent_3br": 1575,
+      "median_home_price": 259000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "honolulu-hi": {
+      "col_index": 186,
+      "median_rent_3br": 4175,
+      "median_home_price": 999000,
+      "est_toddler_childcare_mo": 1250
+    },
+    "anaheim-ca": {
+      "col_index": 155,
+      "median_rent_3br": 3400,
+      "median_home_price": 746000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "lexington-ky": {
+      "col_index": 92,
+      "median_rent_3br": 1875,
+      "median_home_price": 324000,
+      "est_toddler_childcare_mo": 900
+    },
+    "stockton-ca": {
+      "col_index": 118,
+      "median_rent_3br": 2475,
+      "median_home_price": 482000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "corpus-christi-tx": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "henderson-nv": {
+      "col_index": 115,
+      "median_rent_3br": 2400,
+      "median_home_price": 463000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "riverside-ca": {
+      "col_index": 125,
+      "median_rent_3br": 2650,
+      "median_home_price": 529000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "newark-nj": {
+      "col_index": 125,
+      "median_rent_3br": 2650,
+      "median_home_price": 529000,
+      "est_toddler_childcare_mo": 1300
+    },
+    "saint-paul-mn": {
+      "col_index": 103,
+      "median_rent_3br": 2125,
+      "median_home_price": 388000,
+      "est_toddler_childcare_mo": 1350
+    },
+    "santa-ana-ca": {
+      "col_index": 160,
+      "median_rent_3br": 3525,
+      "median_home_price": 785000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "cincinnati-oh": {
+      "col_index": 88,
+      "median_rent_3br": 1775,
+      "median_home_price": 302000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "irvine-ca": {
+      "col_index": 180,
+      "median_rent_3br": 4025,
+      "median_home_price": 948000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "orlando-fl": {
+      "col_index": 102,
+      "median_rent_3br": 2100,
+      "median_home_price": 382000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "pittsburgh-pa": {
+      "col_index": 92,
+      "median_rent_3br": 1875,
+      "median_home_price": 324000,
+      "est_toddler_childcare_mo": 1150
+    },
+    "st-louis-mo": {
+      "col_index": 84,
+      "median_rent_3br": 1675,
+      "median_home_price": 280000,
+      "est_toddler_childcare_mo": 950
+    },
+    "greensboro-nc": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "jersey-city-nj": {
+      "col_index": 150,
+      "median_rent_3br": 3275,
+      "median_home_price": 708000,
+      "est_toddler_childcare_mo": 1300
+    },
+    "anchorage-ak": {
+      "col_index": 125,
+      "median_rent_3br": 2650,
+      "median_home_price": 529000,
+      "est_toddler_childcare_mo": 1200
+    },
+    "lincoln-ne": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "plano-tx": {
+      "col_index": 115,
+      "median_rent_3br": 2400,
+      "median_home_price": 463000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "durham-nc": {
+      "col_index": 100,
+      "median_rent_3br": 2050,
+      "median_home_price": 370000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "buffalo-ny": {
+      "col_index": 92,
+      "median_rent_3br": 1875,
+      "median_home_price": 324000,
+      "est_toddler_childcare_mo": 1400
+    },
+    "chandler-az": {
+      "col_index": 112,
+      "median_rent_3br": 2325,
+      "median_home_price": 444000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "chula-vista-ca": {
+      "col_index": 140,
+      "median_rent_3br": 3025,
+      "median_home_price": 634000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "toledo-oh": {
+      "col_index": 78,
+      "median_rent_3br": 1550,
+      "median_home_price": 249000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "madison-wi": {
+      "col_index": 108,
+      "median_rent_3br": 2250,
+      "median_home_price": 418000,
+      "est_toddler_childcare_mo": 1150
+    },
+    "gilbert-az": {
+      "col_index": 112,
+      "median_rent_3br": 2325,
+      "median_home_price": 444000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "reno-nv": {
+      "col_index": 118,
+      "median_rent_3br": 2475,
+      "median_home_price": 482000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "fort-wayne-in": {
+      "col_index": 85,
+      "median_rent_3br": 1700,
+      "median_home_price": 285000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "north-las-vegas-nv": {
+      "col_index": 110,
+      "median_rent_3br": 2275,
+      "median_home_price": 431000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "st-petersburg-fl": {
+      "col_index": 104,
+      "median_rent_3br": 2150,
+      "median_home_price": 394000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "lubbock-tx": {
+      "col_index": 86,
+      "median_rent_3br": 1725,
+      "median_home_price": 291000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "irving-tx": {
+      "col_index": 103,
+      "median_rent_3br": 2125,
+      "median_home_price": 388000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "laredo-tx": {
+      "col_index": 86,
+      "median_rent_3br": 1725,
+      "median_home_price": 291000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "winston-salem-nc": {
+      "col_index": 88,
+      "median_rent_3br": 1775,
+      "median_home_price": 302000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "chesapeake-va": {
+      "col_index": 102,
+      "median_rent_3br": 2100,
+      "median_home_price": 382000,
+      "est_toddler_childcare_mo": 1200
+    },
+    "glendale-az": {
+      "col_index": 106,
+      "median_rent_3br": 2200,
+      "median_home_price": 406000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "scottsdale-az": {
+      "col_index": 135,
+      "median_rent_3br": 2900,
+      "median_home_price": 598000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "norfolk-va": {
+      "col_index": 100,
+      "median_rent_3br": 2050,
+      "median_home_price": 370000,
+      "est_toddler_childcare_mo": 1200
+    },
+    "fremont-ca": {
+      "col_index": 195,
+      "median_rent_3br": 4425,
+      "median_home_price": 1077000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "garland-tx": {
+      "col_index": 100,
+      "median_rent_3br": 2050,
+      "median_home_price": 370000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "hialeah-fl": {
+      "col_index": 118,
+      "median_rent_3br": 2475,
+      "median_home_price": 482000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "richmond-va": {
+      "col_index": 102,
+      "median_rent_3br": 2100,
+      "median_home_price": 382000,
+      "est_toddler_childcare_mo": 1200
+    },
+    "spokane-wa": {
+      "col_index": 105,
+      "median_rent_3br": 2175,
+      "median_home_price": 400000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "baton-rouge-la": {
+      "col_index": 92,
+      "median_rent_3br": 1875,
+      "median_home_price": 324000,
+      "est_toddler_childcare_mo": 850
+    },
+    "tacoma-wa": {
+      "col_index": 118,
+      "median_rent_3br": 2475,
+      "median_home_price": 482000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "san-bernardino-ca": {
+      "col_index": 115,
+      "median_rent_3br": 2400,
+      "median_home_price": 463000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "modesto-ca": {
+      "col_index": 112,
+      "median_rent_3br": 2325,
+      "median_home_price": 444000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "fontana-ca": {
+      "col_index": 120,
+      "median_rent_3br": 2525,
+      "median_home_price": 495000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "des-moines-ia": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "moreno-valley-ca": {
+      "col_index": 118,
+      "median_rent_3br": 2475,
+      "median_home_price": 482000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "santa-clarita-ca": {
+      "col_index": 150,
+      "median_rent_3br": 3275,
+      "median_home_price": 708000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "fayetteville-nc": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "birmingham-al": {
+      "col_index": 88,
+      "median_rent_3br": 1775,
+      "median_home_price": 302000,
+      "est_toddler_childcare_mo": 800
+    },
+    "oxnard-ca": {
+      "col_index": 150,
+      "median_rent_3br": 3275,
+      "median_home_price": 708000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "rochester-ny": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1400
+    },
+    "port-st-lucie-fl": {
+      "col_index": 104,
+      "median_rent_3br": 2150,
+      "median_home_price": 394000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "grand-rapids-mi": {
+      "col_index": 94,
+      "median_rent_3br": 1900,
+      "median_home_price": 335000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "huntsville-al": {
+      "col_index": 92,
+      "median_rent_3br": 1875,
+      "median_home_price": 324000,
+      "est_toddler_childcare_mo": 800
+    },
+    "salt-lake-city-ut": {
+      "col_index": 118,
+      "median_rent_3br": 2475,
+      "median_home_price": 482000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "frisco-tx": {
+      "col_index": 120,
+      "median_rent_3br": 2525,
+      "median_home_price": 495000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "yonkers-ny": {
+      "col_index": 150,
+      "median_rent_3br": 3275,
+      "median_home_price": 708000,
+      "est_toddler_childcare_mo": 1400
+    },
+    "amarillo-tx": {
+      "col_index": 85,
+      "median_rent_3br": 1700,
+      "median_home_price": 285000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "glendale-ca": {
+      "col_index": 160,
+      "median_rent_3br": 3525,
+      "median_home_price": 785000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "huntington-beach-ca": {
+      "col_index": 165,
+      "median_rent_3br": 3650,
+      "median_home_price": 824000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "mckinney-tx": {
+      "col_index": 112,
+      "median_rent_3br": 2325,
+      "median_home_price": 444000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "montgomery-al": {
+      "col_index": 85,
+      "median_rent_3br": 1700,
+      "median_home_price": 285000,
+      "est_toddler_childcare_mo": 800
+    },
+    "augusta-ga": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "aurora-il": {
+      "col_index": 100,
+      "median_rent_3br": 2050,
+      "median_home_price": 370000,
+      "est_toddler_childcare_mo": 1250
+    },
+    "akron-oh": {
+      "col_index": 80,
+      "median_rent_3br": 1575,
+      "median_home_price": 259000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "little-rock-ar": {
+      "col_index": 88,
+      "median_rent_3br": 1775,
+      "median_home_price": 302000,
+      "est_toddler_childcare_mo": 800
+    },
+    "tempe-az": {
+      "col_index": 112,
+      "median_rent_3br": 2325,
+      "median_home_price": 444000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "columbus-ga": {
+      "col_index": 85,
+      "median_rent_3br": 1700,
+      "median_home_price": 285000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "overland-park-ks": {
+      "col_index": 100,
+      "median_rent_3br": 2050,
+      "median_home_price": 370000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "grand-prairie-tx": {
+      "col_index": 100,
+      "median_rent_3br": 2050,
+      "median_home_price": 370000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "tallahassee-fl": {
+      "col_index": 95,
+      "median_rent_3br": 1925,
+      "median_home_price": 341000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "cape-coral-fl": {
+      "col_index": 102,
+      "median_rent_3br": 2100,
+      "median_home_price": 382000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "mobile-al": {
+      "col_index": 85,
+      "median_rent_3br": 1700,
+      "median_home_price": 285000,
+      "est_toddler_childcare_mo": 800
+    },
+    "knoxville-tn": {
+      "col_index": 92,
+      "median_rent_3br": 1875,
+      "median_home_price": 324000,
+      "est_toddler_childcare_mo": 950
+    },
+    "shreveport-la": {
+      "col_index": 85,
+      "median_rent_3br": 1700,
+      "median_home_price": 285000,
+      "est_toddler_childcare_mo": 850
+    },
+    "worcester-ma": {
+      "col_index": 118,
+      "median_rent_3br": 2475,
+      "median_home_price": 482000,
+      "est_toddler_childcare_mo": 2100
+    },
+    "ontario-ca": {
+      "col_index": 120,
+      "median_rent_3br": 2525,
+      "median_home_price": 495000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "vancouver-wa": {
+      "col_index": 120,
+      "median_rent_3br": 2525,
+      "median_home_price": 495000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "sioux-falls-sd": {
+      "col_index": 92,
+      "median_rent_3br": 1875,
+      "median_home_price": 324000,
+      "est_toddler_childcare_mo": 900
+    },
+    "chattanooga-tn": {
+      "col_index": 92,
+      "median_rent_3br": 1875,
+      "median_home_price": 324000,
+      "est_toddler_childcare_mo": 950
+    },
+    "brownsville-tx": {
+      "col_index": 84,
+      "median_rent_3br": 1675,
+      "median_home_price": 280000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "fort-lauderdale-fl": {
+      "col_index": 120,
+      "median_rent_3br": 2525,
+      "median_home_price": 495000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "providence-ri": {
+      "col_index": 118,
+      "median_rent_3br": 2475,
+      "median_home_price": 482000,
+      "est_toddler_childcare_mo": 1300
+    },
+    "newport-news-va": {
+      "col_index": 98,
+      "median_rent_3br": 2000,
+      "median_home_price": 358000,
+      "est_toddler_childcare_mo": 1200
+    },
+    "rancho-cucamonga-ca": {
+      "col_index": 135,
+      "median_rent_3br": 2900,
+      "median_home_price": 598000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "santa-rosa-ca": {
+      "col_index": 150,
+      "median_rent_3br": 3275,
+      "median_home_price": 708000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "peoria-az": {
+      "col_index": 106,
+      "median_rent_3br": 2200,
+      "median_home_price": 406000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "oceanside-ca": {
+      "col_index": 150,
+      "median_rent_3br": 3275,
+      "median_home_price": 708000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "elk-grove-ca": {
+      "col_index": 130,
+      "median_rent_3br": 2775,
+      "median_home_price": 563000,
+      "est_toddler_childcare_mo": 1500
+    },
+    "salem-or": {
+      "col_index": 110,
+      "median_rent_3br": 2275,
+      "median_home_price": 431000,
+      "est_toddler_childcare_mo": 1300
+    },
+    "grand-junction-co": {
+      "col_index": 98,
+      "median_rent_3br": 2000,
+      "median_home_price": 358000,
+      "est_toddler_childcare_mo": 1400
+    },
+    "sundance-wy": {
+      "col_index": 95,
+      "median_rent_3br": 1925,
+      "median_home_price": 341000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "rapid-city-sd": {
+      "col_index": 98,
+      "median_rent_3br": 1600,
+      "median_home_price": 366000,
+      "est_toddler_childcare_mo": 1000,
+      "verified": true
+    },
+    "blanding-ut": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "monticello-ut": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "durango-co": {
+      "col_index": 118,
+      "median_rent_3br": 2475,
+      "median_home_price": 482000,
+      "est_toddler_childcare_mo": 1400
+    },
+    "flagstaff-az": {
+      "col_index": 120,
+      "median_rent_3br": 2525,
+      "median_home_price": 495000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "taos-nm": {
+      "col_index": 100,
+      "median_rent_3br": 2050,
+      "median_home_price": 370000,
+      "est_toddler_childcare_mo": 950
+    },
+    "santa-fe-nm": {
+      "col_index": 112,
+      "median_rent_3br": 2325,
+      "median_home_price": 444000,
+      "est_toddler_childcare_mo": 950
+    },
+    "los-alamos-nm": {
+      "col_index": 110,
+      "median_rent_3br": 2275,
+      "median_home_price": 431000,
+      "est_toddler_childcare_mo": 950
+    },
+    "geraldine-mt": {
+      "col_index": 88,
+      "median_rent_3br": 1775,
+      "median_home_price": 302000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "billings-mt": {
+      "col_index": 98,
+      "median_rent_3br": 2000,
+      "median_home_price": 358000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "kalispell-mt": {
+      "col_index": 112,
+      "median_rent_3br": 2325,
+      "median_home_price": 444000,
+      "est_toddler_childcare_mo": 1000
+    },
+    "whitewright-tx": {
+      "col_index": 90,
+      "median_rent_3br": 1825,
+      "median_home_price": 313000,
+      "est_toddler_childcare_mo": 1100
+    },
+    "sandpoint-id": {
+      "col_index": 112,
+      "median_rent_3br": 2325,
+      "median_home_price": 444000,
+      "est_toddler_childcare_mo": 950
+    },
+    "asheville-nc": {
+      "col_index": 105,
+      "median_rent_3br": 2175,
+      "median_home_price": 400000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "boise-id": {
+      "col_index": 110,
+      "median_rent_3br": 2275,
+      "median_home_price": 431000,
+      "est_toddler_childcare_mo": 950
+    },
+    "yuma-az": {
+      "col_index": 92,
+      "median_rent_3br": 1875,
+      "median_home_price": 324000,
+      "est_toddler_childcare_mo": 1050
+    },
+    "carlsbad-nm": {
+      "col_index": 95,
+      "median_rent_3br": 1925,
+      "median_home_price": 341000,
+      "est_toddler_childcare_mo": 950
+    }
+  }
+}

@@ -1,0 +1,72 @@
+id: s2-mode1-grass-loop-proof
+epic: allergy-map-mvp
+title: "Mode 1 proof-of-pipeline: grass overlay via a data-driven allergen loop"
+status: pending
+complexity: medium
+methodology: classic
+depends_on: [s1-scaffold-deploy-skeleton]
+
+description: |
+  Build the first real map render using the already-validated grass data
+  (`data/allergy-scores.json`), but the real deliverable is architectural: prove that
+  the allergen toggle UI is driven by looping over a data structure, never a hardcoded
+  per-allergen component. This must hold even with exactly one entry (grass) so that
+  Slice 4 (all sourced allergens) is purely additive data, not a UI rewrite. This
+  directly implements the user's explicit, emphatic correction: "don't hardcode, just
+  loop through allergy toggles for shit in data."
+
+acceptance_criteria:
+  - "Given `lib/allergens/registry.ts`, when inspected, then it exports a loadable data structure (array/map, not inline JSX per allergen) currently containing exactly one entry: grass."
+  - "Given `components/AllergenToggleList.tsx`, when inspected, then it renders toggles by mapping over the registry — there is no hardcoded `<Toggle label=\"Grass\">` or equivalent literal component per allergen anywhere in the codebase."
+  - "Given the grass toggle is turned on, when the map renders, then it shows the correct severity gradient across the 168-city spine, matching `allergy-scores.json`'s existing tiers."
+  - "Given a city is clicked, when the detail panel opens, then it shows grass's component breakdown (`base_season_climate`, `turf_boost`, `arid_weed`, `elevation_discount`, `coastal_nudge`) as a plain-English why."
+  - "Given a reviewer adds a second, fake allergen entry to the registry data (as a test), when the app reloads, then a second toggle appears automatically with zero changes to `AllergenToggleList.tsx` — this is the acceptance test for the data-driven architecture itself."
+
+steps:
+  - id: research
+    description: Confirm `data/allergy-scores.json`'s exact shape and decide the registry's minimal schema (id, category, confidence, display name) needed for both this slice and Slice 4's larger dataset.
+    agent: researcher
+  - id: implement
+    description: Build lib/allergens/registry.ts (grass only), lib/severity/gate.ts, lib/severity/score.ts (thin wrapper reading allergy-scores.json), components/AllergenToggleList.tsx (loop-based), components/UsMap.tsx, components/StateDetailPanel.tsx.
+    agent: developer
+    depends_on: [research]
+  - id: test
+    description: Unit tests for the registry/loop pattern (adding a fake entry produces a new toggle with no code change) and severity rendering; table-driven grass assertions from the E2E oracle achievable without a timeframe axis.
+    agent: tester
+    depends_on: [implement]
+  - id: review
+    description: Explicitly verify no hardcoded per-allergen UI exists anywhere — this is the binding architectural requirement for the whole epic, not just this story.
+    agent: reviewer
+    depends_on: [test]
+  - id: integrate
+    description: Commit and push to the feature branch.
+    agent: developer
+    depends_on: [review]
+
+context:
+  codebase: /Users/mdostal/Code/allergy-locator
+  tech_stack:
+    languages: [typescript]
+    frameworks: [next.js, react, d3-geo]
+  key_files:
+    - path: data/allergy-scores.json
+      purpose: Already-validated grass severity data — this story's only data input.
+    - path: data/cities.json
+      purpose: 168-city spine — the map's point set.
+    - path: data/us_state_paths.json
+      purpose: Base map geometry for context/background.
+
+design_decisions:
+  - decision: Prove the data-driven loop architecture at N=1 before scaling to N=many in Slice 4.
+    rationale: The user's core round-3 correction was architectural, not just "add more data" — retrofitting a hardcoded UI later would repeat the exact mistake being corrected.
+
+references:
+  - path: .pHive/epics/allergy-map-mvp/docs/design-discussion.md
+    relevant_excerpt: |
+      Architecture: the allergen list is data-driven, never hardcoded in UI/engine
+      code... adding a new allergen to the data must require zero UI code changes.
+
+risks:
+  - severity: medium
+    description: A later slice could reintroduce a hardcoded shortcut under time pressure.
+    mitigation: This story's acceptance criteria include an explicit test proving the loop pattern; code review checklist item carried into every subsequent UI story.
