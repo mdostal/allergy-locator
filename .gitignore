@@ -14,3 +14,8 @@ coverage/
 .claude/settings.local.json
 .pHive/interrupts/
 .pHive/agent-complete/
+next-env.d.ts
+*.tsbuildinfo
+test-results/
+playwright-report/
+.pnpm-debug.log*
