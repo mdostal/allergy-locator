@@ -117,6 +117,50 @@ ALLERGEN_DEFS = [
     }, 0),
 ]
 
+# The original 15-species author panel (data/species-ranges.json) has real,
+# verified per-STATE presence data (USDA PLANTS) for its 4 weeds and 5 trees --
+# these were previously only baked into grass's aggregate suppression logic
+# (MY-STORY.md: ragweed/cedar/oak/elm are the author's NEGATIVE allergens) and
+# never exposed as their own independently-toggleable severity entries. Story s5
+# needs them selectable (with real sensitivity) for any user whose panel differs
+# from the author's, so they're generated here using their REAL state presence as
+# a hard gate (more accurate than the Koppen-only approach above, since actual
+# per-state data exists) plus a category-level Koppen severity table when present.
+ORIGINAL_PANEL_NON_GRASS = [
+    ("ragweed", "Common ragweed", "weed"),
+    ("pigweed", "Redroot pigweed", "weed"),
+    ("lambsquarters", "Lambsquarters", "weed"),
+    ("plantain", "English plantain", "weed"),
+    ("live-oak", "Live oak", "tree"),
+    ("american-elm", "American elm", "tree"),
+    ("cedar-juniper", "Eastern redcedar / juniper", "tree"),
+    ("river-birch", "River birch", "tree"),
+    ("boxelder", "Boxelder", "tree"),
+]
+
+SPECIES_RANGES_KEY = {
+    "ragweed": "Common ragweed",
+    "pigweed": "Redroot pigweed",
+    "lambsquarters": "Lambsquarters",
+    "plantain": "English plantain",
+    "live-oak": "Live oak",
+    "american-elm": "American elm",
+    "cedar-juniper": "Eastern redcedar/juniper",
+    "river-birch": "River birch",
+    "boxelder": "Boxelder",
+}
+
+CATEGORY_BASELINE = {
+    "weed": {
+        "Cfa": 35, "Dfa": 32, "Dfb": 28, "Cfb": 30, "Csb": 20, "Csa": 15,
+        "BSk": 15, "BSh": 12, "BWh": 5, "BWk": 5, "Aw": 20, "Dsb": 15, "Dfc": 12,
+    },
+    "tree": {
+        "Cfa": 30, "Dfa": 32, "Dfb": 28, "Cfb": 12, "Csb": 8, "Csa": 6,
+        "BSk": 6, "BSh": 4, "BWh": 0, "BWk": 0, "Aw": 8, "Dsb": 6, "Dfc": 12,
+    },
+}
+
 TIER_THRESHOLDS = [(15, "near-zero"), (35, "low"), (65, "moderate"), (89, "high")]
 
 
@@ -154,6 +198,40 @@ def build():
                         f"{label}: modeled from {city['koppen']} climate zone"
                         + (" (coastal-adjusted)" if city.get("coastal") and coastal_bonus else "")
                     ),
+                }
+            )
+
+    with open(os.path.join(DATA_DIR, "species-ranges.json")) as f:
+        species_ranges = json.load(f)["species"]
+
+    for allergen_id, label, category in ORIGINAL_PANEL_NON_GRASS:
+        allergens_meta.append(
+            {
+                "id": allergen_id,
+                "label": label,
+                "category": category,
+                "confidence": "modeled",
+            }
+        )
+        present_states = set(species_ranges[SPECIES_RANGES_KEY[allergen_id]])
+        koppen_table = CATEGORY_BASELINE[category]
+        for city in CITIES:
+            if city["state"] not in present_states:
+                score = 0
+                why = f"{label}: not listed present in {city['state']} (USDA PLANTS)"
+            else:
+                score = max(0, min(100, round(koppen_table.get(city["koppen"], 0))))
+                why = (
+                    f"{label}: present in {city['state']} (USDA PLANTS), "
+                    f"modeled from {city['koppen']} climate zone"
+                )
+            scores.append(
+                {
+                    "allergen_id": allergen_id,
+                    "city_id": city["id"],
+                    "score": score,
+                    "tier": tier_for(score),
+                    "why": why,
                 }
             )
 
