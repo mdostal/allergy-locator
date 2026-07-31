@@ -38,12 +38,17 @@ interface Props {
  */
 export function BaseSvgMap({ ariaLabel, renderMarker, onSelectCity, selectedCityId }: Props) {
   return (
-    <svg viewBox={viewBox} role="img" aria-label={ariaLabel} className="h-auto w-full">
+    <svg
+      viewBox={viewBox}
+      role="img"
+      aria-label={ariaLabel}
+      className="h-auto w-full rounded-lg bg-white dark:bg-zinc-900"
+    >
       <g
         fill="none"
         stroke="currentColor"
-        strokeWidth={0.5}
-        className="text-zinc-300 dark:text-zinc-700"
+        strokeWidth={0.75}
+        className="text-zinc-400 dark:text-zinc-500"
       >
         {Object.entries(paths).map(([code, d]) => (
           <path key={code} d={d} />

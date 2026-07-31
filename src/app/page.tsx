@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MapView } from "@/components/MapView";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
@@ -13,12 +14,15 @@ export default function Home() {
             Toggle an allergen to see its severity across 168 US cities.
           </p>
         </div>
-        <Link
-          href="/about"
-          className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
-        >
-          About
-        </Link>
+        <div className="flex items-center gap-3">
+          <ThemeToggle />
+          <Link
+            href="/about"
+            className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-400"
+          >
+            About
+          </Link>
+        </div>
       </div>
       <MapView />
     </main>
