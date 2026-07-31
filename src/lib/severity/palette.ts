@@ -1,47 +1,55 @@
 /**
- * Minimal per-allergen intensity gradient for story s2 (one allergen). Story s4
- * replaces this with a dataviz-skill-driven, scalable-to-N-allergens palette once
- * the comprehensive allergen dataset (story s3) exists — this is a correct but
- * intentionally simple starting point, not the final palette work.
+ * Per-allergen palette. Per the dataviz skill's rule ("assign categorical hues in
+ * fixed order, never cycled... a 9th series is never a generated hue — it folds
+ * into small multiples") this app never asks a user to visually distinguish 20
+ * simultaneous hues on one map. Instead:
+ *   - Each allergen gets its own SEQUENTIAL ramp (one hue, light→dark = magnitude)
+ *     — this is exactly what the skill prescribes for a magnitude encoding, and it
+ *     needs no cross-allergen distinguishability at all.
+ *   - When more than one allergen is active at once, the map renders as small
+ *     multiples (one mini-map per allergen, each self-labeled with its name) —
+ *     see components/UsMap.tsx. Identity comes from the label, not from picking 20
+ *     mutually-distinguishable hues, which isn't achievable past ~8 series anyway.
+ *
+ * Hue assignment uses a golden-angle rotation (≈137.5°) keyed by each allergen's
+ * fixed position in the registry, so adding a 21st allergen never reshuffles the
+ * first 20 and never requires hand-picking a color — a color is DATA, derived from
+ * position, matching the epic's "never hardcode per-allergen anything" rule.
  */
 
-function hexToHsl(hex: string): [number, number, number] {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h = 0;
-  const l = (max + min) / 2;
-  const d = max - min;
-  const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1));
-  if (d !== 0) {
-    switch (max) {
-      case r:
-        h = ((g - b) / d) % 6;
-        break;
-      case g:
-        h = (b - r) / d + 2;
-        break;
-      default:
-        h = (r - g) / d + 4;
-    }
-    h *= 60;
-    if (h < 0) h += 360;
-  }
-  return [h, s * 100, l * 100];
+const GOLDEN_ANGLE = 137.508;
+const BASE_SATURATION = 68;
+const BASE_LIGHTNESS = 45;
+
+/** Grass is pinned to its established green (hue 142) for visual continuity with
+ * the original validated-formula work; every other allergen rotates from there. */
+const GRASS_HUE = 142;
+
+export function hueForIndex(index: number): number {
+  if (index === 0) return GRASS_HUE;
+  return (GRASS_HUE + GOLDEN_ANGLE * index) % 360;
+}
+
+export function baseColorForIndex(index: number): string {
+  const hue = hueForIndex(index);
+  return `hsl(${hue.toFixed(1)} ${BASE_SATURATION}% ${BASE_LIGHTNESS}%)`;
+}
+
+function parseHslHue(hslString: string): number {
+  const match = hslString.match(/hsl\(([\d.]+)/);
+  return match ? parseFloat(match[1]) : 0;
 }
 
 /**
  * value: 0-100 severity. Returns a CSS hsl() string: low severity = a light tint of
- * the allergen's base hue, high severity = a fully saturated, darker shade.
+ * the allergen's base hue, high severity = a fully saturated, darker shade — a
+ * single-hue sequential ramp, per the dataviz skill's rule for magnitude encoding.
  */
-export function intensityColor(baseColorHex: string, value: number): string {
-  const [h, s] = hexToHsl(baseColorHex);
+export function intensityColor(baseColor: string, value: number): string {
+  const hue = parseHslHue(baseColor);
   const clamped = Math.max(0, Math.min(100, value));
-  // Lightness runs from a pale 92% (near-zero severity) down to 32% (worst).
   const lightness = 92 - (clamped / 100) * 60;
-  return `hsl(${h.toFixed(1)} ${s.toFixed(1)}% ${lightness.toFixed(1)}%)`;
+  return `hsl(${hue.toFixed(1)} ${BASE_SATURATION}% ${lightness.toFixed(1)}%)`;
 }
 
 export const NO_DATA_COLOR = "hsl(0 0% 88%)";

@@ -3,11 +3,26 @@ import { ALLERGENS } from "@/lib/allergens/registry";
 import { hasAllergen } from "@/lib/severity/gate";
 import { getSeverity } from "@/lib/severity/score";
 
-describe("allergen registry (story s2 architecture proof)", () => {
+describe("allergen registry", () => {
   it("contains grass, the flagship validated allergen", () => {
     const grass = ALLERGENS.find((a) => a.id === "grass");
     expect(grass).toBeDefined();
     expect(grass?.confidence).toBe("validated");
+  });
+
+  it("comprehensively exceeds the original 15-species list (story s3/s4)", () => {
+    expect(ALLERGENS.length).toBeGreaterThan(15);
+  });
+
+  it("every non-grass allergen is confidence: modeled, never validated", () => {
+    for (const allergen of ALLERGENS) {
+      if (allergen.id === "grass") continue;
+      expect(allergen.confidence).toBe("modeled");
+    }
+  });
+
+  it("includes at least one mold entry", () => {
+    expect(ALLERGENS.some((a) => a.category === "mold")).toBe(true);
   });
 });
 
@@ -49,5 +64,29 @@ describe("grass severity — ground-truth oracle (data/allergy-scoring.md)", () 
 
   it("returns null for an allergen with no gate/data", () => {
     expect(getSeverity("nonexistent-allergen", "austin-tx")).toBeNull();
+  });
+});
+
+describe("comprehensive allergen severity — plausibility (story s4, not ground-truth)", () => {
+  it("sagebrush scores high in arid Phoenix and near-zero in humid New York", () => {
+    const phoenix = getSeverity("sagebrush", "phoenix-az");
+    const nyc = getSeverity("sagebrush", "new-york-ny");
+    expect(phoenix?.confidence).toBe("modeled");
+    expect(phoenix?.value ?? 0).toBeGreaterThan(nyc?.value ?? 0);
+    expect(nyc?.tier).toBe("near-zero");
+  });
+
+  it("red alder is present in Pacific NW Seattle but not in humid-subtropical Houston", () => {
+    expect(hasAllergen("red-alder", "seattle-wa")).toBe(true);
+    const seattle = getSeverity("red-alder", "seattle-wa");
+    const houston = getSeverity("red-alder", "houston-tx");
+    expect(seattle?.value ?? 0).toBeGreaterThan(houston?.value ?? 0);
+  });
+
+  it("Cladosporium (humidity-driven mold) scores higher in humid Houston than arid Phoenix", () => {
+    const houston = getSeverity("cladosporium", "houston-tx");
+    const phoenix = getSeverity("cladosporium", "phoenix-az");
+    expect(houston?.confidence).toBe("modeled");
+    expect(houston?.value ?? 0).toBeGreaterThan(phoenix?.value ?? 0);
   });
 });

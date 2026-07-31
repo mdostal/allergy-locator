@@ -21,13 +21,14 @@ export function MapView() {
     });
   }
 
-  const primaryActiveId = active.size > 0 ? Array.from(active)[0] : null;
-
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-6 md:flex-row">
       <div className="flex flex-col gap-4 md:w-64 md:flex-shrink-0">
         <AllergenToggleList active={active} onToggle={toggleAllergen} />
-        <StateDetailPanel cityId={selectedCityId} activeAllergenId={primaryActiveId} />
+        <StateDetailPanel
+          cityId={selectedCityId}
+          activeAllergenIds={Array.from(active)}
+        />
       </div>
       <div className="flex-1">
         <UsMap
