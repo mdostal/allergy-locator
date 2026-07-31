@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AllergenToggleList } from "@/components/AllergenToggleList";
 import { SensitivitySliders } from "@/components/SensitivitySliders";
 import { UsMap } from "@/components/UsMap";
@@ -9,9 +9,8 @@ import { StateDetailPanel } from "@/components/StateDetailPanel";
 import { TimeframeControl } from "@/components/TimeframeControl";
 import { YearPlayback } from "@/components/YearPlayback";
 import { ReportPanel } from "@/components/ReportPanel";
+import { decodeState, buildQueryString, URL_STATE_PARAM, type Mode } from "@/lib/url-state";
 import authorPreset from "@data/presets/author.json";
-
-type Mode = "overlay" | "composite";
 
 export function MapView() {
   const [mode, setMode] = useState<Mode>("overlay");
@@ -19,6 +18,30 @@ export function MapView() {
   const [sensitivities, setSensitivities] = useState<Record<string, number>>({});
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
   const [month, setMonth] = useState<number | null>(null);
+  const [hydratedFromUrl, setHydratedFromUrl] = useState(false);
+
+  // Story s9: the URL is the only "agentic" surface this epic ships -- no chat,
+  // no LLM. Read it once on mount (client-only, matching the same
+  // mounted-hydration pattern ThemeToggle already uses for this exact
+  // SSR-vs-client problem), then keep it in sync with every state change below.
+  /* eslint-disable react-hooks/set-state-in-effect -- one-time client-only URL
+   * read on mount, the same documented hydration pattern as ThemeToggle. */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const decoded = decodeState(params.get(URL_STATE_PARAM));
+    setMode(decoded.mode);
+    setActive(decoded.active);
+    setSensitivities(decoded.sensitivities);
+    setMonth(decoded.month);
+    setHydratedFromUrl(true);
+  }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
+
+  useEffect(() => {
+    if (!hydratedFromUrl) return;
+    const query = buildQueryString({ mode, active, sensitivities, month });
+    window.history.replaceState(null, "", query);
+  }, [hydratedFromUrl, mode, active, sensitivities, month]);
 
   function toggleAllergen(id: string) {
     setActive((prev) => {
