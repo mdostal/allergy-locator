@@ -9,7 +9,10 @@ import { StateDetailPanel } from "@/components/StateDetailPanel";
 import { TimeframeControl } from "@/components/TimeframeControl";
 import { YearPlayback } from "@/components/YearPlayback";
 import { ReportPanel } from "@/components/ReportPanel";
+import { GradientLegend } from "@/components/GradientLegend";
 import { decodeState, buildQueryString, URL_STATE_PARAM, type Mode } from "@/lib/url-state";
+import { getAllergen } from "@/lib/allergens/registry";
+import { intensityColor, compositeColor } from "@/lib/severity/palette";
 import authorPreset from "@data/presets/author.json";
 
 export function MapView() {
@@ -62,6 +65,21 @@ export function MapView() {
   function loadAuthorPreset() {
     setSensitivities(authorPreset.sensitivities);
   }
+
+  // A gradient's colors don't self-explain a scale the way a labeled dot's
+  // tooltip did -- shown only when the map is actually rendering a continuous
+  // surface (single active allergen, or composite mode), matching HeatmapLayer's
+  // own eligibility rule in UsMap/CompositeMap.
+  const singleActiveAllergen = mode === "overlay" && active.size === 1 ? getAllergen([...active][0]) : null;
+  const legend =
+    mode === "composite" ? (
+      <GradientLegend label="Your composite score" colorForValue={compositeColor} />
+    ) : singleActiveAllergen ? (
+      <GradientLegend
+        label={`${singleActiveAllergen.label} severity`}
+        colorForValue={(value) => intensityColor(singleActiveAllergen.color, value)}
+      />
+    ) : null;
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-6 md:flex-row">
@@ -121,9 +139,12 @@ export function MapView() {
         />
       </div>
       <div className="flex flex-1 flex-col gap-3">
-        <div className="flex items-center justify-end gap-3">
-          <YearPlayback month={month} onMonthChange={setMonth} />
-          <TimeframeControl month={month} onChange={setMonth} />
+        <div className="flex items-center justify-between gap-3">
+          <div className="w-48">{legend}</div>
+          <div className="flex items-center gap-3">
+            <YearPlayback month={month} onMonthChange={setMonth} />
+            <TimeframeControl month={month} onChange={setMonth} />
+          </div>
         </div>
         {mode === "overlay" ? (
           <UsMap

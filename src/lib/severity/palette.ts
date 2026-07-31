@@ -58,6 +58,12 @@ export function intensityColor(baseColor: string, value: number): string {
 
 export const NO_DATA_COLOR = "hsl(0 0% 88%)";
 
+/** Subtle, translucent click-target fill for city markers once a continuous
+ * gradient (not the dot) carries the color signal -- visible enough to find
+ * and click against either the light or dark map background, without
+ * competing with the heatmap underneath. */
+export const HEATMAP_MARKER_FILL = "rgba(17, 24, 39, 0.5)";
+
 /**
  * Mode 2's composite scale: green (good/low) -> red (bad/high). This is a single
  * continuous ramp (hue interpolates 142->0 as value rises), not a categorical
