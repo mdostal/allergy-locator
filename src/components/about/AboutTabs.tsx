@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MyStoryTab } from "@/components/about/MyStoryTab";
 import { ProjectTab } from "@/components/about/ProjectTab";
 import { MarkdownContent } from "@/components/about/MarkdownContent";
+import { ByoKeySettings } from "@/components/ByoKeySettings";
 
 interface Props {
   aboutV1: string;
@@ -37,7 +38,10 @@ export function AboutTabs(props: Props) {
     activeTab === "project" ? (
       <ProjectTab aboutV1={props.aboutV1} aboutV2={props.aboutV2} />
     ) : activeTab === "methodology" ? (
-      <MarkdownContent content={props.methodology} />
+      <div className="flex flex-col gap-6">
+        <MarkdownContent content={props.methodology} />
+        <ByoKeySettings />
+      </div>
     ) : (
       <MyStoryTab
         myStory={props.myStory}
