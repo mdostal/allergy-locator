@@ -68,13 +68,22 @@ each visit. Families and couples want to compare or overlay more than one person
 **Depends on:** v1's app-state model (already clean/serializable from v1's agent-
 controllable-surface work) extended to hold a collection of profiles instead of one.
 
+## Superseded by later work (kept here for history, not current)
+- **County/ZIP-level resolution** — was listed below as explicitly out of scope
+  ("state-level only... stated scope boundary"). Superseded: a real ~3,143-county
+  gradient-densification layer, built from Census/USGS/USDA data, shipped
+  post-v1 (`data/county-grid-methodology.md`) as a secondary interpolation-only
+  layer alongside the 168 authoritative cities.
+- **Daily-resolution season curves** — v1 shipped a 4-climate-zone-group monthly
+  model. Superseded post-v1 by a real per-city, day-by-day phenology model driven
+  by NOAA 1991-2020 daily climate normals (`data/daily-season-curves-methodology.md`),
+  plus a Trip Planner surfacing full day-level forecasting for a chosen date range.
+
 ## Explicitly not on this roadmap (revisit only if directly requested)
 - Real-time meteorological pollen *forecasting* from a paid provider — cost-prohibitive
-  at the project's $0 posture; v1's climatological outlook and the existing optional
-  Google-Pollen "current conditions" toggle are the intended ceiling unless the user
-  decides the cost tradeoff is worth it later.
-- County/ZIP-level resolution — state-level only remains the stated scope boundary in
-  `product-brief.md`.
+  at the project's $0 posture; the climatological daily-normals-driven forecast above
+  and the existing optional Google-Pollen "current conditions" toggle are the intended
+  ceiling unless the user decides the cost tradeoff is worth it later.
 - Accounts, login, or a backend database at any version — every version above is
   explicitly designed to avoid this.
 
