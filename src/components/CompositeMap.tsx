@@ -8,12 +8,14 @@ import { getComposite } from "@/lib/severity/composite";
 import { getCountyComposite } from "@/lib/severity/county-composite";
 import { COUNTY_POINTS } from "@/lib/geo/county-points";
 import { compositeColor, NO_DATA_COLOR, HEATMAP_MARKER_FILL } from "@/lib/severity/palette";
+import type { ModelSettings } from "@/lib/model-settings";
 
 interface Props {
   sensitivities: Record<string, number>;
   onSelectCity: (cityId: string) => void;
   selectedCityId: string | null;
   month: number | null;
+  settings: ModelSettings;
 }
 
 /** Mode 2: one personalized green->red composite map, per the user's own framing
@@ -21,10 +23,13 @@ interface Props {
  * Always exactly one scalar field, so it always renders as a continuous
  * gradient surface (interpolated across all 168 cities) rather than isolated
  * dots -- city markers become small, subtle click-targets instead. */
-export function CompositeMap({ sensitivities, onSelectCity, selectedCityId, month }: Props) {
+export function CompositeMap({ sensitivities, onSelectCity, selectedCityId, month, settings }: Props) {
+  const { seasonStrength, combinationMethod, idwPower } = settings;
+  const options = useMemo(() => ({ seasonStrength, combinationMethod }), [seasonStrength, combinationMethod]);
+
   const heatmapPoints = useMemo(() => {
     const cityPoints = CITY_POINTS.map((point) => {
-      const composite = getComposite(sensitivities, point.city.id, month ?? undefined);
+      const composite = getComposite(sensitivities, point.city.id, month ?? undefined, options);
       return composite ? { x: point.x, y: point.y, value: composite.value } : null;
     }).filter((p): p is { x: number; y: number; value: number } => p !== null);
 
@@ -32,21 +37,21 @@ export function CompositeMap({ sensitivities, onSelectCity, selectedCityId, mont
     // methodology.md) densifies the interpolation far beyond the 168 cities
     // -- it never overrides them, only fills the gaps between them.
     const countyPoints = COUNTY_POINTS.map((point) => {
-      const value = getCountyComposite(sensitivities, point, month ?? undefined);
+      const value = getCountyComposite(sensitivities, point, month ?? undefined, options);
       return value !== null ? { x: point.x, y: point.y, value } : null;
     }).filter((p): p is { x: number; y: number; value: number } => p !== null);
 
     return [...cityPoints, ...countyPoints];
-  }, [sensitivities, month]);
+  }, [sensitivities, month, options]);
 
   return (
     <BaseSvgMap
       ariaLabel="Your personalized allergy severity map"
       onSelectCity={onSelectCity}
       selectedCityId={selectedCityId}
-      heatmap={<HeatmapLayer points={heatmapPoints} colorForValue={compositeColor} />}
+      heatmap={<HeatmapLayer points={heatmapPoints} colorForValue={compositeColor} power={idwPower} />}
       renderMarker={(point, isSelected) => {
-        const composite = getComposite(sensitivities, point.city.id, month ?? undefined);
+        const composite = getComposite(sensitivities, point.city.id, month ?? undefined, options);
         return (
           <CityMarker
             point={point}

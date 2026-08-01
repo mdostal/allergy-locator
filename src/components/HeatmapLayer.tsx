@@ -25,6 +25,9 @@ interface Props {
    * own color identity, and overlapping severity reads as a visually denser
    * blend where two allergens are both bad in the same place. */
   opacity?: number;
+  /** Advanced mode (lib/model-settings.ts): IDW power passed straight to
+   * buildInterpolationGrid. */
+  power?: number;
 }
 
 /**
@@ -34,7 +37,7 @@ interface Props {
  * ~5,760-cell grid on every allergen/timeframe change is far cheaper as
  * imperative canvas draws than as reconciled React elements.
  */
-export function HeatmapLayer({ points, colorForValue, opacity = 1 }: Props) {
+export function HeatmapLayer({ points, colorForValue, opacity = 1, power }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -56,6 +59,7 @@ export function HeatmapLayer({ points, colorForValue, opacity = 1 }: Props) {
       rows: ROWS,
       width: VB_WIDTH,
       height: VB_HEIGHT,
+      power,
     });
     const cellWidth = VB_WIDTH / COLS;
     const cellHeight = VB_HEIGHT / ROWS;
@@ -72,7 +76,7 @@ export function HeatmapLayer({ points, colorForValue, opacity = 1 }: Props) {
     }
 
     ctx.restore();
-  }, [points, colorForValue]);
+  }, [points, colorForValue, power]);
 
   return (
     <canvas

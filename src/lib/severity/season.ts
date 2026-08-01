@@ -78,28 +78,45 @@ const CLADOSPORIUM_CURVE: Record<ZoneGroup, MonthCurve> = {
  * forcing a humidity pattern the literature didn't support for it. */
 const ALTERNARIA_CURVE: MonthCurve = [0.3, 0.3, 0.35, 0.4, 0.5, 0.65, 0.85, 1.0, 0.9, 0.6, 0.4, 0.3];
 
+/**
+ * `strength` (0-1, default 1 = the full modeled curve) is Advanced mode's
+ * live-adjustable knob on this formula (see src/lib/model-settings.ts):
+ * `1` uses the curve exactly as modeled above; `0` flattens it to no
+ * seasonality at all (every month reads like the annual/peak score); values
+ * between interpolate linearly. This is a real, live-computed parameter --
+ * not a cosmetic toggle -- so "front and center, and allow modification" is
+ * an honest claim for this part of the model.
+ */
 export function seasonMultiplier(
   allergenId: string,
   category: AllergenCategory,
   koppen: string,
   month: number, // 1-12
+  strength = 1,
 ): number {
   const zone = zoneGroupFor(koppen);
   const i = Math.min(11, Math.max(0, month - 1));
 
-  if (allergenId === "alternaria") return ALTERNARIA_CURVE[i];
-  if (allergenId === "cladosporium") return CLADOSPORIUM_CURVE[zone][i];
-
-  switch (category) {
-    case "grass":
-      return GRASS_CURVE[zone][i];
-    case "weed":
-      return WEED_CURVE[zone][i];
-    case "tree":
-      return TREE_CURVE[zone][i];
-    default:
-      return 1;
+  let raw: number;
+  if (allergenId === "alternaria") raw = ALTERNARIA_CURVE[i];
+  else if (allergenId === "cladosporium") raw = CLADOSPORIUM_CURVE[zone][i];
+  else {
+    switch (category) {
+      case "grass":
+        raw = GRASS_CURVE[zone][i];
+        break;
+      case "weed":
+        raw = WEED_CURVE[zone][i];
+        break;
+      case "tree":
+        raw = TREE_CURVE[zone][i];
+        break;
+      default:
+        raw = 1;
+    }
   }
+
+  return 1 + (raw - 1) * strength;
 }
 
 export const MONTH_NAMES = [

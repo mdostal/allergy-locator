@@ -46,6 +46,21 @@ describe("Mode 2 — personalized composite", () => {
     expect(sundance!.value).toBeLessThan(50);
   });
 
+  it("Advanced mode: combinationMethod 'average' is a genuinely different, live-computed alternative", () => {
+    const noisyOr = getComposite({ grass: 90, pigweed: 40 }, "austin-tx");
+    const average = getComposite({ grass: 90, pigweed: 40 }, "austin-tx", undefined, {
+      combinationMethod: "average",
+    });
+    expect(noisyOr).not.toBeNull();
+    expect(average).not.toBeNull();
+    expect(average!.value).not.toBe(noisyOr!.value);
+    // The weighted average of a strong signal and a weaker one sits below the
+    // compounding noisy-OR result -- this is the "dilution" composite.ts's own
+    // docstring explicitly rejects as the default, now available as an
+    // explicit, honestly-labeled opt-in instead.
+    expect(average!.value).toBeLessThan(noisyOr!.value);
+  });
+
   it("lists contributions sorted by weighted impact", () => {
     const composite = getComposite(
       { grass: 90, pigweed: 40 },

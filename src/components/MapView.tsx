@@ -10,9 +10,11 @@ import { TimeframeControl } from "@/components/TimeframeControl";
 import { YearPlayback } from "@/components/YearPlayback";
 import { ReportPanel } from "@/components/ReportPanel";
 import { GradientLegend } from "@/components/GradientLegend";
+import { AdvancedControls } from "@/components/AdvancedControls";
 import { decodeState, buildQueryString, URL_STATE_PARAM, type Mode } from "@/lib/url-state";
 import { getAllergen } from "@/lib/allergens/registry";
 import { intensityColor, compositeColor } from "@/lib/severity/palette";
+import { DEFAULT_MODEL_SETTINGS, type ModelSettings } from "@/lib/model-settings";
 import authorPreset from "@data/presets/author.json";
 
 export function MapView() {
@@ -22,6 +24,8 @@ export function MapView() {
   const [selectedCityId, setSelectedCityId] = useState<string | null>(null);
   const [month, setMonth] = useState<number | null>(null);
   const [hydratedFromUrl, setHydratedFromUrl] = useState(false);
+  const [advancedMode, setAdvancedMode] = useState(false);
+  const [settings, setSettings] = useState<ModelSettings>(DEFAULT_MODEL_SETTINGS);
 
   // Story s9: the URL is the only "agentic" surface this epic ships -- no chat,
   // no LLM. Read it once on mount (client-only, matching the same
@@ -142,7 +146,23 @@ export function MapView() {
           activeAllergenIds={Array.from(active)}
           sensitivities={sensitivities}
           month={month}
+          settings={settings}
         />
+
+        <div>
+          <button
+            type="button"
+            onClick={() => setAdvancedMode((v) => !v)}
+            className="text-xs font-medium uppercase tracking-wide text-blue-600 hover:underline dark:text-blue-400"
+          >
+            {advancedMode ? "Hide" : "Show"} advanced (model formulas + variables)
+          </button>
+          {advancedMode && (
+            <div className="mt-2">
+              <AdvancedControls settings={settings} onChange={setSettings} />
+            </div>
+          )}
+        </div>
       </div>
       <div className="flex flex-1 flex-col gap-3">
         <div className="flex items-center justify-between gap-3">
@@ -158,6 +178,7 @@ export function MapView() {
             onSelectCity={setSelectedCityId}
             selectedCityId={selectedCityId}
             month={month}
+            settings={settings}
           />
         ) : (
           <CompositeMap
@@ -165,6 +186,7 @@ export function MapView() {
             onSelectCity={setSelectedCityId}
             selectedCityId={selectedCityId}
             month={month}
+            settings={settings}
           />
         )}
       </div>
