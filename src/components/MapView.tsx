@@ -11,6 +11,8 @@ import { YearPlayback } from "@/components/YearPlayback";
 import { ReportPanel } from "@/components/ReportPanel";
 import { TripPlanner } from "@/components/TripPlanner";
 import { PanelUpload } from "@/components/PanelUpload";
+import { AllergyHistoryChart } from "@/components/AllergyHistoryChart";
+import { getPanelHistory, addPanelSnapshot, type PanelSnapshot } from "@/lib/panel-history";
 import { GradientLegend } from "@/components/GradientLegend";
 import { AdvancedControls } from "@/components/AdvancedControls";
 import { decodeState, buildQueryString, URL_STATE_PARAM, type Mode } from "@/lib/url-state";
@@ -28,6 +30,12 @@ export function MapView() {
   const [hydratedFromUrl, setHydratedFromUrl] = useState(false);
   const [advancedMode, setAdvancedMode] = useState(false);
   const [settings, setSettings] = useState<ModelSettings>(DEFAULT_MODEL_SETTINGS);
+  const [panelHistory, setPanelHistory] = useState<PanelSnapshot[]>([]);
+
+  // Client-only read on mount, same hydration-safety pattern as the URL-state
+  // effect just below.
+  /* eslint-disable-next-line react-hooks/set-state-in-effect */
+  useEffect(() => setPanelHistory(getPanelHistory()), []);
 
   // Story s9: the URL is the only "agentic" surface this epic ships -- no chat,
   // no LLM. Read it once on mount (client-only, matching the same
@@ -77,6 +85,11 @@ export function MapView() {
     // actually covers, so any sliders the user already set by hand for
     // other allergens stay untouched.
     setSensitivities((prev) => ({ ...prev, ...uploaded }));
+    // History tracks UPLOAD events specifically (explicit user direction:
+    // "when they upload multiple of their own charts"), not every manual
+    // slider tweak -- this is the one place that records a snapshot.
+    addPanelSnapshot(uploaded);
+    setPanelHistory(getPanelHistory());
   }
 
   // A gradient's colors don't self-explain a scale the way a labeled dot's
@@ -141,6 +154,7 @@ export function MapView() {
         ) : (
           <>
             <PanelUpload onApply={applyUploadedPanel} />
+            <AllergyHistoryChart history={panelHistory} />
             <SensitivitySliders
               sensitivities={sensitivities}
               onChange={setSensitivity}
