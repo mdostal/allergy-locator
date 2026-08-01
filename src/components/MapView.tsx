@@ -15,7 +15,7 @@ import { AllergyHistoryChart } from "@/components/AllergyHistoryChart";
 import { getPanelHistory, addPanelSnapshot, type PanelSnapshot } from "@/lib/panel-history";
 import { GradientLegend } from "@/components/GradientLegend";
 import { AdvancedControls } from "@/components/AdvancedControls";
-import { decodeState, buildQueryString, URL_STATE_PARAM, type Mode } from "@/lib/url-state";
+import { decodeState, buildQueryString, parseHumanState, URL_STATE_PARAM, type Mode } from "@/lib/url-state";
 import { getAllergen } from "@/lib/allergens/registry";
 import { intensityColor, compositeColor } from "@/lib/severity/palette";
 import { DEFAULT_MODEL_SETTINGS, type ModelSettings } from "@/lib/model-settings";
@@ -37,15 +37,21 @@ export function MapView() {
   /* eslint-disable-next-line react-hooks/set-state-in-effect */
   useEffect(() => setPanelHistory(getPanelHistory()), []);
 
-  // Story s9: the URL is the only "agentic" surface this epic ships -- no chat,
-  // no LLM. Read it once on mount (client-only, matching the same
+  // Story s9: the URL is the "agentic" surface this app ships -- no chat, no
+  // LLM. Read it once on mount (client-only, matching the same
   // mounted-hydration pattern ThemeToggle already uses for this exact
   // SSR-vs-client problem), then keep it in sync with every state change below.
+  // The compact `s` param (this app's own shareable-link format) wins when
+  // present; otherwise fall back to plain, hand-writable params (`mode`,
+  // `allergens`, `month` -- see parseHumanState) so an external agent or a
+  // person typing a URL doesn't need to know the binary encoding at all.
   /* eslint-disable react-hooks/set-state-in-effect -- one-time client-only URL
    * read on mount, the same documented hydration pattern as ThemeToggle. */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const decoded = decodeState(params.get(URL_STATE_PARAM));
+    const decoded = params.has(URL_STATE_PARAM)
+      ? decodeState(params.get(URL_STATE_PARAM))
+      : (parseHumanState(params) ?? decodeState(null));
     setMode(decoded.mode);
     setActive(decoded.active);
     setSensitivities(decoded.sensitivities);

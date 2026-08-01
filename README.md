@@ -17,6 +17,31 @@ Fills a real gap: every existing tool shows *"pollen near you right now."* This 
 
 Presence ≠ severity. Your grass allergens grow in nearly every state, so a presence map is a useless red rectangle. Instead the map colors by **pollen-season length × intensity × climate + planted/irrigated turf** for *your* selected allergens. See [`docs/MODEL-NOTES.md`](docs/MODEL-NOTES.md).
 
+## Driving the map programmatically
+
+The whole app's view state lives in the URL, and the app hydrates from it — no
+account, no server session. Sharing a link from the UI produces a compact
+`?s=<encoded>` param (a byte-packed encoding, not meant to be hand-written).
+
+For an external agent (Claude, a script, a person typing a URL) that wants to
+construct a link directly, plain query params work too:
+
+```
+?mode=overlay&allergens=grass,ragweed&month=6
+?mode=composite&allergens=grass:80,ragweed:40
+```
+
+- `mode` — `overlay` (toggle allergens on/off) or `composite` (your personal
+  sensitivity profile). Defaults to `overlay`.
+- `allergens` — comma-separated. In overlay mode, just ids (`grass,ragweed`).
+  In composite mode, `id:sensitivity` pairs, 0-100 (`grass:80`); an id with no
+  value defaults to a moderate `50`. Unknown ids are silently skipped.
+- `month` — `1`-`12` for that month's severity, omitted for current/annual.
+
+Allergen ids are whatever's in `data/allergens.json` (e.g. `grass`, `ragweed`,
+`red-oak`) — `grass` plus every entry's own `id` field. These params are only
+read when the compact `s` param is absent, so a shared link always wins.
+
 ## Data & attribution
 
 - **USDA PLANTS** — species→state ranges (US Gov, public domain)

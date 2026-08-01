@@ -48,11 +48,15 @@ ever required for this feature. If a future non-Anthropic provider is added and 
 equivalent CORS support, that specific provider (not the whole feature) would need the
 stateless pass-through proxy instead — a per-provider fallback, not the default design.
 
-**Also in v2:** a documented, agent-friendly control surface beyond v1's URL-state
-(§ see below) — likely an MCP server or a small documented HTTP/JS API — so an external
-agent (Claude Desktop, a script, a future chat feature) can drive the map
-programmatically without needing the in-app parse/verify flow. The `mcp-builder` skill
-(official `anthropics/skills`) is the natural tool for this when the time comes.
+**Also in v2 (shipped 2026-08-01):** a documented, agent-friendly control surface beyond
+v1's compact `s` param, which is a byte-packed encoding no agent or human could
+hand-construct. Chose the "small documented HTTP/JS API" option over a standalone MCP
+server (lower complexity, stays 100% static, no new process/package) — plain query
+params (`?mode=composite&allergens=grass:80,ragweed:40&month=6`, see README's
+"Driving the map programmatically") parsed by `parseHumanState()` in `lib/url-state.ts`,
+consulted only when the compact `s` param is absent. An MCP server remains a legitimate
+future option (the `mcp-builder` skill is still the right tool for it) if a use case
+needs push-based control rather than a link a script/agent can just construct.
 
 **Depends on:** v1 shipped and validated; v1's panel schema and URL-state model treated
 as a stable contract, not something v2 redesigns from scratch.
