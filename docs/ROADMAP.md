@@ -246,7 +246,7 @@ Tools live under **mdostal.com** (the allergy tool is building now via `hive exe
 | # | Dimension | Artifact | Tool overlay | Data | Status |
 |---|-----------|----------|--------------|------|--------|
 | 1 | Allergy | ✅ live | in build | gathering full-city | **active** |
-| 2 | Cardiac care | — | — | — | queued (next) |
+| 2 | Care access | data fixed + regenerated | not started | `data/care-access.json` (regenerated via `scripts/gen_care_access.py`) | **data layer done 2026-08-01** (map UI not started) |
 | 3 | Cost/housing | — | — | — | queued (overlay late) |
 | 4 | Water/earthwork | — | — | — | queued |
 | 5 | Smells/beauty | — | — | — | queued |

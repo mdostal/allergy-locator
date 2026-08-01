@@ -654,5 +654,85 @@
     "lat": 21.301,
     "lon": -157.828,
     "note": "Hawaii pediatric referral center"
+  },
+  {
+    "name": "NewYork-Presbyterian Morgan Stanley Children's Hospital (Columbia)",
+    "city": "New York",
+    "state": "NY",
+    "lat": 40.841,
+    "lon": -73.942,
+    "note": "Academic pediatric subspecialty care"
+  },
+  {
+    "name": "Cohen Children's Medical Center (Northwell)",
+    "city": "New Hyde Park",
+    "state": "NY",
+    "lat": 40.746,
+    "lon": -73.7,
+    "note": "Broad pediatric subspecialty care"
+  },
+  {
+    "name": "Children's Hospital at Montefiore",
+    "city": "Bronx",
+    "state": "NY",
+    "lat": 40.881,
+    "lon": -73.878,
+    "note": "Academic pediatric subspecialty care"
+  },
+  {
+    "name": "Johns Hopkins Children's Center",
+    "city": "Baltimore",
+    "state": "MD",
+    "lat": 39.297,
+    "lon": -76.592,
+    "note": "Academic pediatric subspecialty care"
+  },
+  {
+    "name": "Yale New Haven Children's Hospital",
+    "city": "New Haven",
+    "state": "CT",
+    "lat": 41.304,
+    "lon": -72.936,
+    "note": "Academic pediatric subspecialty care"
+  },
+  {
+    "name": "MUSC Shawn Jenkins Children's Hospital",
+    "city": "Charleston",
+    "state": "SC",
+    "lat": 32.784,
+    "lon": -79.947,
+    "note": "Academic pediatric subspecialty care"
+  },
+  {
+    "name": "St. Louis Children's Hospital (Washington University)",
+    "city": "St. Louis",
+    "state": "MO",
+    "lat": 38.635,
+    "lon": -90.264,
+    "note": "Academic pediatric subspecialty care"
+  },
+  {
+    "name": "SSM Health Cardinal Glennon Children's",
+    "city": "St. Louis",
+    "state": "MO",
+    "lat": 38.618,
+    "lon": -90.24,
+    "note": "Broad pediatric subspecialty care"
+  },
+  {
+    "name": "Mayo Clinic Children's Center",
+    "city": "Rochester",
+    "state": "MN",
+    "lat": 44.02,
+    "lon": -92.466,
+    "note": "Academic pediatric subspecialty care"
+  },
+  {
+    "name": "UF Health Shands Children's Hospital",
+    "city": "Gainesville",
+    "state": "FL",
+    "lat": 29.64,
+    "lon": -82.343,
+    "note": "Academic pediatric subspecialty care"
   }
 ]

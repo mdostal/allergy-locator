@@ -10,7 +10,7 @@
     },
     "layer_counts": {
       "pediatric_cardiac": 64,
-      "pediatric_specialty": 82,
+      "pediatric_specialty": 92,
       "general": 168
     },
     "caveat": "Straight-line distance x 1.25 factor underestimates drive time in mountainous/rural terrain (e.g. Rocky Mountain West)."
@@ -21,15 +21,15 @@
       "nearest_facility": "NewYork-Presbyterian Morgan Stanley Children's Hospital (Columbia)",
       "facility_city": "New York, NY",
       "distance_mi": 9.7,
-      "est_drive_min": 13.3,
+      "est_drive_min": 13.2,
       "tier": "<=30"
     },
     "pediatric_specialty": {
-      "nearest_facility": "Children's Hospital of Philadelphia (CHOP)",
-      "facility_city": "Philadelphia, PA",
-      "distance_mi": 81.6,
-      "est_drive_min": 111.2,
-      "tier": "<=120"
+      "nearest_facility": "NewYork-Presbyterian Morgan Stanley Children's Hospital (Columbia)",
+      "facility_city": "New York, NY",
+      "distance_mi": 9.7,
+      "est_drive_min": 13.2,
+      "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Bellevue Hospital Center",
@@ -59,7 +59,7 @@
       "nearest_facility": "LAC+USC Medical Center",
       "facility_city": "Los Angeles, CA",
       "distance_mi": 1.9,
-      "est_drive_min": 2.5,
+      "est_drive_min": 2.6,
       "tier": "<=30"
     }
   },
@@ -69,14 +69,14 @@
       "nearest_facility": "Ann & Robert H. Lurie Children's Hospital",
       "facility_city": "Chicago, IL",
       "distance_mi": 1.2,
-      "est_drive_min": 1.7,
+      "est_drive_min": 1.6,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Ann & Robert H. Lurie Children's Hospital",
       "facility_city": "Chicago, IL",
       "distance_mi": 1.2,
-      "est_drive_min": 1.7,
+      "est_drive_min": 1.6,
       "tier": "<=30"
     },
     "general": {
@@ -93,14 +93,14 @@
       "nearest_facility": "Texas Children's Hospital",
       "facility_city": "Houston, TX",
       "distance_mi": 4.0,
-      "est_drive_min": 5.4,
+      "est_drive_min": 5.5,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Texas Children's Hospital",
       "facility_city": "Houston, TX",
       "distance_mi": 4.0,
-      "est_drive_min": 5.4,
+      "est_drive_min": 5.5,
       "tier": "<=30"
     },
     "general": {
@@ -117,21 +117,21 @@
       "nearest_facility": "Phoenix Children's Hospital",
       "facility_city": "Phoenix, AZ",
       "distance_mi": 2.2,
-      "est_drive_min": 2.9,
+      "est_drive_min": 3.0,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Phoenix Children's Hospital",
       "facility_city": "Phoenix, AZ",
       "distance_mi": 2.2,
-      "est_drive_min": 2.9,
+      "est_drive_min": 3.0,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Banner University Medical Center Phoenix",
       "facility_city": "Phoenix, AZ",
       "distance_mi": 1.7,
-      "est_drive_min": 2.4,
+      "est_drive_min": 2.3,
       "tier": "<=30"
     }
   },
@@ -141,21 +141,21 @@
       "nearest_facility": "Children's Hospital of Philadelphia (CHOP)",
       "facility_city": "Philadelphia, PA",
       "distance_mi": 1.3,
-      "est_drive_min": 1.7,
+      "est_drive_min": 1.8,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Hospital of Philadelphia (CHOP)",
       "facility_city": "Philadelphia, PA",
       "distance_mi": 1.3,
-      "est_drive_min": 1.7,
+      "est_drive_min": 1.8,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Hospital of the University of Pennsylvania",
       "facility_city": "Philadelphia, PA",
       "distance_mi": 1.2,
-      "est_drive_min": 1.7,
+      "est_drive_min": 1.6,
       "tier": "<=30"
     }
   },
@@ -165,7 +165,7 @@
       "nearest_facility": "Dell Children's Medical Center",
       "facility_city": "Austin, TX",
       "distance_mi": 77.5,
-      "est_drive_min": 105.6,
+      "est_drive_min": 105.7,
       "tier": "<=120"
     },
     "pediatric_specialty": {
@@ -189,14 +189,14 @@
       "nearest_facility": "Rady Children's Hospital",
       "facility_city": "San Diego, CA",
       "distance_mi": 5.3,
-      "est_drive_min": 7.3,
+      "est_drive_min": 7.2,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Rady Children's Hospital",
       "facility_city": "San Diego, CA",
       "distance_mi": 5.3,
-      "est_drive_min": 7.3,
+      "est_drive_min": 7.2,
       "tier": "<=30"
     },
     "general": {
@@ -213,21 +213,21 @@
       "nearest_facility": "Children's Health / Children's Medical Center Dallas (UT Southwestern)",
       "facility_city": "Dallas, TX",
       "distance_mi": 3.1,
-      "est_drive_min": 4.3,
+      "est_drive_min": 4.2,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Medical Center Dallas",
       "facility_city": "Dallas, TX",
       "distance_mi": 3.1,
-      "est_drive_min": 4.3,
+      "est_drive_min": 4.2,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Baylor University Medical Center",
       "facility_city": "Dallas, TX",
       "distance_mi": 1.2,
-      "est_drive_min": 1.7,
+      "est_drive_min": 1.6,
       "tier": "<=30"
     }
   },
@@ -251,7 +251,7 @@
       "nearest_facility": "Santa Clara Valley Medical Center",
       "facility_city": "San Jose, CA",
       "distance_mi": 5.2,
-      "est_drive_min": 7.0,
+      "est_drive_min": 7.1,
       "tier": "<=30"
     }
   },
@@ -333,14 +333,14 @@
       "nearest_facility": "Nationwide Children's Hospital",
       "facility_city": "Columbus, OH",
       "distance_mi": 0.8,
-      "est_drive_min": 1.0,
+      "est_drive_min": 1.1,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Nationwide Children's Hospital",
       "facility_city": "Columbus, OH",
       "distance_mi": 0.8,
-      "est_drive_min": 1.0,
+      "est_drive_min": 1.1,
       "tier": "<=30"
     },
     "general": {
@@ -395,7 +395,7 @@
       "nearest_facility": "Zuckerberg San Francisco General Hospital",
       "facility_city": "San Francisco, CA",
       "distance_mi": 1.3,
-      "est_drive_min": 1.7,
+      "est_drive_min": 1.8,
       "tier": "<=30"
     }
   },
@@ -419,7 +419,7 @@
       "nearest_facility": "Indiana University Health Methodist Hospital",
       "facility_city": "Indianapolis, IN",
       "distance_mi": 1.6,
-      "est_drive_min": 2.1,
+      "est_drive_min": 2.2,
       "tier": "<=30"
     }
   },
@@ -429,14 +429,14 @@
       "nearest_facility": "Seattle Children's Hospital",
       "facility_city": "Seattle, WA",
       "distance_mi": 4.3,
-      "est_drive_min": 5.8,
+      "est_drive_min": 5.9,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Seattle Children's Hospital",
       "facility_city": "Seattle, WA",
       "distance_mi": 4.3,
-      "est_drive_min": 5.8,
+      "est_drive_min": 5.9,
       "tier": "<=30"
     },
     "general": {
@@ -477,14 +477,14 @@
       "nearest_facility": "Children's National Hospital",
       "facility_city": "Washington, DC",
       "distance_mi": 1.8,
-      "est_drive_min": 2.4,
+      "est_drive_min": 2.5,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's National Hospital",
       "facility_city": "Washington, DC",
       "distance_mi": 1.8,
-      "est_drive_min": 2.4,
+      "est_drive_min": 2.5,
       "tier": "<=30"
     },
     "general": {
@@ -501,14 +501,14 @@
       "nearest_facility": "Boston Children's Hospital",
       "facility_city": "Boston, MA",
       "distance_mi": 2.8,
-      "est_drive_min": 3.9,
+      "est_drive_min": 3.8,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Boston Children's Hospital",
       "facility_city": "Boston, MA",
       "distance_mi": 2.8,
-      "est_drive_min": 3.9,
+      "est_drive_min": 3.8,
       "tier": "<=30"
     },
     "general": {
@@ -525,7 +525,7 @@
       "nearest_facility": "Phoenix Children's Hospital",
       "facility_city": "Phoenix, AZ",
       "distance_mi": 345.5,
-      "est_drive_min": 471.2,
+      "est_drive_min": 471.1,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -597,7 +597,7 @@
       "nearest_facility": "Loma Linda University Children's Hospital",
       "facility_city": "Loma Linda, CA",
       "distance_mi": 189.4,
-      "est_drive_min": 258.2,
+      "est_drive_min": 258.3,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -635,7 +635,7 @@
       "nearest_facility": "Henry Ford Hospital",
       "facility_city": "Detroit, MI",
       "distance_mi": 3.2,
-      "est_drive_min": 4.3,
+      "est_drive_min": 4.4,
       "tier": "<=30"
     }
   },
@@ -717,21 +717,21 @@
       "nearest_facility": "Children's Wisconsin (Herma Heart Institute)",
       "facility_city": "Milwaukee, WI",
       "distance_mi": 1.2,
-      "est_drive_min": 1.7,
+      "est_drive_min": 1.6,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Wisconsin",
       "facility_city": "Milwaukee, WI",
       "distance_mi": 1.2,
-      "est_drive_min": 1.7,
+      "est_drive_min": 1.6,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Froedtert Hospital",
       "facility_city": "Milwaukee, WI",
       "distance_mi": 6.0,
-      "est_drive_min": 8.1,
+      "est_drive_min": 8.2,
       "tier": "<=30"
     }
   },
@@ -745,11 +745,11 @@
       "tier": "<=30"
     },
     "pediatric_specialty": {
-      "nearest_facility": "Children's National Hospital",
-      "facility_city": "Washington, DC",
-      "distance_mi": 33.2,
-      "est_drive_min": 45.3,
-      "tier": "<=60"
+      "nearest_facility": "Johns Hopkins Children's Center",
+      "facility_city": "Baltimore, MD",
+      "distance_mi": 1.1,
+      "est_drive_min": 1.5,
+      "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Johns Hopkins Hospital",
@@ -827,7 +827,7 @@
       "nearest_facility": "Community Regional Medical Center",
       "facility_city": "Fresno, CA",
       "distance_mi": 1.1,
-      "est_drive_min": 1.4,
+      "est_drive_min": 1.5,
       "tier": "<=30"
     }
   },
@@ -844,14 +844,14 @@
       "nearest_facility": "UC Davis Children's Hospital",
       "facility_city": "Sacramento, CA",
       "distance_mi": 2.6,
-      "est_drive_min": 3.6,
+      "est_drive_min": 3.5,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "UC Davis Medical Center",
       "facility_city": "Sacramento, CA",
       "distance_mi": 2.6,
-      "est_drive_min": 3.6,
+      "est_drive_min": 3.5,
       "tier": "<=30"
     }
   },
@@ -933,14 +933,14 @@
       "nearest_facility": "Children's Nebraska",
       "facility_city": "Omaha, NE",
       "distance_mi": 2.5,
-      "est_drive_min": 3.3,
+      "est_drive_min": 3.4,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Nebraska",
       "facility_city": "Omaha, NE",
       "distance_mi": 2.5,
-      "est_drive_min": 3.3,
+      "est_drive_min": 3.4,
       "tier": "<=30"
     },
     "general": {
@@ -957,14 +957,14 @@
       "nearest_facility": "Children's Hospital Colorado",
       "facility_city": "Aurora, CO",
       "distance_mi": 63.2,
-      "est_drive_min": 86.1,
+      "est_drive_min": 86.2,
       "tier": "<=120"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Hospital Colorado",
       "facility_city": "Aurora, CO",
       "distance_mi": 63.2,
-      "est_drive_min": 86.1,
+      "est_drive_min": 86.2,
       "tier": "<=120"
     },
     "general": {
@@ -1029,7 +1029,7 @@
       "nearest_facility": "Children's National Hospital",
       "facility_city": "Washington, DC",
       "distance_mi": 154.1,
-      "est_drive_min": 210.2,
+      "est_drive_min": 210.1,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -1077,14 +1077,14 @@
       "nearest_facility": "UCSF Benioff Children's Hospital",
       "facility_city": "San Francisco, CA",
       "distance_mi": 10.6,
-      "est_drive_min": 14.4,
+      "est_drive_min": 14.5,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "UCSF Benioff Children's Hospital",
       "facility_city": "San Francisco, CA",
       "distance_mi": 10.6,
-      "est_drive_min": 14.4,
+      "est_drive_min": 14.5,
       "tier": "<=30"
     },
     "general": {
@@ -1101,14 +1101,14 @@
       "nearest_facility": "Children's Minnesota",
       "facility_city": "Minneapolis, MN",
       "distance_mi": 1.8,
-      "est_drive_min": 2.4,
+      "est_drive_min": 2.5,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Minnesota",
       "facility_city": "Minneapolis, MN",
       "distance_mi": 1.8,
-      "est_drive_min": 2.4,
+      "est_drive_min": 2.5,
       "tier": "<=30"
     },
     "general": {
@@ -1125,7 +1125,7 @@
       "nearest_facility": "Children's Mercy Kansas City",
       "facility_city": "Kansas City, MO",
       "distance_mi": 216.8,
-      "est_drive_min": 295.7,
+      "est_drive_min": 295.6,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -1139,7 +1139,7 @@
       "nearest_facility": "Saint Francis Hospital",
       "facility_city": "Tulsa, OK",
       "distance_mi": 7.8,
-      "est_drive_min": 10.7,
+      "est_drive_min": 10.6,
       "tier": "<=30"
     }
   },
@@ -1149,21 +1149,21 @@
       "nearest_facility": "UCLA Mattel Children's Hospital",
       "facility_city": "Los Angeles, CA",
       "distance_mi": 95.8,
-      "est_drive_min": 130.7,
+      "est_drive_min": 130.6,
       "tier": "120+"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Hospital Los Angeles",
       "facility_city": "Los Angeles, CA",
       "distance_mi": 97.1,
-      "est_drive_min": 132.5,
+      "est_drive_min": 132.4,
       "tier": "120+"
     },
     "general": {
       "nearest_facility": "Kern Medical Center",
       "facility_city": "Bakersfield, CA",
       "distance_mi": 4.7,
-      "est_drive_min": 6.5,
+      "est_drive_min": 6.4,
       "tier": "<=30"
     }
   },
@@ -1187,7 +1187,7 @@
       "nearest_facility": "Ascension Via Christi St. Francis",
       "facility_city": "Wichita, KS",
       "distance_mi": 0.6,
-      "est_drive_min": 0.9,
+      "est_drive_min": 0.8,
       "tier": "<=30"
     }
   },
@@ -1221,21 +1221,21 @@
       "nearest_facility": "Children's Hospital Colorado",
       "facility_city": "Aurora, CO",
       "distance_mi": 1.1,
-      "est_drive_min": 1.4,
+      "est_drive_min": 1.5,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Hospital Colorado",
       "facility_city": "Aurora, CO",
       "distance_mi": 1.1,
-      "est_drive_min": 1.4,
+      "est_drive_min": 1.5,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "UCHealth University of Colorado Hospital",
       "facility_city": "Aurora, CO",
       "distance_mi": 1.1,
-      "est_drive_min": 1.4,
+      "est_drive_min": 1.5,
       "tier": "<=30"
     }
   },
@@ -1245,21 +1245,21 @@
       "nearest_facility": "Johns Hopkins All Children's Hospital",
       "facility_city": "St. Petersburg, FL",
       "distance_mi": 16.8,
-      "est_drive_min": 22.8,
+      "est_drive_min": 22.9,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Johns Hopkins All Children's Hospital",
       "facility_city": "St. Petersburg, FL",
       "distance_mi": 16.8,
-      "est_drive_min": 22.8,
+      "est_drive_min": 22.9,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Tampa General Hospital",
       "facility_city": "Tampa, FL",
       "distance_mi": 0.8,
-      "est_drive_min": 1.0,
+      "est_drive_min": 1.1,
       "tier": "<=30"
     }
   },
@@ -1316,15 +1316,15 @@
     "pediatric_cardiac": {
       "nearest_facility": "UCSF Benioff Children's Hospital",
       "facility_city": "San Francisco, CA",
-      "distance_mi": 2392.4,
-      "est_drive_min": 3262.4,
+      "distance_mi": 2392.5,
+      "est_drive_min": 3262.5,
       "tier": "120+"
     },
     "pediatric_specialty": {
       "nearest_facility": "Kapiolani Medical Center for Women & Children",
       "facility_city": "Honolulu, HI",
       "distance_mi": 2.2,
-      "est_drive_min": 2.9,
+      "est_drive_min": 3.0,
       "tier": "<=30"
     },
     "general": {
@@ -1341,21 +1341,21 @@
       "nearest_facility": "Children's Hospital of Orange County (CHOC)",
       "facility_city": "Orange, CA",
       "distance_mi": 4.4,
-      "est_drive_min": 5.9,
+      "est_drive_min": 6.0,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Hospital of Orange County (CHOC)",
       "facility_city": "Orange, CA",
       "distance_mi": 4.4,
-      "est_drive_min": 5.9,
+      "est_drive_min": 6.0,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "UC Irvine Medical Center",
       "facility_city": "Orange, CA",
       "distance_mi": 3.8,
-      "est_drive_min": 5.1,
+      "est_drive_min": 5.2,
       "tier": "<=30"
     }
   },
@@ -1372,14 +1372,14 @@
       "nearest_facility": "Kentucky Children's Hospital (UK)",
       "facility_city": "Lexington, KY",
       "distance_mi": 0.8,
-      "est_drive_min": 1.0,
+      "est_drive_min": 1.1,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "UK Albert B. Chandler Hospital",
       "facility_city": "Lexington, KY",
       "distance_mi": 0.8,
-      "est_drive_min": 1.0,
+      "est_drive_min": 1.1,
       "tier": "<=30"
     }
   },
@@ -1427,7 +1427,7 @@
       "nearest_facility": "CHRISTUS Spohn Hospital Corpus Christi",
       "facility_city": "Corpus Christi, TX",
       "distance_mi": 2.2,
-      "est_drive_min": 2.9,
+      "est_drive_min": 3.0,
       "tier": "<=30"
     }
   },
@@ -1444,14 +1444,14 @@
       "nearest_facility": "Sunrise Children's Hospital",
       "facility_city": "Las Vegas, NV",
       "distance_mi": 9.5,
-      "est_drive_min": 12.9,
+      "est_drive_min": 13.0,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "University Medical Center of Southern Nevada",
       "facility_city": "Las Vegas, NV",
       "distance_mi": 13.2,
-      "est_drive_min": 17.9,
+      "est_drive_min": 18.0,
       "tier": "<=30"
     }
   },
@@ -1489,17 +1489,17 @@
       "tier": "<=30"
     },
     "pediatric_specialty": {
-      "nearest_facility": "Children's Hospital of Philadelphia (CHOP)",
-      "facility_city": "Philadelphia, PA",
-      "distance_mi": 76.8,
-      "est_drive_min": 104.7,
-      "tier": "<=120"
+      "nearest_facility": "NewYork-Presbyterian Morgan Stanley Children's Hospital (Columbia)",
+      "facility_city": "New York, NY",
+      "distance_mi": 13.8,
+      "est_drive_min": 18.8,
+      "tier": "<=30"
     },
     "general": {
       "nearest_facility": "University Hospital",
       "facility_city": "Newark, NJ",
       "distance_mi": 1.5,
-      "est_drive_min": 2.1,
+      "est_drive_min": 2.0,
       "tier": "<=30"
     }
   },
@@ -1516,14 +1516,14 @@
       "nearest_facility": "Children's Minnesota",
       "facility_city": "Minneapolis, MN",
       "distance_mi": 8.5,
-      "est_drive_min": 11.5,
+      "est_drive_min": 11.6,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Regions Hospital",
       "facility_city": "Saint Paul, MN",
       "distance_mi": 0.4,
-      "est_drive_min": 0.6,
+      "est_drive_min": 0.5,
       "tier": "<=30"
     }
   },
@@ -1533,21 +1533,21 @@
       "nearest_facility": "Children's Hospital of Orange County (CHOC)",
       "facility_city": "Orange, CA",
       "distance_mi": 2.6,
-      "est_drive_min": 3.6,
+      "est_drive_min": 3.5,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Hospital of Orange County (CHOC)",
       "facility_city": "Orange, CA",
       "distance_mi": 2.6,
-      "est_drive_min": 3.6,
+      "est_drive_min": 3.5,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "UC Irvine Medical Center",
       "facility_city": "Orange, CA",
       "distance_mi": 2.9,
-      "est_drive_min": 3.9,
+      "est_drive_min": 4.0,
       "tier": "<=30"
     }
   },
@@ -1605,21 +1605,21 @@
       "nearest_facility": "Nemours Children's Hospital, Florida",
       "facility_city": "Orlando, FL",
       "distance_mi": 13.6,
-      "est_drive_min": 18.6,
+      "est_drive_min": 18.5,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Nemours Children's Hospital, Florida",
       "facility_city": "Orlando, FL",
       "distance_mi": 13.6,
-      "est_drive_min": 18.6,
+      "est_drive_min": 18.5,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Orlando Health ORMC",
       "facility_city": "Orlando, FL",
       "distance_mi": 1.0,
-      "est_drive_min": 1.3,
+      "est_drive_min": 1.4,
       "tier": "<=30"
     }
   },
@@ -1653,15 +1653,15 @@
       "nearest_facility": "SSM Health Cardinal Glennon Children's",
       "facility_city": "St. Louis, MO",
       "distance_mi": 2.3,
-      "est_drive_min": 3.2,
+      "est_drive_min": 3.1,
       "tier": "<=30"
     },
     "pediatric_specialty": {
-      "nearest_facility": "University of Iowa Stead Family Children's Hospital",
-      "facility_city": "Iowa City, IA",
-      "distance_mi": 221.2,
-      "est_drive_min": 301.6,
-      "tier": "120+"
+      "nearest_facility": "SSM Health Cardinal Glennon Children's",
+      "facility_city": "St. Louis, MO",
+      "distance_mi": 2.3,
+      "est_drive_min": 3.1,
+      "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Barnes-Jewish Hospital",
@@ -1701,15 +1701,15 @@
       "nearest_facility": "NewYork-Presbyterian Morgan Stanley Children's Hospital (Columbia)",
       "facility_city": "New York, NY",
       "distance_mi": 10.5,
-      "est_drive_min": 14.4,
+      "est_drive_min": 14.3,
       "tier": "<=30"
     },
     "pediatric_specialty": {
-      "nearest_facility": "Children's Hospital of Philadelphia (CHOP)",
-      "facility_city": "Philadelphia, PA",
-      "distance_mi": 79.7,
-      "est_drive_min": 108.7,
-      "tier": "<=120"
+      "nearest_facility": "NewYork-Presbyterian Morgan Stanley Children's Hospital (Columbia)",
+      "facility_city": "New York, NY",
+      "distance_mi": 10.5,
+      "est_drive_min": 14.3,
+      "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Bellevue Hospital Center",
@@ -1773,14 +1773,14 @@
       "nearest_facility": "Children's Health / Children's Medical Center Dallas (UT Southwestern)",
       "facility_city": "Dallas, TX",
       "distance_mi": 16.5,
-      "est_drive_min": 22.4,
+      "est_drive_min": 22.5,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Medical Center Dallas",
       "facility_city": "Dallas, TX",
       "distance_mi": 16.5,
-      "est_drive_min": 22.4,
+      "est_drive_min": 22.5,
       "tier": "<=30"
     },
     "general": {
@@ -1821,21 +1821,21 @@
       "nearest_facility": "Oishei Children's Hospital",
       "facility_city": "Buffalo, NY",
       "distance_mi": 0.7,
-      "est_drive_min": 0.9,
+      "est_drive_min": 1.0,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Oishei Children's Hospital",
       "facility_city": "Buffalo, NY",
       "distance_mi": 0.7,
-      "est_drive_min": 0.9,
+      "est_drive_min": 1.0,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "University Hospitals Cleveland Medical Center",
       "facility_city": "Cleveland, OH",
       "distance_mi": 169.1,
-      "est_drive_min": 230.7,
+      "est_drive_min": 230.6,
       "tier": "120+"
     }
   },
@@ -1883,7 +1883,7 @@
       "nearest_facility": "UC San Diego Medical Center",
       "facility_city": "San Diego, CA",
       "distance_mi": 9.5,
-      "est_drive_min": 12.9,
+      "est_drive_min": 13.0,
       "tier": "<=30"
     }
   },
@@ -1979,7 +1979,7 @@
       "nearest_facility": "Renown Regional Medical Center",
       "facility_city": "Reno, NV",
       "distance_mi": 1.4,
-      "est_drive_min": 2.0,
+      "est_drive_min": 1.9,
       "tier": "<=30"
     }
   },
@@ -2003,7 +2003,7 @@
       "nearest_facility": "Parkview Regional Medical Center",
       "facility_city": "Fort Wayne, IN",
       "distance_mi": 2.6,
-      "est_drive_min": 3.6,
+      "est_drive_min": 3.5,
       "tier": "<=30"
     }
   },
@@ -2027,7 +2027,7 @@
       "nearest_facility": "University Medical Center of Southern Nevada",
       "facility_city": "Las Vegas, NV",
       "distance_mi": 3.9,
-      "est_drive_min": 5.4,
+      "est_drive_min": 5.3,
       "tier": "<=30"
     }
   },
@@ -2051,7 +2051,7 @@
       "nearest_facility": "Tampa General Hospital",
       "facility_city": "Tampa, FL",
       "distance_mi": 16.1,
-      "est_drive_min": 21.9,
+      "est_drive_min": 22.0,
       "tier": "<=30"
     }
   },
@@ -2075,7 +2075,7 @@
       "nearest_facility": "University Medical Center (Lubbock)",
       "facility_city": "Lubbock, TX",
       "distance_mi": 2.3,
-      "est_drive_min": 3.2,
+      "est_drive_min": 3.1,
       "tier": "<=30"
     }
   },
@@ -2099,7 +2099,7 @@
       "nearest_facility": "Parkland Memorial Hospital",
       "facility_city": "Dallas, TX",
       "distance_mi": 6.4,
-      "est_drive_min": 8.8,
+      "est_drive_min": 8.7,
       "tier": "<=30"
     }
   },
@@ -2109,7 +2109,7 @@
       "nearest_facility": "Dell Children's Medical Center",
       "facility_city": "Austin, TX",
       "distance_mi": 222.2,
-      "est_drive_min": 302.9,
+      "est_drive_min": 303.0,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -2157,7 +2157,7 @@
       "nearest_facility": "Children's National Hospital",
       "facility_city": "Washington, DC",
       "distance_mi": 154.1,
-      "est_drive_min": 210.2,
+      "est_drive_min": 210.1,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -2205,14 +2205,14 @@
       "nearest_facility": "Phoenix Children's Hospital",
       "facility_city": "Phoenix, AZ",
       "distance_mi": 7.9,
-      "est_drive_min": 10.7,
+      "est_drive_min": 10.8,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Phoenix Children's Hospital",
       "facility_city": "Phoenix, AZ",
       "distance_mi": 7.9,
-      "est_drive_min": 10.7,
+      "est_drive_min": 10.8,
       "tier": "<=30"
     },
     "general": {
@@ -2277,14 +2277,14 @@
       "nearest_facility": "Children's Health / Children's Medical Center Dallas (UT Southwestern)",
       "facility_city": "Dallas, TX",
       "distance_mi": 13.3,
-      "est_drive_min": 18.2,
+      "est_drive_min": 18.1,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Medical Center Dallas",
       "facility_city": "Dallas, TX",
       "distance_mi": 13.3,
-      "est_drive_min": 18.2,
+      "est_drive_min": 18.1,
       "tier": "<=30"
     },
     "general": {
@@ -2301,14 +2301,14 @@
       "nearest_facility": "Nicklaus Children's Hospital",
       "facility_city": "Miami, FL",
       "distance_mi": 8.8,
-      "est_drive_min": 12.1,
+      "est_drive_min": 12.0,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Nicklaus Children's Hospital",
       "facility_city": "Miami, FL",
       "distance_mi": 8.8,
-      "est_drive_min": 12.1,
+      "est_drive_min": 12.0,
       "tier": "<=30"
     },
     "general": {
@@ -2349,14 +2349,14 @@
       "nearest_facility": "Seattle Children's Hospital",
       "facility_city": "Seattle, WA",
       "distance_mi": 225.8,
-      "est_drive_min": 307.8,
+      "est_drive_min": 307.9,
       "tier": "120+"
     },
     "pediatric_specialty": {
       "nearest_facility": "Montana Children's (Community Medical Center)",
       "facility_city": "Missoula, MT",
       "distance_mi": 169.5,
-      "est_drive_min": 231.2,
+      "est_drive_min": 231.1,
       "tier": "120+"
     },
     "general": {
@@ -2435,7 +2435,7 @@
       "nearest_facility": "Arrowhead Regional Medical Center",
       "facility_city": "Colton, CA",
       "distance_mi": 3.9,
-      "est_drive_min": 5.4,
+      "est_drive_min": 5.3,
       "tier": "<=30"
     }
   },
@@ -2445,14 +2445,14 @@
       "nearest_facility": "Lucile Packard Children's Hospital Stanford",
       "facility_city": "Palo Alto, CA",
       "distance_mi": 66.1,
-      "est_drive_min": 90.2,
+      "est_drive_min": 90.1,
       "tier": "<=120"
     },
     "pediatric_specialty": {
       "nearest_facility": "Lucile Packard Children's Hospital Stanford",
       "facility_city": "Palo Alto, CA",
       "distance_mi": 66.1,
-      "est_drive_min": 90.2,
+      "est_drive_min": 90.1,
       "tier": "<=120"
     },
     "general": {
@@ -2469,21 +2469,21 @@
       "nearest_facility": "Loma Linda University Children's Hospital",
       "facility_city": "Loma Linda, CA",
       "distance_mi": 10.6,
-      "est_drive_min": 14.4,
+      "est_drive_min": 14.5,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Loma Linda University Children's Hospital",
       "facility_city": "Loma Linda, CA",
       "distance_mi": 10.6,
-      "est_drive_min": 14.4,
+      "est_drive_min": 14.5,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Arrowhead Regional Medical Center",
       "facility_city": "Colton, CA",
       "distance_mi": 5.9,
-      "est_drive_min": 8.1,
+      "est_drive_min": 8.0,
       "tier": "<=30"
     }
   },
@@ -2531,7 +2531,7 @@
       "nearest_facility": "Riverside University Health System Medical Center",
       "facility_city": "Moreno Valley, CA",
       "distance_mi": 3.1,
-      "est_drive_min": 4.3,
+      "est_drive_min": 4.2,
       "tier": "<=30"
     }
   },
@@ -2579,7 +2579,7 @@
       "nearest_facility": "Cape Fear Valley Medical Center",
       "facility_city": "Fayetteville, NC",
       "distance_mi": 0.1,
-      "est_drive_min": 0.2,
+      "est_drive_min": 0.1,
       "tier": "<=30"
     }
   },
@@ -2589,21 +2589,21 @@
       "nearest_facility": "Children's of Alabama",
       "facility_city": "Birmingham, AL",
       "distance_mi": 0.9,
-      "est_drive_min": 1.3,
+      "est_drive_min": 1.2,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's of Alabama",
       "facility_city": "Birmingham, AL",
       "distance_mi": 0.9,
-      "est_drive_min": 1.3,
+      "est_drive_min": 1.2,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "UAB Hospital",
       "facility_city": "Birmingham, AL",
       "distance_mi": 1.0,
-      "est_drive_min": 1.3,
+      "est_drive_min": 1.4,
       "tier": "<=30"
     }
   },
@@ -2613,7 +2613,7 @@
       "nearest_facility": "UCLA Mattel Children's Hospital",
       "facility_city": "Los Angeles, CA",
       "distance_mi": 43.0,
-      "est_drive_min": 58.7,
+      "est_drive_min": 58.6,
       "tier": "<=60"
     },
     "pediatric_specialty": {
@@ -2627,7 +2627,7 @@
       "nearest_facility": "Ventura County Medical Center",
       "facility_city": "Ventura, CA",
       "distance_mi": 6.5,
-      "est_drive_min": 8.8,
+      "est_drive_min": 8.9,
       "tier": "<=30"
     }
   },
@@ -2637,14 +2637,14 @@
       "nearest_facility": "Golisano Children's Hospital (URMC)",
       "facility_city": "Rochester, NY",
       "distance_mi": 2.8,
-      "est_drive_min": 3.9,
+      "est_drive_min": 3.8,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Golisano Children's Hospital (URMC)",
       "facility_city": "Rochester, NY",
       "distance_mi": 2.8,
-      "est_drive_min": 3.9,
+      "est_drive_min": 3.8,
       "tier": "<=30"
     },
     "general": {
@@ -2661,21 +2661,21 @@
       "nearest_facility": "Joe DiMaggio Children's Hospital",
       "facility_city": "Hollywood, FL",
       "distance_mi": 87.9,
-      "est_drive_min": 119.8,
+      "est_drive_min": 119.9,
       "tier": "<=120"
     },
     "pediatric_specialty": {
       "nearest_facility": "Joe DiMaggio Children's Hospital",
       "facility_city": "Hollywood, FL",
       "distance_mi": 87.9,
-      "est_drive_min": 119.8,
+      "est_drive_min": 119.9,
       "tier": "<=120"
     },
     "general": {
       "nearest_facility": "Cleveland Clinic Tradition Hospital",
       "facility_city": "Port St. Lucie, FL",
       "distance_mi": 2.9,
-      "est_drive_min": 3.9,
+      "est_drive_min": 4.0,
       "tier": "<=30"
     }
   },
@@ -2699,7 +2699,7 @@
       "nearest_facility": "Corewell Health Butterworth Hospital",
       "facility_city": "Grand Rapids, MI",
       "distance_mi": 0.4,
-      "est_drive_min": 0.6,
+      "est_drive_min": 0.5,
       "tier": "<=30"
     }
   },
@@ -2733,21 +2733,21 @@
       "nearest_facility": "Primary Children's Hospital (Intermountain)",
       "facility_city": "Salt Lake City, UT",
       "distance_mi": 2.9,
-      "est_drive_min": 3.9,
+      "est_drive_min": 4.0,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Primary Children's Hospital",
       "facility_city": "Salt Lake City, UT",
       "distance_mi": 2.9,
-      "est_drive_min": 3.9,
+      "est_drive_min": 4.0,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "University of Utah Hospital",
       "facility_city": "Salt Lake City, UT",
       "distance_mi": 2.9,
-      "est_drive_min": 3.9,
+      "est_drive_min": 4.0,
       "tier": "<=30"
     }
   },
@@ -2785,11 +2785,11 @@
       "tier": "<=30"
     },
     "pediatric_specialty": {
-      "nearest_facility": "Connecticut Children's Medical Center",
-      "facility_city": "Hartford, CT",
-      "distance_mi": 85.0,
-      "est_drive_min": 115.8,
-      "tier": "<=120"
+      "nearest_facility": "Children's Hospital at Montefiore",
+      "facility_city": "Bronx, NY",
+      "distance_mi": 3.6,
+      "est_drive_min": 4.9,
+      "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Hackensack University Medical Center",
@@ -2819,7 +2819,7 @@
       "nearest_facility": "Northwest Texas Healthcare System",
       "facility_city": "Amarillo, TX",
       "distance_mi": 4.2,
-      "est_drive_min": 5.8,
+      "est_drive_min": 5.7,
       "tier": "<=30"
     }
   },
@@ -2853,14 +2853,14 @@
       "nearest_facility": "Children's Hospital of Orange County (CHOC)",
       "facility_city": "Orange, CA",
       "distance_mi": 11.7,
-      "est_drive_min": 15.9,
+      "est_drive_min": 16.0,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Hospital of Orange County (CHOC)",
       "facility_city": "Orange, CA",
       "distance_mi": 11.7,
-      "est_drive_min": 15.9,
+      "est_drive_min": 16.0,
       "tier": "<=30"
     },
     "general": {
@@ -2956,14 +2956,14 @@
       "nearest_facility": "Comer Children's Hospital (UChicago)",
       "facility_city": "Chicago, IL",
       "distance_mi": 36.9,
-      "est_drive_min": 50.4,
+      "est_drive_min": 50.3,
       "tier": "<=60"
     },
     "general": {
       "nearest_facility": "Rush University Medical Center",
       "facility_city": "Chicago, IL",
       "distance_mi": 34.4,
-      "est_drive_min": 47.0,
+      "est_drive_min": 46.9,
       "tier": "<=60"
     }
   },
@@ -2997,14 +2997,14 @@
       "nearest_facility": "Arkansas Children's Hospital",
       "facility_city": "Little Rock, AR",
       "distance_mi": 0.8,
-      "est_drive_min": 1.0,
+      "est_drive_min": 1.1,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Arkansas Children's Hospital",
       "facility_city": "Little Rock, AR",
       "distance_mi": 0.8,
-      "est_drive_min": 1.0,
+      "est_drive_min": 1.1,
       "tier": "<=30"
     },
     "general": {
@@ -3045,21 +3045,21 @@
       "nearest_facility": "Children's Healthcare of Atlanta (Arthur M. Blank)",
       "facility_city": "Atlanta, GA",
       "distance_mi": 100.9,
-      "est_drive_min": 137.5,
+      "est_drive_min": 137.6,
       "tier": "120+"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Healthcare of Atlanta",
       "facility_city": "Atlanta, GA",
       "distance_mi": 100.9,
-      "est_drive_min": 137.5,
+      "est_drive_min": 137.6,
       "tier": "120+"
     },
     "general": {
       "nearest_facility": "Piedmont Columbus Regional",
       "facility_city": "Columbus, GA",
       "distance_mi": 2.0,
-      "est_drive_min": 2.8,
+      "est_drive_min": 2.7,
       "tier": "<=30"
     }
   },
@@ -3093,14 +3093,14 @@
       "nearest_facility": "Children's Health / Children's Medical Center Dallas (UT Southwestern)",
       "facility_city": "Dallas, TX",
       "distance_mi": 10.3,
-      "est_drive_min": 14.1,
+      "est_drive_min": 14.0,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Medical Center Dallas",
       "facility_city": "Dallas, TX",
       "distance_mi": 10.3,
-      "est_drive_min": 14.1,
+      "est_drive_min": 14.0,
       "tier": "<=30"
     },
     "general": {
@@ -3117,21 +3117,21 @@
       "nearest_facility": "UF Health Shands Children's Hospital",
       "facility_city": "Gainesville, FL",
       "distance_mi": 128.4,
-      "est_drive_min": 175.0,
+      "est_drive_min": 175.1,
       "tier": "120+"
     },
     "pediatric_specialty": {
-      "nearest_facility": "Wolfson Children's Hospital",
-      "facility_city": "Jacksonville, FL",
-      "distance_mi": 156.5,
-      "est_drive_min": 213.4,
+      "nearest_facility": "UF Health Shands Children's Hospital",
+      "facility_city": "Gainesville, FL",
+      "distance_mi": 128.4,
+      "est_drive_min": 175.1,
       "tier": "120+"
     },
     "general": {
       "nearest_facility": "Tallahassee Memorial HealthCare",
       "facility_city": "Tallahassee, FL",
       "distance_mi": 1.3,
-      "est_drive_min": 1.7,
+      "est_drive_min": 1.8,
       "tier": "<=30"
     }
   },
@@ -3165,7 +3165,7 @@
       "nearest_facility": "Children's Hospital New Orleans",
       "facility_city": "New Orleans, LA",
       "distance_mi": 134.3,
-      "est_drive_min": 183.2,
+      "est_drive_min": 183.1,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -3196,7 +3196,7 @@
       "nearest_facility": "East Tennessee Children's Hospital",
       "facility_city": "Knoxville, TN",
       "distance_mi": 0.4,
-      "est_drive_min": 0.6,
+      "est_drive_min": 0.5,
       "tier": "<=30"
     },
     "general": {
@@ -3213,14 +3213,14 @@
       "nearest_facility": "Arkansas Children's Hospital",
       "facility_city": "Little Rock, AR",
       "distance_mi": 174.2,
-      "est_drive_min": 237.6,
+      "est_drive_min": 237.5,
       "tier": "120+"
     },
     "pediatric_specialty": {
       "nearest_facility": "Arkansas Children's Hospital",
       "facility_city": "Little Rock, AR",
       "distance_mi": 174.2,
-      "est_drive_min": 237.6,
+      "est_drive_min": 237.5,
       "tier": "120+"
     },
     "general": {
@@ -3237,7 +3237,7 @@
       "nearest_facility": "Boston Children's Hospital",
       "facility_city": "Boston, MA",
       "distance_mi": 35.9,
-      "est_drive_min": 48.9,
+      "est_drive_min": 49.0,
       "tier": "<=60"
     },
     "pediatric_specialty": {
@@ -3285,14 +3285,14 @@
       "nearest_facility": "OHSU Doernbecher Children's Hospital",
       "facility_city": "Portland, OR",
       "distance_mi": 9.1,
-      "est_drive_min": 12.5,
+      "est_drive_min": 12.4,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "OHSU Doernbecher Children's Hospital",
       "facility_city": "Portland, OR",
       "distance_mi": 9.1,
-      "est_drive_min": 12.5,
+      "est_drive_min": 12.4,
       "tier": "<=30"
     },
     "general": {
@@ -3309,21 +3309,21 @@
       "nearest_facility": "Sanford Children's Hospital",
       "facility_city": "Sioux Falls, SD",
       "distance_mi": 3.4,
-      "est_drive_min": 4.7,
+      "est_drive_min": 4.6,
       "tier": "<=30"
     },
     "pediatric_specialty": {
       "nearest_facility": "Sanford Children's Hospital",
       "facility_city": "Sioux Falls, SD",
       "distance_mi": 3.4,
-      "est_drive_min": 4.7,
+      "est_drive_min": 4.6,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "Avera McKennan Hospital",
       "facility_city": "Sioux Falls, SD",
       "distance_mi": 2.1,
-      "est_drive_min": 2.8,
+      "est_drive_min": 2.9,
       "tier": "<=30"
     }
   },
@@ -3333,7 +3333,7 @@
       "nearest_facility": "Children's Healthcare of Atlanta (Arthur M. Blank)",
       "facility_city": "Atlanta, GA",
       "distance_mi": 101.6,
-      "est_drive_min": 138.6,
+      "est_drive_min": 138.5,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -3364,7 +3364,7 @@
       "nearest_facility": "Driscoll Children's Hospital",
       "facility_city": "Corpus Christi, TX",
       "distance_mi": 128.4,
-      "est_drive_min": 175.0,
+      "est_drive_min": 175.1,
       "tier": "120+"
     },
     "general": {
@@ -3405,7 +3405,7 @@
       "nearest_facility": "Boston Children's Hospital",
       "facility_city": "Boston, MA",
       "distance_mi": 39.0,
-      "est_drive_min": 53.1,
+      "est_drive_min": 53.2,
       "tier": "<=60"
     },
     "pediatric_specialty": {
@@ -3429,7 +3429,7 @@
       "nearest_facility": "Children's National Hospital",
       "facility_city": "Washington, DC",
       "distance_mi": 129.7,
-      "est_drive_min": 176.8,
+      "est_drive_min": 176.9,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -3525,14 +3525,14 @@
       "nearest_facility": "Rady Children's Hospital",
       "facility_city": "San Diego, CA",
       "distance_mi": 30.8,
-      "est_drive_min": 42.1,
+      "est_drive_min": 42.0,
       "tier": "<=60"
     },
     "pediatric_specialty": {
       "nearest_facility": "Rady Children's Hospital",
       "facility_city": "San Diego, CA",
       "distance_mi": 30.8,
-      "est_drive_min": 42.1,
+      "est_drive_min": 42.0,
       "tier": "<=60"
     },
     "general": {
@@ -3549,21 +3549,21 @@
       "nearest_facility": "UCSF Benioff Children's Hospital",
       "facility_city": "San Francisco, CA",
       "distance_mi": 74.1,
-      "est_drive_min": 101.1,
+      "est_drive_min": 101.0,
       "tier": "<=120"
     },
     "pediatric_specialty": {
       "nearest_facility": "UC Davis Children's Hospital",
       "facility_city": "Sacramento, CA",
       "distance_mi": 11.0,
-      "est_drive_min": 14.9,
+      "est_drive_min": 15.0,
       "tier": "<=30"
     },
     "general": {
       "nearest_facility": "UC Davis Medical Center",
       "facility_city": "Sacramento, CA",
       "distance_mi": 11.0,
-      "est_drive_min": 14.9,
+      "est_drive_min": 15.0,
       "tier": "<=30"
     }
   },
@@ -3621,14 +3621,14 @@
       "nearest_facility": "Children's Hospital Colorado",
       "facility_city": "Aurora, CO",
       "distance_mi": 323.2,
-      "est_drive_min": 440.8,
+      "est_drive_min": 440.7,
       "tier": "120+"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Hospital Colorado",
       "facility_city": "Aurora, CO",
       "distance_mi": 323.2,
-      "est_drive_min": 440.8,
+      "est_drive_min": 440.7,
       "tier": "120+"
     },
     "general": {
@@ -3659,7 +3659,7 @@
       "nearest_facility": "Monument Health Rapid City Hospital",
       "facility_city": "Rapid City, SD",
       "distance_mi": 0.7,
-      "est_drive_min": 0.9,
+      "est_drive_min": 1.0,
       "tier": "<=30"
     }
   },
@@ -3676,14 +3676,14 @@
       "nearest_facility": "University of New Mexico Children's Hospital",
       "facility_city": "Albuquerque, NM",
       "distance_mi": 236.7,
-      "est_drive_min": 322.7,
+      "est_drive_min": 322.8,
       "tier": "120+"
     },
     "general": {
       "nearest_facility": "Mercy Hospital (Durango)",
       "facility_city": "Durango, CO",
       "distance_mi": 93.1,
-      "est_drive_min": 126.9,
+      "est_drive_min": 127.0,
       "tier": "120+"
     }
   },
@@ -3693,14 +3693,14 @@
       "nearest_facility": "Primary Children's Hospital (Intermountain)",
       "facility_city": "Salt Lake City, UT",
       "distance_mi": 240.8,
-      "est_drive_min": 328.3,
+      "est_drive_min": 328.4,
       "tier": "120+"
     },
     "pediatric_specialty": {
       "nearest_facility": "Primary Children's Hospital",
       "facility_city": "Salt Lake City, UT",
       "distance_mi": 240.8,
-      "est_drive_min": 328.3,
+      "est_drive_min": 328.4,
       "tier": "120+"
     },
     "general": {
@@ -3717,7 +3717,7 @@
       "nearest_facility": "Children's Hospital Colorado",
       "facility_city": "Aurora, CO",
       "distance_mi": 236.7,
-      "est_drive_min": 322.7,
+      "est_drive_min": 322.8,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -3731,7 +3731,7 @@
       "nearest_facility": "Mercy Hospital (Durango)",
       "facility_city": "Durango, CO",
       "distance_mi": 3.5,
-      "est_drive_min": 4.7,
+      "est_drive_min": 4.8,
       "tier": "<=30"
     }
   },
@@ -3741,14 +3741,14 @@
       "nearest_facility": "Phoenix Children's Hospital",
       "facility_city": "Phoenix, AZ",
       "distance_mi": 121.1,
-      "est_drive_min": 165.2,
+      "est_drive_min": 165.1,
       "tier": "120+"
     },
     "pediatric_specialty": {
       "nearest_facility": "Phoenix Children's Hospital",
       "facility_city": "Phoenix, AZ",
       "distance_mi": 121.1,
-      "est_drive_min": 165.2,
+      "est_drive_min": 165.1,
       "tier": "120+"
     },
     "general": {
@@ -3772,7 +3772,7 @@
       "nearest_facility": "University of New Mexico Children's Hospital",
       "facility_city": "Albuquerque, NM",
       "distance_mi": 109.0,
-      "est_drive_min": 148.7,
+      "est_drive_min": 148.6,
       "tier": "120+"
     },
     "general": {
@@ -3803,7 +3803,7 @@
       "nearest_facility": "Christus St. Vincent Regional Medical Center",
       "facility_city": "Santa Fe, NM",
       "distance_mi": 2.1,
-      "est_drive_min": 2.8,
+      "est_drive_min": 2.9,
       "tier": "<=30"
     }
   },
@@ -3813,7 +3813,7 @@
       "nearest_facility": "Children's Hospital Colorado",
       "facility_city": "Aurora, CO",
       "distance_mi": 278.6,
-      "est_drive_min": 380.0,
+      "est_drive_min": 379.9,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -3861,7 +3861,7 @@
       "nearest_facility": "Primary Children's Hospital (Intermountain)",
       "facility_city": "Salt Lake City, UT",
       "distance_mi": 385.2,
-      "est_drive_min": 525.2,
+      "est_drive_min": 525.3,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -3885,7 +3885,7 @@
       "nearest_facility": "Seattle Children's Hospital",
       "facility_city": "Seattle, WA",
       "distance_mi": 370.7,
-      "est_drive_min": 505.6,
+      "est_drive_min": 505.5,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -3909,14 +3909,14 @@
       "nearest_facility": "Children's Health / Children's Medical Center Dallas (UT Southwestern)",
       "facility_city": "Dallas, TX",
       "distance_mi": 54.7,
-      "est_drive_min": 74.7,
+      "est_drive_min": 74.6,
       "tier": "<=120"
     },
     "pediatric_specialty": {
       "nearest_facility": "Children's Medical Center Dallas",
       "facility_city": "Dallas, TX",
       "distance_mi": 54.7,
-      "est_drive_min": 74.7,
+      "est_drive_min": 74.6,
       "tier": "<=120"
     },
     "general": {
@@ -3940,14 +3940,14 @@
       "nearest_facility": "Montana Children's (Community Medical Center)",
       "facility_city": "Missoula, MT",
       "distance_mi": 153.4,
-      "est_drive_min": 209.1,
+      "est_drive_min": 209.2,
       "tier": "120+"
     },
     "general": {
       "nearest_facility": "Bonner General Health",
       "facility_city": "Sandpoint, ID",
       "distance_mi": 0.1,
-      "est_drive_min": 0.2,
+      "est_drive_min": 0.1,
       "tier": "<=30"
     }
   },
@@ -3957,7 +3957,7 @@
       "nearest_facility": "Levine Children's Hospital (Atrium Health)",
       "facility_city": "Charlotte, NC",
       "distance_mi": 100.3,
-      "est_drive_min": 136.7,
+      "est_drive_min": 136.8,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -3971,7 +3971,7 @@
       "nearest_facility": "Mission Hospital",
       "facility_city": "Asheville, NC",
       "distance_mi": 1.9,
-      "est_drive_min": 2.5,
+      "est_drive_min": 2.6,
       "tier": "<=30"
     }
   },
@@ -3981,7 +3981,7 @@
       "nearest_facility": "Primary Children's Hospital (Intermountain)",
       "facility_city": "Salt Lake City, UT",
       "distance_mi": 297.6,
-      "est_drive_min": 405.9,
+      "est_drive_min": 405.8,
       "tier": "120+"
     },
     "pediatric_specialty": {
@@ -4036,14 +4036,14 @@
       "nearest_facility": "El Paso Children's Hospital",
       "facility_city": "El Paso, TX",
       "distance_mi": 140.8,
-      "est_drive_min": 191.9,
+      "est_drive_min": 192.0,
       "tier": "120+"
     },
     "general": {
       "nearest_facility": "Carlsbad Medical Center",
       "facility_city": "Carlsbad, NM",
       "distance_mi": 1.6,
-      "est_drive_min": 2.1,
+      "est_drive_min": 2.2,
       "tier": "<=30"
     }
   }
