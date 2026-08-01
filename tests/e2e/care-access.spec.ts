@@ -27,6 +27,9 @@ test("care access map loads, switches layers, and shows city detail on click", a
 test("care access map links back to the allergy map", async ({ page }) => {
   await page.goto("/care-access");
   await page.getByRole("link", { name: "Allergy map" }).click();
-  await expect(page).toHaveURL(/\/$/);
+  // Note: not asserting the exact URL here -- MapView's own URL write-back
+  // effect appends its compact `?s=` state param right after hydration, so
+  // asserting a bare "/" is a real race (passed locally, failed in CI).
   await expect(page.getByRole("heading", { name: "Allergy Locator" })).toBeVisible();
+  expect(new URL(page.url()).pathname).toBe("/");
 });
