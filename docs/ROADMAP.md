@@ -27,6 +27,14 @@ composites that overlay them so anyone can decide where to live. Open source, US
 - **Keep it honest with current comps.** Score off LIVE data, never memory or nostalgia — prices move
   (Austin's rents fell since it was framed). Always include the **"stay put" option** as a real comp
   so *leaving* has to earn it, rather than being assumed.
+- **Per-dimension year/date vintage picker (explicit user direction, 2026-08-01).** Every dimension
+  should eventually let you pick a year/date and load THAT vintage of its data, not just "current" —
+  the allergy tool already does exactly this for season/day (`TimeframeControl`, `YearPlayback`,
+  Trip Planner); the same pattern generalizes to every other facet (e.g. "crime rates in 2019" vs
+  "crime rates now," or a cost dimension's rent comps a specific year back). Default/initial focus
+  stays current + recent per facet (deep multi-decade history isn't the v1 bar for a new dimension),
+  but the engine and each dataset's schema should leave room to expand backward per-facet over time,
+  not be redesigned later to add it.
 - **Gradients, not buckets.** Every overlay is a continuous **heatmap** on granular (county/raster)
   data with visible confidence — never state fills or lone city dots. Intra-state spread is the whole
   problem (NYC $5k/mo ≠ Rochester $2k/mo). Interpolate where data is sparse, but *show* it's a guess.
@@ -145,6 +153,17 @@ insurance + higher tax? And are single parents penalized worse than two-parent h
 - **Framing:** illustrative/systemic content ("the system punishes the striving single parent"),
   NOT the user's personal path (he's high-income). Ties to the numbers-and-agendas thread.
 
+### 13. Crime & safety
+Neighborhood-level safety, not a single scary city-wide headline number (crime concentrates in
+pockets; a "bad" city can have plenty of safe neighborhoods and vice versa).
+- **Data:** FBI Crime Data Explorer / NIBRS (free, federal, open) for city/county-level rates;
+  individual city open-data portals for finer neighborhood-level incident data where published.
+  Explicitly avoiding paid/proprietary crime-score vendors (e.g. NeighborhoodScout, CrimeGrade) —
+  consistent with this project's open-data-only, zero-cost posture.
+- **Known soft spot:** reporting practices and what counts as a given offense vary by
+  jurisdiction — a transparent, documented limitation like every other dimension here, not
+  smoothed over.
+
 ### + International companion
 Rough climate-logic + chat only (Mediterranean summers dry = low grass; olive/cypress = his
 negatives; tropics = year-round). Broken out from the US tool; commentary, not a scored product.
@@ -179,6 +198,15 @@ must not box out the next.**
 - **Phase 4 — Composite + controls.** Weighted **phase-blend** of overlays, user weight **sliders**,
   community ground-truth submission + weight proposals. The decision funnel (quality → cost late →
   nails last) runs here.
+- **Phase 5 — AI chat / natural-language search (explicit user direction, 2026-08-01; not started).**
+  "Use AI chat to find the ideal place" once Phase 4's composite exists — describe what you want in
+  plain language ("low allergies, low crime, decent healthcare, under $X/mo") and get a ranked
+  shortlist back. Should build on what's already shipped rather than invent a new mechanism: the
+  agent-friendly plain-URL control surface (`parseHumanState` in the allergy tool, v2 of
+  `.pHive/planning/roadmap.md`) and the BYO-key, zero-project-cost LLM pattern already proven for
+  panel-upload extraction. A chat feature that reads the current multi-layer map state and
+  constructs/interprets URLs is the natural fit — keeps this $0/static, no project-held key,
+  consistent with every architecture decision so far.
 
 **Cross-cutting requirements (EVERY phase & dimension):** transparent decomposable scoring +
 methodology doc · user-adjustable & community-tweakable weights · gradients-not-buckets (county/raster,
@@ -229,4 +257,6 @@ Tools live under **mdostal.com** (the allergy tool is building now via `hive exe
 | 10 | Family & community life | — | — | — | queued |
 | 11 | Context & wellbeing stats | — | — | — | queued |
 | 12 | Single-parent economics / benefits cliff | — | — | — | queued (analysis, not map) |
+| 13 | Crime & safety | — | — | — | queued |
 | + | Composite overlay | — | — | — | queued (last) |
+| + | AI chat / natural-language search (Phase 5) | — | — | — | queued (after composite) |
