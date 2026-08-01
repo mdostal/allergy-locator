@@ -79,10 +79,48 @@ each visit. Families and couples want to compare or overlay more than one person
 3. **Overlay view** — show two or more profiles' severity on the same map at once (e.g.,
    a composite "best-for-everyone" score, or a split/toggle between individual family
    members) so a family can jointly evaluate a place instead of each running the tool
-   separately. Not yet started — builds on the saved-profiles list above.
+   separately. **Shipped 2026-08-01**: `ProfileCompare` (pick 2+ saved profiles) +
+   three switchable views, per explicit user direction ("allow tabs to view it different
+   ways") rather than picking one default combination —
+   - **Worst-case (max)**: `ProfileOverlayMap` blends via `Math.max` across profiles
+     at each point (`lib/severity/combine-profiles.ts`).
+   - **Noisy-OR across people**: same file, extends the existing within-profile
+     independent-risk compounding (composite.ts) across people instead of allergens.
+   - **Side-by-side**: no combination math at all — two independent `CompositeMap`
+     instances, capped to the first 2 selected profiles (a 3rd disables this tab).
 
 **Depends on:** v1's app-state model (already clean/serializable from v1's agent-
 controllable-surface work) extended to hold a collection of profiles instead of one.
+
+## v4 — Accounts + long-term historical profile tracking (future, explicitly requested, not started)
+**Problem it solves:** v3's saved profiles and upload history (`lib/profiles.ts`,
+`lib/panel-history.ts`) are real but browser-local only — clearing browser data loses
+everything, and there's no way to see "how has this person's allergies changed over
+YEARS" beyond whatever fits in one browser's localStorage. Explicit user direction
+(2026-08-01): "we may as well start prefacing it all to be able to be saved and have
+the full profile for a user -- if we get it further along, we'll add login and allow a
+user to save and load and upload profile info over time and see how it goes and is
+affecting them and even historicals so it may have been better some years vs another."
+
+**Approach (directional only — not yet designed in detail):**
+1. Optional login/accounts — a genuine reversal of every prior version's deliberate
+   "no accounts, ever" posture (see below), and a real one-way-door decision (auth
+   provider, where account data lives, whether it changes the $0/static-hosting
+   posture) that needs its own real scoping discussion when actually picked up, not
+   assumed here.
+2. Full profile save/load/upload/export tied to an account instead of one browser's
+   localStorage. v3's `SavedProfile`/`PanelSnapshot` shapes are the intended data
+   model to migrate INTO an account-backed store, not thrown away and rebuilt.
+3. True long-term historical tracking across years (not just the handful of
+   upload-driven snapshots `AllergyHistoryChart` shows today) — e.g. "was last spring
+   worse than this one" year-over-year comparisons.
+
+**Explicitly deferred, not started.** Revisit once v3's client-only profile/compare
+features are proven out. **Supersedes** the blanket "no accounts, login, or backend
+database at any version" line that used to live under "Explicitly not on this
+roadmap" below — the user has now directly requested this as a real future direction,
+so it moves here instead of staying in the "never" list. Everything through v3 still
+ships and works with zero accounts; this is additive, optional future scope.
 
 ## Superseded by later work (kept here for history, not current)
 - **County/ZIP-level resolution** — was listed below as explicitly out of scope
@@ -100,8 +138,9 @@ controllable-surface work) extended to hold a collection of profiles instead of 
   at the project's $0 posture; the climatological daily-normals-driven forecast above
   and the existing optional Google-Pollen "current conditions" toggle are the intended
   ceiling unless the user decides the cost tradeoff is worth it later.
-- Accounts, login, or a backend database at any version — every version above is
-  explicitly designed to avoid this.
+- (Former entry "accounts, login, or a backend database at any version" — superseded
+  2026-08-01 by v4 above, which the user directly requested. v1-v3 still ship and work
+  with zero accounts regardless.)
 
 ## Tooling readiness note
 v1 includes a dedicated "tooling & skill readiness" slice (Slice 0) that enables the
