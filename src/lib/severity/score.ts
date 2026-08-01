@@ -36,11 +36,14 @@ function tierForValue(value: number): SeverityTier {
  * returns the unmodified annual score exactly as before. Provided, the annual
  * score is treated as that allergen's PEAK-season severity for the city's
  * climate zone and scaled down for other months via lib/severity/season.ts.
+ * `seasonStrength` (Advanced mode, lib/model-settings.ts) passes through to
+ * that same curve unchanged when omitted.
  */
 export function getSeverity(
   allergenId: string,
   cityId: string,
   month?: number,
+  seasonStrength?: number,
 ): SeverityResult | null {
   if (!hasAllergen(allergenId, cityId)) {
     return null;
@@ -51,7 +54,7 @@ export function getSeverity(
     const allergen = getAllergen(allergenId);
     const koppen = koppenIndex.get(cityId);
     if (!allergen || !koppen) return value;
-    const multiplier = seasonMultiplier(allergenId, allergen.category, koppen, month);
+    const multiplier = seasonMultiplier(allergenId, allergen.category, koppen, month, seasonStrength);
     return Math.round(value * multiplier);
   }
 

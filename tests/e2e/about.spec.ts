@@ -20,3 +20,13 @@ test("about page layout toggle switches between layout A and B", async ({ page }
   await page.getByRole("button", { name: "B", exact: true }).click();
   await expect(page.getByRole("navigation", { name: "About sections" })).toBeVisible();
 });
+
+test("methodology tab documents the model's formulas and Advanced mode transparently", async ({
+  page,
+}) => {
+  await page.goto("/about");
+  await page.getByRole("button", { name: "Methodology" }).click();
+  await expect(page.getByRole("heading", { name: /every formula, every source/i })).toBeVisible();
+  await expect(page.getByText(/noisy-OR/i).first()).toBeVisible();
+  await expect(page.getByText(/Advanced mode/i).first()).toBeVisible();
+});

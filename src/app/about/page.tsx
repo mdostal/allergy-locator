@@ -8,7 +8,7 @@ export const metadata = {
 };
 
 export default function AboutPage() {
-  const { aboutV1, aboutV2 } = loadAboutContent();
+  const { aboutV1, aboutV2, methodology } = loadAboutContent();
   const { myStory, whyThisExists, immunotherapy, myAnswer } = loadMyStoryContent();
 
   return (
@@ -25,6 +25,7 @@ export default function AboutPage() {
       <AboutTabs
         aboutV1={aboutV1}
         aboutV2={aboutV2}
+        methodology={methodology}
         myStory={myStory}
         whyThisExists={whyThisExists}
         immunotherapy={immunotherapy}

@@ -3,22 +3,25 @@
 import { useState } from "react";
 import { MyStoryTab } from "@/components/about/MyStoryTab";
 import { ProjectTab } from "@/components/about/ProjectTab";
+import { MarkdownContent } from "@/components/about/MarkdownContent";
 
 interface Props {
   aboutV1: string;
   aboutV2: string;
+  methodology: string;
   myStory: string;
   whyThisExists: string;
   immunotherapy: string;
   myAnswer: string;
 }
 
-type TabId = "my-story" | "project";
+type TabId = "my-story" | "project" | "methodology";
 type LayoutVariant = "a" | "b";
 
 const TABS: { id: TabId; label: string }[] = [
   { id: "my-story", label: "My Story" },
   { id: "project", label: "The Project" },
+  { id: "methodology", label: "Methodology" },
 ];
 
 /**
@@ -33,6 +36,8 @@ export function AboutTabs(props: Props) {
   const content =
     activeTab === "project" ? (
       <ProjectTab aboutV1={props.aboutV1} aboutV2={props.aboutV2} />
+    ) : activeTab === "methodology" ? (
+      <MarkdownContent content={props.methodology} />
     ) : (
       <MyStoryTab
         myStory={props.myStory}

@@ -11,6 +11,7 @@ export function loadAboutContent() {
   return {
     aboutV1: readStoryFile("ABOUT.md"),
     aboutV2: readStoryFile("ABOUT-v2.md"),
+    methodology: readStoryFile("METHODOLOGY.md"),
   };
 }
 

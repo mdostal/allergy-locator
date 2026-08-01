@@ -9,24 +9,19 @@ import { getSeverity } from "@/lib/severity/score";
 import { seasonMultiplier } from "@/lib/severity/season";
 import { COUNTY_POINTS } from "@/lib/geo/county-points";
 import { intensityColor, NO_DATA_COLOR, HEATMAP_MARKER_FILL } from "@/lib/severity/palette";
+import type { ModelSettings } from "@/lib/model-settings";
 
 interface Props {
   active: Set<string>;
   onSelectCity: (cityId: string) => void;
   selectedCityId: string | null;
   month: number | null;
+  settings: ModelSettings;
 }
 
 interface AllergenLayer {
   allergen: AllergenDef;
   points: Array<{ x: number; y: number; value: number }>;
-}
-
-/** Full opacity for a single active allergen (matches the original solid
- * look); partial opacity per layer once 2+ stack, so overlapping severity
- * reads as a visually denser blend instead of one color fully hiding another. */
-function opacityFor(layerCount: number): number {
-  return layerCount <= 1 ? 1 : 0.65;
 }
 
 /**
@@ -42,7 +37,9 @@ function opacityFor(layerCount: number): number {
  * for every active allergen at the selected city is still in
  * StateDetailPanel, unabbreviated.
  */
-export function UsMap({ active, onSelectCity, selectedCityId, month }: Props) {
+export function UsMap({ active, onSelectCity, selectedCityId, month, settings }: Props) {
+  const { seasonStrength, idwPower, layerOpacity } = settings;
+
   const layers = useMemo<AllergenLayer[]>(() => {
     return Array.from(active)
       .map((allergenId): AllergenLayer | null => {
@@ -50,7 +47,7 @@ export function UsMap({ active, onSelectCity, selectedCityId, month }: Props) {
         if (!allergen) return null;
 
         const cityPoints = CITY_POINTS.map((point) => {
-          const severity = getSeverity(allergenId, point.city.id, month ?? undefined);
+          const severity = getSeverity(allergenId, point.city.id, month ?? undefined, seasonStrength);
           return severity ? { x: point.x, y: point.y, value: severity.value } : null;
         }).filter((p): p is { x: number; y: number; value: number } => p !== null);
 
@@ -61,7 +58,7 @@ export function UsMap({ active, onSelectCity, selectedCityId, month }: Props) {
           const raw = point.scores[allergenId];
           if (raw === undefined) return null;
           const value = month
-            ? Math.round(raw * seasonMultiplier(allergenId, allergen.category, point.koppen, month))
+            ? Math.round(raw * seasonMultiplier(allergenId, allergen.category, point.koppen, month, seasonStrength))
             : raw;
           return { x: point.x, y: point.y, value };
         }).filter((p): p is { x: number; y: number; value: number } => p !== null);
@@ -69,7 +66,7 @@ export function UsMap({ active, onSelectCity, selectedCityId, month }: Props) {
         return { allergen, points: [...cityPoints, ...countyPoints] };
       })
       .filter((l): l is AllergenLayer => l !== null);
-  }, [active, month]);
+  }, [active, month, seasonStrength]);
 
   return (
     <BaseSvgMap
@@ -84,7 +81,8 @@ export function UsMap({ active, onSelectCity, selectedCityId, month }: Props) {
                 key={allergen.id}
                 points={points}
                 colorForValue={(value) => intensityColor(allergen.color, value)}
-                opacity={opacityFor(layers.length)}
+                opacity={layers.length <= 1 ? 1 : layerOpacity}
+                power={idwPower}
               />
             ))}
           </>
@@ -98,7 +96,12 @@ export function UsMap({ active, onSelectCity, selectedCityId, month }: Props) {
         const tooltip =
           layers.length === 1
             ? (() => {
-                const severity = getSeverity(layers[0].allergen.id, point.city.id, month ?? undefined);
+                const severity = getSeverity(
+                  layers[0].allergen.id,
+                  point.city.id,
+                  month ?? undefined,
+                  seasonStrength,
+                );
                 return severity ? `${severity.tier} (${severity.value})` : undefined;
               })()
             : `${layers.length} allergens active`;

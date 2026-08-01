@@ -38,6 +38,23 @@ describe("season-position scoring (story s6)", () => {
     expect(tropical).not.toBe(continental);
   });
 
+  it("Advanced mode: seasonStrength 0 flattens the curve to no seasonality at all", () => {
+    // Austin's January multiplier is normally ~0.05 (near-zero); at strength 0
+    // every month must read exactly like the unmodified annual/peak score.
+    expect(seasonMultiplier("grass", "grass", "Cfa", 1, 0)).toBe(1);
+    const flatJanuary = getSeverity("grass", "austin-tx", 1, 0);
+    const annual = getSeverity("grass", "austin-tx");
+    expect(flatJanuary?.value).toBe(annual?.value);
+  });
+
+  it("Advanced mode: seasonStrength between 0 and 1 interpolates linearly", () => {
+    const full = seasonMultiplier("grass", "grass", "Cfa", 1, 1);
+    const half = seasonMultiplier("grass", "grass", "Cfa", 1, 0.5);
+    const none = seasonMultiplier("grass", "grass", "Cfa", 1, 0);
+    expect(none).toBe(1);
+    expect(half).toBeCloseTo((full + none) / 2, 5);
+  });
+
   it("composite score for a month threads through to every contributing allergen", () => {
     const annual = getComposite({ grass: 100 }, "austin-tx");
     const january = getComposite({ grass: 100 }, "austin-tx", 1);
