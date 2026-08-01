@@ -8,29 +8,43 @@ describe("data/daily-season-curves.json integrity (real NOAA daily-normal phenol
     expect(Object.keys(dailyCurves).length).toBe(168);
   });
 
-  it("every one of the 168 cities has exactly 366 days per curve, all values in [0,1]", () => {
-    // Full coverage, not a sample -- a real bug (NOAA's -9999 missing-value
-    // sentinel parsed as a valid float, corrupting the Cladosporium humidity
-    // term) only showed up in specific dry-climate cities, so a partial
-    // slice would have missed it.
-    for (const [cityId, curves] of Object.entries(dailyCurves)) {
-      for (const key of ["grass", "tree", "weed", "cladosporium", "alternaria"] as const) {
-        const curve = curves[key];
-        expect(curve.length, `${cityId}.${key}`).toBe(366);
-        for (const v of curve) {
-          expect(v, `${cityId}.${key}`).toBeGreaterThanOrEqual(0);
-          expect(v, `${cityId}.${key}`).toBeLessThanOrEqual(1);
+  it(
+    "every one of the 168 cities has exactly 366 days per curve, all values in [0,1]",
+    () => {
+      // Full coverage, not a sample -- a real bug (NOAA's -9999 missing-value
+      // sentinel parsed as a valid float, corrupting the Cladosporium humidity
+      // term) only showed up in specific dry-climate cities, so a partial
+      // slice would have missed it. A plain loop + one failure collector
+      // (rather than a chai `expect(...)` call per one of the ~600k values)
+      // keeps this fast enough for CI's slower runners while still checking
+      // every value.
+      const failures: string[] = [];
+      for (const [cityId, curves] of Object.entries(dailyCurves)) {
+        for (const key of ["grass", "tree", "weed", "cladosporium", "alternaria"] as const) {
+          const curve = curves[key];
+          if (curve.length !== 366) failures.push(`${cityId}.${key}: length ${curve.length}`);
+          for (const v of curve) {
+            if (v < 0 || v > 1) {
+              failures.push(`${cityId}.${key}: out-of-range value ${v}`);
+              break;
+            }
+          }
         }
       }
-    }
-  });
+      expect(failures).toEqual([]);
+    },
+    15000,
+  );
 
   it("every one of the 168 cities' curves peaks at exactly 1.0 (annual score = peak-season convention)", () => {
+    const failures: string[] = [];
     for (const [cityId, curves] of Object.entries(dailyCurves)) {
       for (const key of ["grass", "tree", "weed", "cladosporium", "alternaria"] as const) {
-        expect(Math.max(...curves[key]), `${cityId}.${key}`).toBe(1);
+        const peak = Math.max(...curves[key]);
+        if (peak !== 1) failures.push(`${cityId}.${key}: peak ${peak}`);
       }
     }
+    expect(failures).toEqual([]);
   });
 });
 
