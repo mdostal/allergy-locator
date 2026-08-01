@@ -42,6 +42,13 @@ Allergen ids are whatever's in `data/allergens.json` (e.g. `grass`, `ragweed`,
 `red-oak`) — `grass` plus every entry's own `id` field. These params are only
 read when the compact `s` param is absent, so a shared link always wins.
 
+If you've saved 2+ named profiles and compared them on the map ("My map" →
+Compare profiles), that view also round-trips through `compare=<id1>,<id2>`
+and `view=max|noisy-or|side-by-side`. Note this is a **bookmark/reload**
+feature, not a cross-device share — a saved profile's id only means anything
+in the browser that saved it, so opening that link on a different device or
+after clearing storage just shows an empty comparison, not an error.
+
 ## Data & attribution
 
 - **USDA PLANTS** — species→state ranges (US Gov, public domain)

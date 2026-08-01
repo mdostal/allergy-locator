@@ -37,6 +37,37 @@ test("comparing 2+ saved profiles offers switchable worst-case / noisy-OR / side
   await expect(page.getByRole("img", { name: "Your personalized allergy severity map" })).toHaveCount(2);
 });
 
+test("a compare view survives a reload via the URL (bookmark/restore, not cross-device sharing)", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await page.getByRole("radio", { name: "My map" }).click();
+
+  await saveProfile(page, "Alex", "80");
+  await saveProfile(page, "Sam", "30");
+  await page.getByLabel("Alex", { exact: true }).check();
+  await page.getByLabel("Sam", { exact: true }).check();
+  await page.getByRole("tab", { name: "Noisy-OR" }).click();
+
+  await expect(page).toHaveURL(/compare=/);
+  await expect(page).toHaveURL(/view=noisy-or/);
+  const url = page.url();
+
+  await page.goto(url);
+  await page.getByRole("radio", { name: "My map" }).click();
+  await expect(page.getByLabel("Alex", { exact: true })).toBeChecked();
+  await expect(page.getByLabel("Sam", { exact: true })).toBeChecked();
+  await expect(page.getByRole("tab", { name: "Noisy-OR" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("img", { name: /noisy-OR/ })).toBeVisible();
+});
+
+test("a compare URL with an unknown/foreign profile id is ignored, not crashed on", async ({ page }) => {
+  await page.goto("/?compare=not-a-real-id,also-fake&view=max");
+  await expect(page.getByRole("heading", { name: "Allergy Locator" })).toBeVisible();
+  await page.getByRole("radio", { name: "My map" }).click();
+  await expect(page.getByText("Save at least 2 profiles")).toBeVisible();
+});
+
 test("side-by-side is disabled once a 3rd profile is selected", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("radio", { name: "My map" }).click();

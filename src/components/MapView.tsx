@@ -19,7 +19,14 @@ import { getPanelHistory, addPanelSnapshot, type PanelSnapshot } from "@/lib/pan
 import { getSavedProfiles, type SavedProfile } from "@/lib/profiles";
 import { GradientLegend } from "@/components/GradientLegend";
 import { AdvancedControls } from "@/components/AdvancedControls";
-import { decodeState, buildQueryString, parseHumanState, URL_STATE_PARAM, type Mode } from "@/lib/url-state";
+import {
+  decodeState,
+  buildQueryString,
+  parseHumanState,
+  parseCompareParams,
+  URL_STATE_PARAM,
+  type Mode,
+} from "@/lib/url-state";
 import { getAllergen } from "@/lib/allergens/registry";
 import { intensityColor, compositeColor } from "@/lib/severity/palette";
 import { DEFAULT_MODEL_SETTINGS, type ModelSettings } from "@/lib/model-settings";
@@ -54,6 +61,10 @@ export function MapView() {
   // present; otherwise fall back to plain, hand-writable params (`mode`,
   // `allergens`, `month` -- see parseHumanState) so an external agent or a
   // person typing a URL doesn't need to know the binary encoding at all.
+  // `compare`/`view` restore a compare-profiles session on reload/bookmark
+  // (see parseCompareParams) -- profile ids only mean anything in the
+  // browser that saved them, so a stale/foreign id here is simply ignored,
+  // never a crash (see compareProfiles' filter below).
   /* eslint-disable react-hooks/set-state-in-effect -- one-time client-only URL
    * read on mount, the same documented hydration pattern as ThemeToggle. */
   useEffect(() => {
@@ -65,15 +76,27 @@ export function MapView() {
     setActive(decoded.active);
     setSensitivities(decoded.sensitivities);
     setMonth(decoded.month);
+
+    const compare = parseCompareParams(params);
+    if (compare) {
+      setCompareIds(new Set(compare.ids));
+      if (compare.view === "max" || compare.view === "noisy-or" || compare.view === "side-by-side") {
+        setCompareView(compare.view);
+      }
+    }
+
     setHydratedFromUrl(true);
   }, []);
   /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!hydratedFromUrl) return;
-    const query = buildQueryString({ mode, active, sensitivities, month });
+    const query = buildQueryString(
+      { mode, active, sensitivities, month },
+      { ids: [...compareIds], view: compareView },
+    );
     window.history.replaceState(null, "", query);
-  }, [hydratedFromUrl, mode, active, sensitivities, month]);
+  }, [hydratedFromUrl, mode, active, sensitivities, month, compareIds, compareView]);
 
   function toggleAllergen(id: string) {
     setActive((prev) => {

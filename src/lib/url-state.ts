@@ -101,10 +101,43 @@ export function decodeState(encoded: string | null | undefined): UrlState {
   }
 }
 
-export function buildQueryString(state: UrlState): string {
+export const COMPARE_IDS_PARAM = "compare";
+export const COMPARE_VIEW_PARAM = "view";
+
+export interface CompareUrlState {
+  ids: string[];
+  view: string;
+}
+
+/**
+ * v3's "save/share beyond a single-view URL" for the compare-profiles
+ * feature. Saved-profile ids only mean anything in the browser that saved
+ * them (localStorage), so this is a "restore my own session on reload/
+ * bookmark" feature, NOT a cross-device shareable link the way the compact
+ * `s` param is -- a stale/foreign id here is simply ignored (see MapView's
+ * compareProfiles filter), never a crash. Kept as separate plain params
+ * rather than folded into the `s` blob's byte-packed encoding, since
+ * arbitrary-length profile ids don't fit that fixed-width scheme.
+ */
+export function buildQueryString(state: UrlState, compare?: CompareUrlState): string {
   const params = new URLSearchParams();
   params.set(URL_STATE_PARAM, encodeState(state));
+  if (compare && compare.ids.length >= 2) {
+    params.set(COMPARE_IDS_PARAM, compare.ids.join(","));
+    params.set(COMPARE_VIEW_PARAM, compare.view);
+  }
   return `?${params.toString()}`;
+}
+
+export function parseCompareParams(params: URLSearchParams): CompareUrlState | null {
+  const idsParam = params.get(COMPARE_IDS_PARAM);
+  if (!idsParam) return null;
+  const ids = idsParam
+    .split(",")
+    .map((id) => id.trim())
+    .filter(Boolean);
+  if (ids.length < 2) return null;
+  return { ids, view: params.get(COMPARE_VIEW_PARAM) ?? "max" };
 }
 
 /**
