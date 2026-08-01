@@ -122,6 +122,51 @@ roadmap" below — the user has now directly requested this as a real future dir
 so it moves here instead of staying in the "never" list. Everything through v3 still
 ships and works with zero accounts; this is additive, optional future scope.
 
+## v5 — Generalized multi-dataset layer engine + AI chat search (future, explicitly requested, not started)
+**Problem it solves:** this app's map engine (`UsMap`, `CompositeMap`, `HeatmapLayer`, the county
+grid) is currently allergy-specific. `docs/ROADMAP.md` already lays out the full "Livability Atlas"
+vision this project is Phase 1 of — 12+ dimensions (care access, cost/housing, crime, water rights,
+schooling, family life, wellbeing, etc.) sharing ONE map engine with toggleable overlays. This entry
+is the app-*version* pointer to that vision, not a duplicate of it — **`docs/ROADMAP.md` is the
+authoritative, dimension-by-dimension detail; this section only captures what it means for THIS
+codebase's architecture.**
+
+Explicit user direction (2026-08-01): "v4 will be making the allergy data a single wrapper and then
+allowing us to use the same map with different data sets and combine them all -- like crime with
+history on that dataset, healthcare, etc and we should be able to pick a year, date, and load data
+in for the section and run through etc on any of the facets -- we'll keep it focused around current
+and recent, but can expand it... and that'll let us have the one map and then tab through data sets
+and add them in and create LAYERS that we use to find things.. then use AI chat to find the ideal
+place." (Numbered **v5** here, not v4, since v4 above — accounts + long-term history — was already
+locked with the user earlier the same day; both are real, both are future, neither blocks the other.)
+
+**Approach (directional only — not yet designed in detail):**
+1. **A single dataset "wrapper" interface** — generalize the allergen-specific shape
+   (`getComposite`/`getCountyComposite`/`ALLERGENS` registry) into a common contract any dimension
+   can implement: a value-surface + confidence-surface per point, on the shared city/county spine
+   (`data/cities.json`), so `UsMap`/`CompositeMap`/`HeatmapLayer` stop being allergy-specific and
+   become the shared engine `docs/ROADMAP.md`'s "Deployment" section already calls for.
+2. **Per-facet year/date vintage picker** — generalizes the allergy tool's own already-shipped
+   `TimeframeControl`/`YearPlayback`/Trip-Planner pattern to every dataset ("crime rates in 2019" vs
+   now). Scope discipline per the user's own framing: focus on current/recent per facet first: deep
+   multi-decade history isn't the v1 bar for a new dimension, but the wrapper's schema shouldn't need
+   a redesign to add it later.
+3. **Layer combination** — "tab through data sets and add them in," i.e. the same
+   toggle-and-stack-with-opacity UX already shipped for allergen overlays (`UsMap`) and now
+   profile-compare (`ProfileOverlayMap`), generalized across dimensions instead of just allergens.
+4. **AI chat to find the ideal place** — see `docs/ROADMAP.md` Phase 5. Should reuse, not replace,
+   what's already shipped: the agent-friendly plain-URL surface (v2 above, `parseHumanState`) and the
+   BYO-key zero-project-cost LLM pattern (v2's panel-import work) — a chat feature that reads/writes
+   map state through the same URL contract an external agent already can, not a new mechanism.
+
+**Explicitly deferred, not started.** A real architectural fork (does one generalized engine serve
+every dimension, or do dimensions get their own specialized engines that share only the spine + UI
+conventions?) that `docs/ROADMAP.md`'s own "Deployment" section already leans toward (one engine,
+toggleable overlays) but hasn't been implemented. Revisit once v3/v4 are proven out and the next
+dimension (care access, per `docs/ROADMAP.md`'s own build order) is actually picked up — that's the
+real forcing function for designing the wrapper interface concretely, not before there's a second
+real dataset to generalize against.
+
 ## Superseded by later work (kept here for history, not current)
 - **County/ZIP-level resolution** — was listed below as explicitly out of scope
   ("state-level only... stated scope boundary"). Superseded: a real ~3,143-county
