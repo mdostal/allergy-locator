@@ -35,11 +35,18 @@ report, not a hand-filled JSON file.
 LLM API key and pays for no LLM calls — that would break the $0-cost, zero-secrets
 posture that everything else in this app is built on. v2 must use a **bring-your-own-key**
 model: the user supplies their own LLM provider API key, stored only in their own
-browser (never sent to or logged by any project-controlled server), used either for
-direct client→provider calls or through a stateless pass-through proxy that never
-persists the key. This is the single most important architectural decision for v2 and
-should be validated (e.g., against current provider CORS/browser-calling support) before
-implementation starts.
+browser (never sent to or logged by any project-controlled server).
+
+**Resolved (2026-08-01), verified not assumed:** direct client→provider calls, no
+server proxy at all. Anthropic's API explicitly supports CORS for exactly this pattern
+via the `anthropic-dangerous-direct-browser-access: true` request header — their own
+documentation names "bring your own API key" as an intended use case for it, not a
+workaround. This keeps the entire app 100% static (it already builds as static-only
+output today, per `next build`'s "○ Static" pages) — deployable free on Vercel Hobby
+(non-commercial/OSS use qualifies) or any other free static host, with zero backend
+ever required for this feature. If a future non-Anthropic provider is added and lacks
+equivalent CORS support, that specific provider (not the whole feature) would need the
+stateless pass-through proxy instead — a per-provider fallback, not the default design.
 
 **Also in v2:** a documented, agent-friendly control surface beyond v1's URL-state
 (§ see below) — likely an MCP server or a small documented HTTP/JS API — so an external
