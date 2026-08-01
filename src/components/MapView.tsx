@@ -13,6 +13,8 @@ import { TripPlanner } from "@/components/TripPlanner";
 import { PanelUpload } from "@/components/PanelUpload";
 import { AllergyHistoryChart } from "@/components/AllergyHistoryChart";
 import { ProfileManager } from "@/components/ProfileManager";
+import { ProfileCompare, type CompareView } from "@/components/ProfileCompare";
+import { ProfileOverlayMap } from "@/components/ProfileOverlayMap";
 import { getPanelHistory, addPanelSnapshot, type PanelSnapshot } from "@/lib/panel-history";
 import { getSavedProfiles, type SavedProfile } from "@/lib/profiles";
 import { GradientLegend } from "@/components/GradientLegend";
@@ -34,6 +36,8 @@ export function MapView() {
   const [settings, setSettings] = useState<ModelSettings>(DEFAULT_MODEL_SETTINGS);
   const [panelHistory, setPanelHistory] = useState<PanelSnapshot[]>([]);
   const [savedProfiles, setSavedProfiles] = useState<SavedProfile[]>([]);
+  const [compareIds, setCompareIds] = useState<Set<string>>(new Set());
+  const [compareView, setCompareView] = useState<CompareView>("max");
 
   // Client-only read on mount, same hydration-safety pattern as the URL-state
   // effect just below.
@@ -91,6 +95,18 @@ export function MapView() {
     setSensitivities(authorPreset.sensitivities);
   }
 
+  function toggleCompareProfile(id: string) {
+    setCompareIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }
+
   function applyUploadedPanel(uploaded: Record<string, number>) {
     // Merge rather than replace: an upload only speaks to the allergens it
     // actually covers, so any sliders the user already set by hand for
@@ -103,12 +119,22 @@ export function MapView() {
     setPanelHistory(getPanelHistory());
   }
 
+  const compareProfiles = savedProfiles.filter((p) => compareIds.has(p.id));
+  const comparing = compareProfiles.length >= 2;
+
   // A gradient's colors don't self-explain a scale the way a labeled dot's
   // tooltip did -- one legend per active allergen (they each stack their own
   // gradient layer on the map now, see UsMap), or one for Mode 2's composite.
   const legend =
     mode === "composite" ? (
-      <GradientLegend label="Your composite score" colorForValue={compositeColor} />
+      <GradientLegend
+        label={
+          comparing && compareView !== "side-by-side"
+            ? `Combined score (${compareView === "max" ? "worst-case" : "noisy-OR"})`
+            : "Your composite score"
+        }
+        colorForValue={compositeColor}
+      />
     ) : (
       <div className="flex flex-col gap-3">
         {Array.from(active)
@@ -177,6 +203,13 @@ export function MapView() {
               profiles={savedProfiles}
               onProfilesChange={setSavedProfiles}
             />
+            <ProfileCompare
+              profiles={savedProfiles}
+              selectedIds={compareIds}
+              onToggle={toggleCompareProfile}
+              view={compareView}
+              onViewChange={setCompareView}
+            />
             <ReportPanel sensitivities={sensitivities} />
             <TripPlanner sensitivities={sensitivities} settings={settings} />
           </>
@@ -217,6 +250,30 @@ export function MapView() {
         {mode === "overlay" ? (
           <UsMap
             active={active}
+            onSelectCity={setSelectedCityId}
+            selectedCityId={selectedCityId}
+            month={month}
+            settings={settings}
+          />
+        ) : comparing && compareView === "side-by-side" ? (
+          <div className="grid flex-1 grid-cols-1 gap-3 md:grid-cols-2">
+            {compareProfiles.slice(0, 2).map((profile) => (
+              <div key={profile.id} className="flex flex-col gap-1">
+                <p className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{profile.name}</p>
+                <CompositeMap
+                  sensitivities={profile.sensitivities}
+                  onSelectCity={setSelectedCityId}
+                  selectedCityId={selectedCityId}
+                  month={month}
+                  settings={settings}
+                />
+              </div>
+            ))}
+          </div>
+        ) : comparing ? (
+          <ProfileOverlayMap
+            profiles={compareProfiles}
+            combination={compareView === "side-by-side" ? "max" : compareView}
             onSelectCity={setSelectedCityId}
             selectedCityId={selectedCityId}
             month={month}
