@@ -106,3 +106,55 @@ export function buildQueryString(state: UrlState): string {
   params.set(URL_STATE_PARAM, encodeState(state));
   return `?${params.toString()}`;
 }
+
+/**
+ * Plain, hand-writable query params for an external agent (or a human typing
+ * a URL) to drive the map without needing this module's compact binary `s`
+ * encoding above -- that format is a byte-packed base64 blob, not something
+ * an LLM or a person can reliably construct from a text prompt. This is the
+ * "documented, agent-friendly control surface" v2 of the roadmap calls for.
+ *
+ * Schema: `?mode=overlay|composite&allergens=<list>&month=1-12`
+ *   - overlay mode: `allergens=grass,ragweed` (ids only, comma-separated)
+ *   - composite mode: `allergens=grass:80,ragweed:40` (id:sensitivity pairs;
+ *     an id with no value defaults to 50 -- a documented, moderate default)
+ *   - `month` omitted means "current/annual", matching the compact format
+ *
+ * Only consulted by the caller when the compact `s` param is absent -- `s`
+ * remains the canonical shareable-link format once the app has hydrated.
+ * Unknown allergen ids are silently skipped (a real "gap," not a crash).
+ * Returns null when none of these params are present, so it never overrides
+ * ordinary defaults.
+ */
+export function parseHumanState(params: URLSearchParams): UrlState | null {
+  const modeParam = params.get("mode");
+  const allergensParam = params.get("allergens");
+  const monthParam = params.get("month");
+  if (modeParam === null && allergensParam === null && monthParam === null) return null;
+
+  const mode: Mode = modeParam === "composite" ? "composite" : "overlay";
+  const active = new Set<string>();
+  const sensitivities: Record<string, number> = {};
+
+  if (allergensParam) {
+    for (const entry of allergensParam.split(",")) {
+      const trimmed = entry.trim();
+      if (!trimmed) continue;
+      const [rawId, rawValue] = trimmed.split(":");
+      const id = rawId.trim();
+      if (!idToIndex.has(id)) continue;
+
+      if (mode === "composite") {
+        const value = rawValue !== undefined ? Number(rawValue) : NaN;
+        sensitivities[id] = Number.isNaN(value) ? 50 : Math.max(0, Math.min(100, Math.round(value)));
+      } else {
+        active.add(id);
+      }
+    }
+  }
+
+  const monthNum = monthParam ? Number(monthParam) : NaN;
+  const month = monthNum >= 1 && monthNum <= 12 ? monthNum : null;
+
+  return { mode, active, sensitivities, month };
+}

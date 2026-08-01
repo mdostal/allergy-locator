@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ALLERGENS } from "@/lib/allergens/registry";
-import { decodeState, encodeState, buildQueryString, URL_STATE_PARAM } from "@/lib/url-state";
+import { decodeState, encodeState, buildQueryString, parseHumanState, URL_STATE_PARAM } from "@/lib/url-state";
 
 describe("URL state serialization (story s9)", () => {
   it("round-trips a no-op default state", () => {
@@ -65,5 +65,50 @@ describe("URL state serialization (story s9)", () => {
     const decoded = decodeState(params.get(URL_STATE_PARAM));
     expect(decoded.active.has("grass")).toBe(true);
     expect(decoded.month).toBe(3);
+  });
+});
+
+describe("parseHumanState (plain, hand-writable params for external agents)", () => {
+  it("returns null when none of the human params are present, so it never overrides defaults", () => {
+    expect(parseHumanState(new URLSearchParams(""))).toBeNull();
+    expect(parseHumanState(new URLSearchParams("foo=bar"))).toBeNull();
+  });
+
+  it("parses overlay mode from a plain comma-separated allergen list", () => {
+    const state = parseHumanState(new URLSearchParams("mode=overlay&allergens=grass,ragweed&month=6"));
+    expect(state).toEqual({
+      mode: "overlay",
+      active: new Set(["grass", "ragweed"]),
+      sensitivities: {},
+      month: 6,
+    });
+  });
+
+  it("parses composite mode from id:value pairs", () => {
+    const state = parseHumanState(new URLSearchParams("mode=composite&allergens=grass:80,ragweed:40"));
+    expect(state?.mode).toBe("composite");
+    expect(state?.sensitivities).toEqual({ grass: 80, ragweed: 40 });
+    expect(state?.active.size).toBe(0);
+  });
+
+  it("defaults a composite id with no value to a moderate 50, rather than erroring", () => {
+    const state = parseHumanState(new URLSearchParams("mode=composite&allergens=grass"));
+    expect(state?.sensitivities).toEqual({ grass: 50 });
+  });
+
+  it("silently skips unknown allergen ids as a real gap, not a crash", () => {
+    const state = parseHumanState(new URLSearchParams("allergens=grass,not-a-real-allergen"));
+    expect(state?.active).toEqual(new Set(["grass"]));
+  });
+
+  it("treats an out-of-range or missing month as annual/current (null)", () => {
+    expect(parseHumanState(new URLSearchParams("mode=overlay"))?.month).toBeNull();
+    expect(parseHumanState(new URLSearchParams("mode=overlay&month=13"))?.month).toBeNull();
+    expect(parseHumanState(new URLSearchParams("mode=overlay&month=0"))?.month).toBeNull();
+  });
+
+  it("clamps out-of-range composite sensitivity values instead of accepting garbage", () => {
+    const state = parseHumanState(new URLSearchParams("mode=composite&allergens=grass:500,ragweed:-20"));
+    expect(state?.sensitivities).toEqual({ grass: 100, ragweed: 0 });
   });
 });
