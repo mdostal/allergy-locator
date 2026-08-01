@@ -10,6 +10,7 @@ import { TimeframeControl } from "@/components/TimeframeControl";
 import { YearPlayback } from "@/components/YearPlayback";
 import { ReportPanel } from "@/components/ReportPanel";
 import { TripPlanner } from "@/components/TripPlanner";
+import { PanelUpload } from "@/components/PanelUpload";
 import { GradientLegend } from "@/components/GradientLegend";
 import { AdvancedControls } from "@/components/AdvancedControls";
 import { decodeState, buildQueryString, URL_STATE_PARAM, type Mode } from "@/lib/url-state";
@@ -69,6 +70,13 @@ export function MapView() {
 
   function loadAuthorPreset() {
     setSensitivities(authorPreset.sensitivities);
+  }
+
+  function applyUploadedPanel(uploaded: Record<string, number>) {
+    // Merge rather than replace: an upload only speaks to the allergens it
+    // actually covers, so any sliders the user already set by hand for
+    // other allergens stay untouched.
+    setSensitivities((prev) => ({ ...prev, ...uploaded }));
   }
 
   // A gradient's colors don't self-explain a scale the way a labeled dot's
@@ -132,6 +140,7 @@ export function MapView() {
           <AllergenToggleList active={active} onToggle={toggleAllergen} />
         ) : (
           <>
+            <PanelUpload onApply={applyUploadedPanel} />
             <SensitivitySliders
               sensitivities={sensitivities}
               onChange={setSensitivity}
