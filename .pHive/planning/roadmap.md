@@ -68,13 +68,18 @@ each visit. Families and couples want to compare or overlay more than one person
 **Approach:**
 1. Multiple **named, saved profiles**, stored client-side only (browser storage) —
    still no accounts, no backend database, consistent with every non-negotiable this
-   project has carried since `REQUIREMENTS.md`.
+   project has carried since `REQUIREMENTS.md`. **Shipped 2026-08-01**:
+   `lib/profiles.ts` (save/rename/delete, localStorage-only) +
+   `components/ProfileManager.tsx` in Mode 2's sidebar. Loading a saved profile
+   REPLACES the active sensitivities (a distinct person/scenario), unlike an uploaded
+   panel, which merges.
 2. **Save/share** beyond a single-view URL (v1 already gives a shareable URL for one
    configured view; v3 is about persisting and naming multiple such configurations).
+   Not yet started.
 3. **Overlay view** — show two or more profiles' severity on the same map at once (e.g.,
    a composite "best-for-everyone" score, or a split/toggle between individual family
    members) so a family can jointly evaluate a place instead of each running the tool
-   separately.
+   separately. Not yet started — builds on the saved-profiles list above.
 
 **Depends on:** v1's app-state model (already clean/serializable from v1's agent-
 controllable-surface work) extended to hold a collection of profiles instead of one.

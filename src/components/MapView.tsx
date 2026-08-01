@@ -12,7 +12,9 @@ import { ReportPanel } from "@/components/ReportPanel";
 import { TripPlanner } from "@/components/TripPlanner";
 import { PanelUpload } from "@/components/PanelUpload";
 import { AllergyHistoryChart } from "@/components/AllergyHistoryChart";
+import { ProfileManager } from "@/components/ProfileManager";
 import { getPanelHistory, addPanelSnapshot, type PanelSnapshot } from "@/lib/panel-history";
+import { getSavedProfiles, type SavedProfile } from "@/lib/profiles";
 import { GradientLegend } from "@/components/GradientLegend";
 import { AdvancedControls } from "@/components/AdvancedControls";
 import { decodeState, buildQueryString, parseHumanState, URL_STATE_PARAM, type Mode } from "@/lib/url-state";
@@ -31,11 +33,14 @@ export function MapView() {
   const [advancedMode, setAdvancedMode] = useState(false);
   const [settings, setSettings] = useState<ModelSettings>(DEFAULT_MODEL_SETTINGS);
   const [panelHistory, setPanelHistory] = useState<PanelSnapshot[]>([]);
+  const [savedProfiles, setSavedProfiles] = useState<SavedProfile[]>([]);
 
   // Client-only read on mount, same hydration-safety pattern as the URL-state
   // effect just below.
   /* eslint-disable-next-line react-hooks/set-state-in-effect */
   useEffect(() => setPanelHistory(getPanelHistory()), []);
+  /* eslint-disable-next-line react-hooks/set-state-in-effect */
+  useEffect(() => setSavedProfiles(getSavedProfiles()), []);
 
   // Story s9: the URL is the "agentic" surface this app ships -- no chat, no
   // LLM. Read it once on mount (client-only, matching the same
@@ -165,6 +170,12 @@ export function MapView() {
               sensitivities={sensitivities}
               onChange={setSensitivity}
               onLoadPreset={loadAuthorPreset}
+            />
+            <ProfileManager
+              sensitivities={sensitivities}
+              onLoad={setSensitivities}
+              profiles={savedProfiles}
+              onProfilesChange={setSavedProfiles}
             />
             <ReportPanel sensitivities={sensitivities} />
             <TripPlanner sensitivities={sensitivities} settings={settings} />
