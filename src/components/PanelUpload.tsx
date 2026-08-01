@@ -1,49 +1,80 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { ALLERGENS } from "@/lib/allergens/registry";
 import { parseCsv, type ParsedRow } from "@/lib/panel-import/parse-csv";
+import { extractPanelFromFile, verifyExtraction } from "@/lib/panel-import/claude-client";
+import { getStoredApiKey } from "@/lib/byo-key";
 
 interface Props {
   onApply: (sensitivities: Record<string, number>) => void;
 }
 
+type Status = "idle" | "extracting" | "verifying" | "error";
+
 /**
- * v2, slice 1 (CSV/text import -- no LLM, no API key needed): reads a
- * lab-report-shaped CSV or plain-text 2-column file entirely client-side,
- * fuzzy-matches allergen names against the registry ("fit"), and surfaces
- * every row for review before anything is applied to the user's profile
- * ("...let people fix it if needed" -- explicit user direction). Unmatched
- * rows ("gap") get a manual dropdown instead of being silently dropped.
- *
- * Photo/PDF upload (using the BYO key from ByoKeySettings) is a separate,
- * later slice built on the same review-and-apply UI below.
+ * v2, slices 1-3: reads a CSV/text export entirely client-side (no LLM
+ * needed), or a photo/PDF via a two-pass Claude extraction (generate, then
+ * an independent verify pass against the same source -- see
+ * lib/panel-import/claude-client.ts) using the user's own saved API key.
+ * Both paths land in the same review table: every row visible, matched or
+ * not, editable, with nothing applied to the profile until the user
+ * explicitly confirms ("...let people fix it if needed" -- explicit user
+ * direction). Unmatched rows ("gap") get a manual dropdown instead of being
+ * silently dropped.
  */
 export function PanelUpload({ onApply }: Props) {
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [rows, setRows] = useState<ParsedRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [status, setStatus] = useState<Status>("idle");
+  const [verified, setVerified] = useState(false);
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = ""; // allow re-selecting the same file later
     if (!file) return;
 
-    if (!/\.(csv|txt)$/i.test(file.name)) {
+    setError(null);
+    setVerified(false);
+
+    if (/\.(csv|txt)$/i.test(file.name)) {
+      const text = await file.text();
+      const parsed = parseCsv(text);
+      if (parsed.length === 0) {
+        setError("Couldn't find any rows in that file -- expected an allergen name and a value per line.");
+        return;
+      }
+      setRows(parsed);
+      return;
+    }
+
+    if (!/\.(pdf|jpe?g|png|heic|webp)$/i.test(file.name)) {
+      setError("Upload a CSV/text export, or a photo/PDF of your test results.");
+      return;
+    }
+
+    const apiKey = getStoredApiKey();
+    if (!apiKey) {
       setError(
-        "This slice reads CSV/text files only for now. Photo/PDF upload (using your saved API key) is coming next.",
+        "Reading a photo or PDF needs your own Anthropic API key. Save one in About → Methodology, then try again.",
       );
       return;
     }
 
-    const text = await file.text();
-    const parsed = parseCsv(text);
-    if (parsed.length === 0) {
-      setError("Couldn't find any rows in that file -- expected an allergen name and a value per line.");
-      return;
+    try {
+      setStatus("extracting");
+      const draft = await extractPanelFromFile(file, apiKey);
+      setRows(draft); // show the first pass immediately, don't make the user wait through both calls to see anything
+
+      setStatus("verifying");
+      const checked = await verifyExtraction(file, apiKey, draft);
+      setRows(checked);
+      setVerified(true);
+      setStatus("idle");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong reading that file.");
+      setStatus("error");
     }
-    setError(null);
-    setRows(parsed);
   }
 
   function updateRow(index: number, changes: Partial<ParsedRow>) {
@@ -58,6 +89,7 @@ export function PanelUpload({ onApply }: Props) {
     }
     onApply(sensitivities);
     setRows(null);
+    setVerified(false);
   }
 
   const matchedCount = rows?.filter((r) => r.allergenId).length ?? 0;
@@ -66,27 +98,37 @@ export function PanelUpload({ onApply }: Props) {
     <div className="flex flex-col gap-3 rounded-lg border border-zinc-200 p-4 text-sm dark:border-zinc-800">
       <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Upload your allergy test</h3>
       <p className="text-xs text-zinc-500 dark:text-zinc-400">
-        Upload a CSV or text export of your test results instead of setting sliders by hand. We match
-        each allergen name automatically where we can, and let you fix anything we got wrong or
-        couldn&rsquo;t recognize before it&rsquo;s applied.
+        Upload a CSV/text export, or a photo/PDF of your results, instead of setting sliders by hand.
+        We match each allergen automatically where we can, and let you fix anything we got wrong or
+        couldn&rsquo;t recognize before it&rsquo;s applied. Photos/PDFs are read directly by Claude
+        using your own saved API key (About &rarr; Methodology) -- never sent to or stored by this
+        project.
       </p>
 
       <input
-        ref={fileInputRef}
         type="file"
-        accept=".csv,.txt,text/csv,text/plain"
+        accept=".csv,.txt,.pdf,.jpg,.jpeg,.png,.heic,.webp,text/csv,text/plain,application/pdf,image/*"
         onChange={handleFileChange}
         aria-label="Upload allergy test file"
         className="text-xs text-zinc-600 dark:text-zinc-300"
       />
 
+      {status === "extracting" && (
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">Reading your file with Claude…</p>
+      )}
+      {status === "verifying" && (
+        <p className="text-xs text-zinc-500 dark:text-zinc-400">
+          Double-checking that extraction against the original…
+        </p>
+      )}
       {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
 
       {rows && (
         <div className="flex flex-col gap-2">
           <p className="text-xs text-zinc-500 dark:text-zinc-400">
-            {matchedCount} of {rows.length} rows matched automatically. Review and fix anything below,
-            then apply.
+            {matchedCount} of {rows.length} rows matched automatically
+            {verified && " (verified against the original)"}. Review and fix anything below, then
+            apply.
           </p>
           <div className="max-h-64 overflow-y-auto rounded-md border border-zinc-200 dark:border-zinc-800">
             <table className="w-full text-left text-xs">
@@ -156,4 +198,3 @@ export function PanelUpload({ onApply }: Props) {
     </div>
   );
 }
-
