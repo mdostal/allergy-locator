@@ -67,19 +67,25 @@ export function MapView() {
   }
 
   // A gradient's colors don't self-explain a scale the way a labeled dot's
-  // tooltip did -- shown only when the map is actually rendering a continuous
-  // surface (single active allergen, or composite mode), matching HeatmapLayer's
-  // own eligibility rule in UsMap/CompositeMap.
-  const singleActiveAllergen = mode === "overlay" && active.size === 1 ? getAllergen([...active][0]) : null;
+  // tooltip did -- one legend per active allergen (they each stack their own
+  // gradient layer on the map now, see UsMap), or one for Mode 2's composite.
   const legend =
     mode === "composite" ? (
       <GradientLegend label="Your composite score" colorForValue={compositeColor} />
-    ) : singleActiveAllergen ? (
-      <GradientLegend
-        label={`${singleActiveAllergen.label} severity`}
-        colorForValue={(value) => intensityColor(singleActiveAllergen.color, value)}
-      />
-    ) : null;
+    ) : (
+      <div className="flex flex-col gap-3">
+        {Array.from(active)
+          .map((id) => getAllergen(id))
+          .filter((allergen): allergen is NonNullable<typeof allergen> => allergen !== undefined)
+          .map((allergen) => (
+            <GradientLegend
+              key={allergen.id}
+              label={`${allergen.label} severity`}
+              colorForValue={(value) => intensityColor(allergen.color, value)}
+            />
+          ))}
+      </div>
+    );
 
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-6 md:flex-row">
