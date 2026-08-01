@@ -20,6 +20,11 @@ const ROWS = 60;
 interface Props {
   points: DataPoint[];
   colorForValue: (value: number) => string;
+  /** 2+ active allergens (Mode 1) stack one of these per allergen at partial
+   * opacity instead of a single blended surface -- each allergen keeps its
+   * own color identity, and overlapping severity reads as a visually denser
+   * blend where two allergens are both bad in the same place. */
+  opacity?: number;
 }
 
 /**
@@ -29,7 +34,7 @@ interface Props {
  * ~5,760-cell grid on every allergen/timeframe change is far cheaper as
  * imperative canvas draws than as reconciled React elements.
  */
-export function HeatmapLayer({ points, colorForValue }: Props) {
+export function HeatmapLayer({ points, colorForValue, opacity = 1 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -74,6 +79,7 @@ export function HeatmapLayer({ points, colorForValue }: Props) {
       ref={canvasRef}
       aria-hidden
       data-testid="heatmap-canvas"
+      style={{ opacity }}
       className="pointer-events-none absolute inset-0 h-full w-full rounded-lg [filter:blur(3px)]"
     />
   );

@@ -72,4 +72,20 @@ describe("IDW interpolation grid (continuous gradient rendering)", () => {
     const elapsed = performance.now() - start;
     expect(elapsed).toBeLessThan(200);
   });
+
+  it("computes the FULL production scale (168 cities + 3,143 counties) fast enough for interactive re-renders", () => {
+    // Regression guard: brute-force IDW over this many points measured ~800ms
+    // for a full grid (well past interactive) before the spatial index was
+    // added -- this is the actual point count HeatmapLayer combines every
+    // time a single allergen or the composite score is toggled.
+    const points = Array.from({ length: 168 + 3143 }, (_, i) => ({
+      x: (i * 37) % 960,
+      y: (i * 53) % 600,
+      value: (i * 7) % 100,
+    }));
+    const start = performance.now();
+    buildInterpolationGrid(points, { cols: 96, rows: 60, width: 960, height: 600 });
+    const elapsed = performance.now() - start;
+    expect(elapsed).toBeLessThan(150);
+  });
 });
