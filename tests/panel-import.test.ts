@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { matchAllergenName, classToSensitivity } from "@/lib/panel-import/match-allergen";
-import { parseCsv } from "@/lib/panel-import/parse-csv";
+import { parseCsv, mergeSensitivities, type ParsedRow } from "@/lib/panel-import/parse-csv";
 
 describe("matchAllergenName (fit-gap fuzzy matching)", () => {
   it("matches a registry label exactly (case-insensitive)", () => {
@@ -76,5 +76,28 @@ describe("parseCsv", () => {
     const rows = parseCsv(csv);
     expect(rows[0].rawName).toBe("Ragweed, Short");
     expect(rows[0].allergenId).toBe("ragweed");
+  });
+});
+
+describe("mergeSensitivities (real multi-species reports collapse onto one id)", () => {
+  function row(allergenId: string | null, sensitivity: number): ParsedRow {
+    return { rawName: allergenId ?? "unmatched", rawValue: String(sensitivity), allergenId, confidence: "alias", sensitivity };
+  }
+
+  it("takes the highest value when multiple rows match the same allergen", () => {
+    // Real-world case found via Gemini extraction testing: a report listing
+    // Bermuda, Bahia, and Johnson grass (all -> "grass") must not silently
+    // keep only whichever row happened to come last.
+    const rows = [row("grass", 11), row("grass", 45), row("grass", 30)];
+    expect(mergeSensitivities(rows)).toEqual({ grass: 45 });
+  });
+
+  it("skips unmatched rows and keeps distinct ids separate", () => {
+    const rows = [row("grass", 20), row(null, 90), row("ragweed", 15)];
+    expect(mergeSensitivities(rows)).toEqual({ grass: 20, ragweed: 15 });
+  });
+
+  it("returns an empty object for no matched rows", () => {
+    expect(mergeSensitivities([row(null, 50)])).toEqual({});
   });
 });

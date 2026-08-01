@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { ALLERGENS } from "@/lib/allergens/registry";
-import { parseCsv, type ParsedRow } from "@/lib/panel-import/parse-csv";
+import { parseCsv, mergeSensitivities, type ParsedRow } from "@/lib/panel-import/parse-csv";
 import { extractPanelFromFile, verifyExtraction } from "@/lib/panel-import/claude-client";
 import { getStoredApiKey } from "@/lib/byo-key";
 
@@ -83,16 +83,21 @@ export function PanelUpload({ onApply }: Props) {
 
   function handleApply() {
     if (!rows) return;
-    const sensitivities: Record<string, number> = {};
-    for (const row of rows) {
-      if (row.allergenId) sensitivities[row.allergenId] = row.sensitivity;
-    }
-    onApply(sensitivities);
+    onApply(mergeSensitivities(rows));
     setRows(null);
     setVerified(false);
   }
 
   const matchedCount = rows?.filter((r) => r.allergenId).length ?? 0;
+
+  // Multiple report rows (e.g. Bermuda/Bahia/Johnson grass) commonly match
+  // the same id -- surfaced here so the user knows the highest value wins,
+  // rather than silently applying just one of several real test results.
+  const matchedIdCounts = new Map<string, number>();
+  for (const row of rows ?? []) {
+    if (row.allergenId) matchedIdCounts.set(row.allergenId, (matchedIdCounts.get(row.allergenId) ?? 0) + 1);
+  }
+  const hasCollisions = [...matchedIdCounts.values()].some((count) => count > 1);
 
   return (
     <div className="flex flex-col gap-3 rounded-lg border border-zinc-200 p-4 text-sm dark:border-zinc-800">
@@ -130,6 +135,12 @@ export function PanelUpload({ onApply }: Props) {
             {verified && " (verified against the original)"}. Review and fix anything below, then
             apply.
           </p>
+          {hasCollisions && (
+            <p className="text-xs text-amber-600 dark:text-amber-400">
+              Some rows matched the same allergen (e.g. multiple grass species) -- the highest value
+              among them will be applied.
+            </p>
+          )}
           <div className="max-h-64 overflow-y-auto rounded-md border border-zinc-200 dark:border-zinc-800">
             <table className="w-full text-left text-xs">
               <thead className="sticky top-0 bg-zinc-50 dark:bg-zinc-900">
@@ -179,6 +190,14 @@ export function PanelUpload({ onApply }: Props) {
                         aria-label={`Sensitivity for ${row.rawName}`}
                         className="w-16 rounded border border-zinc-200 px-1 py-0.5 text-xs dark:border-zinc-700 dark:bg-zinc-900"
                       />
+                      {!Number.isNaN(Number(row.rawValue)) && Number(row.rawValue) <= 6 && (
+                        <span
+                          className="ml-1 text-zinc-400"
+                          title={`Raw value "${row.rawValue}" was assumed to be a 0-6 immunoassay class and converted to ${row.sensitivity}. If your report uses a different scale, edit the number directly.`}
+                        >
+                          ⓘ
+                        </span>
+                      )}
                     </td>
                   </tr>
                 ))}

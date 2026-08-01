@@ -55,6 +55,26 @@ export function parseCsv(text: string): ParsedRow[] {
   return results;
 }
 
+/**
+ * Real reports commonly test multiple species that all roll up to one of
+ * this app's coarser ids (e.g. a report testing Bermuda, Bahia, Johnson
+ * grass, and a "K-O-R-T grass mix" all resolve to the single "grass" id).
+ * Combine by taking the HIGHEST sensitivity among them, not last-row-wins --
+ * a person's real-world grass sensitivity is best represented by their
+ * worst reaction among the grasses actually tested, not whichever species
+ * happened to appear last in the file. Found via a real multi-species lab
+ * report during Gemini extraction testing.
+ */
+export function mergeSensitivities(rows: ParsedRow[]): Record<string, number> {
+  const sensitivities: Record<string, number> = {};
+  for (const row of rows) {
+    if (!row.allergenId) continue;
+    const existing = sensitivities[row.allergenId];
+    sensitivities[row.allergenId] = existing === undefined ? row.sensitivity : Math.max(existing, row.sensitivity);
+  }
+  return sensitivities;
+}
+
 function splitCsvLine(line: string): string[] {
   const cells: string[] = [];
   let current = "";
