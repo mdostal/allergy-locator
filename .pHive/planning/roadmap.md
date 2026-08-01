@@ -167,13 +167,20 @@ locked with the user earlier the same day; both are real, both are future, neith
    BYO-key zero-project-cost LLM pattern (v2's panel-import work) — a chat feature that reads/writes
    map state through the same URL contract an external agent already can, not a new mechanism.
 
-**Explicitly deferred, not started.** A real architectural fork (does one generalized engine serve
-every dimension, or do dimensions get their own specialized engines that share only the spine + UI
-conventions?) that `docs/ROADMAP.md`'s own "Deployment" section already leans toward (one engine,
-toggleable overlays) but hasn't been implemented. Revisit once v3/v4 are proven out and the next
-dimension (care access, per `docs/ROADMAP.md`'s own build order) is actually picked up — that's the
-real forcing function for designing the wrapper interface concretely, not before there's a second
-real dataset to generalize against.
+**Progress (2026-08-01):** care access (`docs/ROADMAP.md` dimension 2) now exists as a real second
+dataset — `lib/care-access/score.ts`, `CareAccessMap`/`CareAccessView`, live at `/care-access`.
+Deliberately built as its OWN standalone page/map, reusing `BaseSvgMap`/`HeatmapLayer`/`CityMarker`
+unchanged rather than forcing it into the allergy `MapView`'s mode/session state — this is the
+concrete second case v5's wrapper-interface design needs to exist before it can be designed
+correctly, not the generalization itself.
+
+**Still explicitly deferred, not started:** the actual generalized wrapper/one-engine refactor (does
+one engine serve every dimension, or do dimensions keep their own specialized engines sharing only
+the spine + UI conventions?), the per-facet year/date vintage picker, cross-dataset layer
+combination, and AI chat search. Now that a second real dataset exists, this is the real point to
+design the wrapper interface concretely by diffing what allergy's and care-access's engines actually
+have in common (points + a 0-100 concern value + a color ramp + click-to-detail) vs. what's
+allergy-specific (county-grid densification, season/day curves) — not before.
 
 ## Superseded by later work (kept here for history, not current)
 - **County/ZIP-level resolution** — was listed below as explicitly out of scope
