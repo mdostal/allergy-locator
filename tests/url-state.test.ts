@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
 import { ALLERGENS } from "@/lib/allergens/registry";
-import { decodeState, encodeState, buildQueryString, parseHumanState, URL_STATE_PARAM } from "@/lib/url-state";
+import {
+  decodeState,
+  encodeState,
+  buildQueryString,
+  parseHumanState,
+  parseCompareParams,
+  URL_STATE_PARAM,
+  COMPARE_IDS_PARAM,
+  COMPARE_VIEW_PARAM,
+} from "@/lib/url-state";
 
 describe("URL state serialization (story s9)", () => {
   it("round-trips a no-op default state", () => {
@@ -110,5 +119,36 @@ describe("parseHumanState (plain, hand-writable params for external agents)", ()
   it("clamps out-of-range composite sensitivity values instead of accepting garbage", () => {
     const state = parseHumanState(new URLSearchParams("mode=composite&allergens=grass:500,ragweed:-20"));
     expect(state?.sensitivities).toEqual({ grass: 100, ragweed: 0 });
+  });
+});
+
+describe("compare-profiles URL persistence (v3: reload/bookmark, not cross-device sharing)", () => {
+  it("buildQueryString omits compare params when fewer than 2 ids are selected", () => {
+    const state = { mode: "composite" as const, active: new Set<string>(), sensitivities: {}, month: null };
+    const query = buildQueryString(state, { ids: ["only-one"], view: "max" });
+    const params = new URLSearchParams(query);
+    expect(params.has(COMPARE_IDS_PARAM)).toBe(false);
+  });
+
+  it("buildQueryString includes compare ids and view once 2+ are selected", () => {
+    const state = { mode: "composite" as const, active: new Set<string>(), sensitivities: {}, month: null };
+    const query = buildQueryString(state, { ids: ["abc", "def"], view: "noisy-or" });
+    const params = new URLSearchParams(query);
+    expect(params.get(COMPARE_IDS_PARAM)).toBe("abc,def");
+    expect(params.get(COMPARE_VIEW_PARAM)).toBe("noisy-or");
+  });
+
+  it("parseCompareParams round-trips ids and view", () => {
+    const parsed = parseCompareParams(new URLSearchParams("compare=abc,def&view=side-by-side"));
+    expect(parsed).toEqual({ ids: ["abc", "def"], view: "side-by-side" });
+  });
+
+  it("parseCompareParams defaults view to max when omitted", () => {
+    expect(parseCompareParams(new URLSearchParams("compare=abc,def"))?.view).toBe("max");
+  });
+
+  it("parseCompareParams returns null with fewer than 2 ids (a stale/single id isn't a real comparison)", () => {
+    expect(parseCompareParams(new URLSearchParams("compare=abc"))).toBeNull();
+    expect(parseCompareParams(new URLSearchParams(""))).toBeNull();
   });
 });

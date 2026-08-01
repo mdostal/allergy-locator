@@ -75,7 +75,15 @@ each visit. Families and couples want to compare or overlay more than one person
    panel, which merges.
 2. **Save/share** beyond a single-view URL (v1 already gives a shareable URL for one
    configured view; v3 is about persisting and naming multiple such configurations).
-   Not yet started.
+   **Shipped 2026-08-01**: a compare view (2+ selected profiles + which view tab) now
+   round-trips through the URL (`compare`/`view` params, `lib/url-state.ts`'s
+   `parseCompareParams`/`buildQueryString`). Important, deliberate limitation: saved-
+   profile ids only mean anything in the browser that saved them (localStorage), so
+   this is a **bookmark/reload-restore** feature for your own session, NOT a true
+   cross-device shareable link for the profiles themselves — a foreign/stale id is
+   silently ignored, never a crash. True cross-device profile sharing would need the
+   profile's actual sensitivities embedded in the link (or v4's account-backed
+   storage) — not attempted here.
 3. **Overlay view** — show two or more profiles' severity on the same map at once (e.g.,
    a composite "best-for-everyone" score, or a split/toggle between individual family
    members) so a family can jointly evaluate a place instead of each running the tool
