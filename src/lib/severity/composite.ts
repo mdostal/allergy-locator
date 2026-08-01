@@ -10,6 +10,10 @@ export interface CompositeResult {
 export interface CompositeOptions {
   month?: number;
   seasonStrength?: number;
+  /** Trip planner: an exact day-of-month for real per-city daily precision
+   * (see lib/severity/daily-curves.ts), rather than the month's mid-month
+   * representative value. */
+  day?: number;
   /** Advanced mode (lib/model-settings.ts): "noisy-or" is the shipped
    * default (see below); "average" is a plain sensitivity-weighted mean
    * instead -- a real, live-computed alternative, not a cosmetic toggle. */
@@ -41,7 +45,7 @@ export function getComposite(
   month?: number,
   options: CompositeOptions = {},
 ): CompositeResult | null {
-  const { seasonStrength, combinationMethod = "noisy-or" } = options;
+  const { seasonStrength, combinationMethod = "noisy-or", day } = options;
   let survivalProduct = 1;
   let weightedSum = 0;
   let weightTotal = 0;
@@ -50,7 +54,7 @@ export function getComposite(
   for (const allergen of ALLERGENS) {
     const sensitivity = sensitivities[allergen.id] ?? 0;
     if (sensitivity <= 0) continue;
-    const severity = getSeverity(allergen.id, cityId, month, seasonStrength);
+    const severity = getSeverity(allergen.id, cityId, month, seasonStrength, day);
     if (!severity) continue;
     const weight = sensitivity / 100;
     const risk = weight * (severity.value / 100);

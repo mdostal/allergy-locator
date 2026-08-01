@@ -18,8 +18,13 @@ describe("season-position scoring (story s6)", () => {
 
   it("off-season month scores far lower than the annual peak for the same city", () => {
     const january = getSeverity("grass", "austin-tx", 1);
+    const annual = getSeverity("grass", "austin-tx");
     expect(january).not.toBeNull();
-    expect(january!.value).toBeLessThan(10);
+    // Real per-city NOAA daily-normal data (data/daily-season-curves.json)
+    // drives this now, not the coarser static zone-group curve -- the
+    // robust assertion is "far below the peak and near-zero," not an exact
+    // magic number that happens to match one specific curve's shape.
+    expect(january!.value).toBeLessThan(annual!.value / 4);
     expect(january!.tier).toBe("near-zero");
   });
 

@@ -23,7 +23,8 @@ Presence ≠ severity. Your grass allergens grow in nearly every state, so a pre
 - **GBIF** — taxonomy/occurrence (CC-BY)
 - **Season severity** — Anderegg 2021 (PNAS), Zhang-Steiner 2022 (Nat. Comms.)
 - Geographic base: us-atlas / US Census (public domain)
-- AAAAI/NAB + BONAP referenced for QA only, not embedded (reuse restricted)
+- **[AAAAI National Allergy Bureau](https://www.aaaai.org/tools-for-the-public/conditions-library/allergies/hay-fever-and-pollen-counts)** ([pollen.aaaai.org](https://pollen.aaaai.org/nab/)) — the real, measured, station-by-station current pollen/mold counts. Full credit to AAAAI and every certified NAB counting station. Referenced for QA only, **not embedded** — their data requires a formal research-data-release agreement (PI, institutional affiliation, department-head approval) this project doesn't qualify for as an independent open-source tool. Go there directly for today's actual count; this map models *seasonal patterns*, not live measurements.
+- BONAP referenced for QA only, not embedded (reuse restricted)
 
 ## Stack
 

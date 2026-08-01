@@ -37,13 +37,28 @@ state-presence data, a hard presence gate. Every one of these is labeled
 **"modeled, not ground-truth-validated"** everywhere it appears in the app —
 never silently presented with grass's rigor.
 
-## Season-position scoring — month-indexed curves
+## Season-position scoring — real, per-city, day-by-day curves
 
-Each allergen's annual score is treated as its **peak-season** severity; a
-month-indexed multiplier (grounded in general pollen phenology, by climate-
-zone group) scales it down for other months. **Advanced mode's "Season curve
-strength" slider** runs this exact curve at 0-100% intensity live — 0% flattens
-every month to the annual/peak score; 100% is the curve as modeled.
+Each allergen's annual score is treated as its **peak-season** severity,
+scaled down for other times of year. For each of the 168 named cities, that
+scaling is a genuinely **daily** curve — driven by real NOAA 1991-2020 daily
+climate normals (measured temperature and precipitation, not modeled) run
+through a temperature-response phenology model per allergen category. Full
+methodology, real data sources, and every bug caught fixing it, in
+`data/daily-season-curves-methodology.md`. Any location without a matched
+daily curve falls back to the coarser month-indexed, climate-zone-group model
+it replaced. **Advanced mode's "Season curve strength" slider** runs this
+exact curve at 0-100% intensity live — 0% flattens every day to the annual/
+peak score; 100% is the curve as modeled.
+
+## Trip planner — forecasting a specific date range
+
+Pick a destination and a departure/return date in **Mode 2 ("My map")** and
+the Trip Planner computes your personalized composite score for every real
+calendar day of the trip, using the same day-by-day curves above. This is a
+**climatological forecast** — what a typical year looks like at that
+location, not a prediction of the specific year's actual weather (no weather
+forecast, paid or otherwise, is used anywhere in this project).
 
 ## "My map" — combining multiple allergens
 

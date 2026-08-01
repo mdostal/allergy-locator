@@ -9,6 +9,7 @@ import { StateDetailPanel } from "@/components/StateDetailPanel";
 import { TimeframeControl } from "@/components/TimeframeControl";
 import { YearPlayback } from "@/components/YearPlayback";
 import { ReportPanel } from "@/components/ReportPanel";
+import { TripPlanner } from "@/components/TripPlanner";
 import { GradientLegend } from "@/components/GradientLegend";
 import { AdvancedControls } from "@/components/AdvancedControls";
 import { decodeState, buildQueryString, URL_STATE_PARAM, type Mode } from "@/lib/url-state";
@@ -137,6 +138,7 @@ export function MapView() {
               onLoadPreset={loadAuthorPreset}
             />
             <ReportPanel sensitivities={sensitivities} />
+            <TripPlanner sensitivities={sensitivities} settings={settings} />
           </>
         )}
 

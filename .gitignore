@@ -22,3 +22,9 @@ playwright-report/
 .playwright-mcp/
 __pycache__/
 *.pyc
+# Global GHCN station catalog (~11MB, all countries) -- pure fetch-script
+# cache for nearest-station matching, not consumed by the app. Re-downloaded
+# automatically by scripts/fetch_daily_normals.py when missing. The derived,
+# city-relevant data/raw/city_daily_normals.json IS committed.
+data/raw/ghcnd-stations.txt
+data/raw/normals_station_ids.txt

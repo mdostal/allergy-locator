@@ -10,9 +10,17 @@ refresh (see the script's own docstring). Last fetched: 2026-07-31.
 | `usgs_water_use_2015_county.csv` | [USGS, "Estimated Use of Water in the United States, County-Level Data for 2015"](https://www.sciencebase.gov/catalog/item/5af3311be4b0da30c1b245d8) (Dieter et al. 2018, Circular 1441) | Real county-level irrigation withdrawal data -- the `IC-IrTot`/`IC-WFrTo` columns (crop irrigation, separate from golf) feed the turf/irrigation model. |
 | `nass_turf_county_2022.tsv` | [USDA NASS, 2022 Census of Agriculture bulk export](https://www.nass.usda.gov/datasets/qs.census2022.txt.gz), filtered | County-level HAY, SOD, and GRASSES & LEGUMES TOTALS (grass-seed proxy) harvested acreage -- filtered down from the ~2.3 GB full bulk file to ~15.8k relevant rows. Some small-operation counties are suppressed ("(D)") per NASS disclosure rules -- expected, documented in `docs/TURF-DATA-SOURCES.md` section 2. |
 | `county_elevations_m.json` | [open-elevation.com](https://www.open-elevation.com/) bulk lookup API, keyed by 5-digit county FIPS | Elevation (meters) at each county's population centroid. Not a government source, but a keyless, no-signup public API; validated against Denver's known ~1609m/5280ft elevation during sourcing. |
+| `city_daily_normals.json` | [NOAA NCEI, U.S. Daily Climate Normals (1991-2020)](https://www.ncei.noaa.gov/data/normals-daily/1991-2020/access/), per nearest full-climate GHCN station to each of the 168 cities | Real, measured 30-year daily mean-temperature and precipitation normals (366 days/city) -- feeds the day-by-day phenology model in `data/daily-season-curves-methodology.md`. Fetched by `scripts/fetch_daily_normals.py`. |
 
-All public-domain (Census, USGS) or open-with-attribution (NASS terms) --
-MIT-compatible, per the license audit already done in `docs/TURF-DATA-SOURCES.md`.
+All public-domain (Census, USGS, NOAA) or open-with-attribution (NASS terms)
+-- MIT-compatible, per the license audit already done in
+`docs/TURF-DATA-SOURCES.md`.
+
+**Not committed (pure fetch-script cache, regenerated automatically):**
+`ghcnd-stations.txt` (the full ~11MB global GHCN station catalog, used only
+transiently for nearest-station matching) and `normals_station_ids.txt` (the
+list of stations with a usable normals file). Both are re-downloaded by
+`scripts/fetch_daily_normals.py` on first run if missing -- see `.gitignore`.
 
 **Not fetched (documented limitation):** NLCD 30m land-cover raster (the
 "landTurf" component in `docs/TURF-DATA-SOURCES.md` section 6.1) -- national

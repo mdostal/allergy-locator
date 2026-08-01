@@ -4,6 +4,7 @@ import cities from "@data/cities.json";
 import { hasAllergen } from "@/lib/severity/gate";
 import { getAllergen } from "@/lib/allergens/registry";
 import { seasonMultiplier } from "@/lib/severity/season";
+import { getDailyMultiplier, getDailyMultiplierForMonth } from "@/lib/severity/daily-curves";
 import type { SeverityResult, SeverityTier } from "@/lib/severity/types";
 
 const grassScoreIndex = new Map(grassScores.map((entry) => [entry.id, entry]));
@@ -38,12 +39,22 @@ function tierForValue(value: number): SeverityTier {
  * climate zone and scaled down for other months via lib/severity/season.ts.
  * `seasonStrength` (Advanced mode, lib/model-settings.ts) passes through to
  * that same curve unchanged when omitted.
+ *
+ * `day` (1-31, optional) requests an EXACT calendar day rather than the
+ * month's representative mid-month value -- used by the trip planner, which
+ * needs real day-level precision, not just "this month." Whenever this city
+ * is one of the 168 with a real NOAA-daily-normal-derived curve
+ * (data/daily-season-curves.json), that real per-day data is used instead of
+ * the coarser 4-climate-zone-group monthly model automatically -- this is a
+ * transparent upgrade for every existing month-granularity caller too (the
+ * main map, playback, reports), not just the trip planner.
  */
 export function getSeverity(
   allergenId: string,
   cityId: string,
   month?: number,
   seasonStrength?: number,
+  day?: number,
 ): SeverityResult | null {
   if (!hasAllergen(allergenId, cityId)) {
     return null;
@@ -52,8 +63,15 @@ export function getSeverity(
   function applySeason(value: number): number {
     if (!month) return value;
     const allergen = getAllergen(allergenId);
+    if (!allergen) return value;
+
+    const daily = day
+      ? getDailyMultiplier(cityId, allergenId, allergen.category, month, day, seasonStrength)
+      : getDailyMultiplierForMonth(cityId, allergenId, allergen.category, month, seasonStrength);
+    if (daily !== null) return Math.round(value * daily);
+
     const koppen = koppenIndex.get(cityId);
-    if (!allergen || !koppen) return value;
+    if (!koppen) return value;
     const multiplier = seasonMultiplier(allergenId, allergen.category, koppen, month, seasonStrength);
     return Math.round(value * multiplier);
   }
