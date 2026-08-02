@@ -198,15 +198,16 @@ must not box out the next.**
 - **Phase 4 — Composite + controls.** Weighted **phase-blend** of overlays, user weight **sliders**,
   community ground-truth submission + weight proposals. The decision funnel (quality → cost late →
   nails last) runs here.
-- **Phase 5 — AI chat / natural-language search (explicit user direction, 2026-08-01; not started).**
+- **Phase 5 — AI chat / natural-language search (explicit user direction, 2026-08-01).**
   "Use AI chat to find the ideal place" once Phase 4's composite exists — describe what you want in
   plain language ("low allergies, low crime, decent healthcare, under $X/mo") and get a ranked
-  shortlist back. Should build on what's already shipped rather than invent a new mechanism: the
-  agent-friendly plain-URL control surface (`parseHumanState` in the allergy tool, v2 of
-  `.pHive/planning/roadmap.md`) and the BYO-key, zero-project-cost LLM pattern already proven for
-  panel-upload extraction. A chat feature that reads the current multi-layer map state and
-  constructs/interprets URLs is the natural fit — keeps this $0/static, no project-held key,
-  consistent with every architecture decision so far.
+  shortlist back. Builds on what's already shipped rather than a new mechanism: the agent-friendly
+  plain-URL control surface (`parseHumanState`) and the BYO-key, zero-project-cost LLM pattern
+  already proven for panel-upload extraction.
+  **Allergy-only slice shipped 2026-08-02** (`ChatSearch` component, `src/lib/chat/allergy-chat.ts`)
+  — plain language → allergy `UrlState`, reusing `parseHumanState` for id/range validation. The full
+  cross-dimension version (crime, healthcare, cost) stays queued behind Phase 4's composite, which
+  now lives in mapstack-us, not here.
 
 **Cross-cutting requirements (EVERY phase & dimension):** transparent decomposable scoring +
 methodology doc · user-adjustable & community-tweakable weights · gradients-not-buckets (county/raster,
@@ -259,4 +260,4 @@ Tools live under **mdostal.com** (the allergy tool is building now via `hive exe
 | 12 | Single-parent economics / benefits cliff | — | — | — | queued (analysis, not map) |
 | 13 | Crime & safety | — | — | — | queued |
 | + | Composite overlay | — | — | — | queued (last) |
-| + | AI chat / natural-language search (Phase 5) | — | — | — | queued (after composite) |
+| + | AI chat / natural-language search (Phase 5) | ✅ allergy-only slice live | `ChatSearch` in allergy MapView | `src/lib/chat/allergy-chat.ts` | **allergy-only live 2026-08-02** — full cross-dimension version queued (after mapstack-us's composite) |
