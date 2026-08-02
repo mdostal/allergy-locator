@@ -19,6 +19,7 @@ import { getPanelHistory, addPanelSnapshot, type PanelSnapshot } from "@/lib/pan
 import { getSavedProfiles, type SavedProfile } from "@/lib/profiles";
 import { GradientLegend } from "@/components/GradientLegend";
 import { AdvancedControls } from "@/components/AdvancedControls";
+import { ChatSearch } from "@/components/ChatSearch";
 import {
   decodeState,
   buildQueryString,
@@ -26,6 +27,7 @@ import {
   parseCompareParams,
   URL_STATE_PARAM,
   type Mode,
+  type UrlState,
 } from "@/lib/url-state";
 import { getAllergen } from "@/lib/allergens/registry";
 import { intensityColor, compositeColor } from "@/lib/severity/palette";
@@ -118,6 +120,17 @@ export function MapView() {
     setSensitivities(authorPreset.sensitivities);
   }
 
+  // Bridge for ChatSearch: a chat-derived UrlState applies to the same live
+  // state the URL-hydration effect above sets on mount, so it flows through
+  // the existing state-to-URL sync effect for free -- no separate chat-only
+  // code path.
+  function applyChatState(state: UrlState) {
+    setMode(state.mode);
+    setActive(state.active);
+    setSensitivities(state.sensitivities);
+    if (state.month !== null) setMonth(state.month);
+  }
+
   function toggleCompareProfile(id: string) {
     setCompareIds((prev) => {
       const next = new Set(prev);
@@ -176,6 +189,8 @@ export function MapView() {
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-6 md:flex-row">
       <div className="flex flex-col gap-4 md:w-64 md:flex-shrink-0">
+        <ChatSearch onApply={applyChatState} />
+
         <div
           role="radiogroup"
           aria-label="Map mode"
