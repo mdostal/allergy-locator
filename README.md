@@ -56,6 +56,14 @@ exposes the real scoring engine (not a summary of it) as callable tools —
 `get_allergy_severity`, `get_composite_score`, `generate_report`, `build_shareable_url`,
 and more. See [`mcp-server/README.md`](mcp-server/README.md) for setup.
 
+### Claude Code skill
+
+[`.claude/skills/allergy-locator/SKILL.md`](.claude/skills/allergy-locator/SKILL.md)
+teaches an agent when to reach for the MCP tools vs. plain URL construction above,
+and carries the non-negotiable framing (directional not medical, validated vs.
+modeled confidence, presence ≠ severity) into every response instead of relying
+on general pollen knowledge.
+
 ## Data & attribution
 
 - **USDA PLANTS** — species→state ranges (US Gov, public domain)
