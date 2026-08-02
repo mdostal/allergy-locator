@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Allergy Locator — find where your allergies don't follow you</title>
+<meta name="description" content="Pick your real allergens, see a validated severity map of the US built for YOU, not a generic pollen index. Open source, zero cost, zero secrets."/>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2322c55e'/%3E%3C/svg%3E"/>
+<meta property="og:title" content="Allergy Locator — find where your allergies don't follow you"/>
+<meta property="og:description" content="A validated, open-source severity map built on YOUR panel, not a generic pollen index."/>
+<meta property="og:type" content="website"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0B120E;
+  --deck:#121B15;
+  --good:#22C55E;
+  --good-glow:#4ADE80;
+  --bad:#EF4444;
+  --mid:#F59E0B;
+  --glass:rgba(255,255,255,0.06);
+  --glass-border:rgba(255,255,255,0.11);
+  --txt:#F1F5F2;
+  --txt-2:#A9B8AD;
+  --txt-faint:#5C6B60;
+  --maxw:1080px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(34,197,94,0.16), transparent),
+    radial-gradient(ellipse 700px 500px at 100% 20%, rgba(239,68,68,0.10), transparent),
+    var(--bg);
+  color:var(--txt-2);
+  font-family:'Inter',system-ui,sans-serif;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,.display{font-family:'Space Grotesk',sans-serif;color:var(--txt);letter-spacing:-.01em;line-height:1.15}
+a{color:var(--good-glow);text-decoration:none}
+a:hover{text-decoration:underline}
+.mono{font-family:'JetBrains Mono',monospace}
+.eyebrow{
+  font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--good-glow);
+  display:block;margin-bottom:14px;
+}
+.wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+section{position:relative;padding:88px 0}
+section:first-of-type{padding-top:96px}
+.gradient-rule{height:2px;background:linear-gradient(90deg, var(--good), var(--mid), var(--bad));border-radius:2px;opacity:.6}
+
+/* ============ hero ============ */
+.hero{padding-top:120px;text-align:center}
+.hero h1{font-size:clamp(2.2rem,5.5vw,3.6rem);max-width:820px;margin:0 auto 20px}
+.hero .sub{font-size:1.15rem;max-width:620px;margin:0 auto 32px;color:var(--txt-2)}
+.cta-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:56px}
+.btn{
+  font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.95rem;
+  padding:13px 26px;border-radius:10px;transition:transform .15s var(--ease), box-shadow .15s var(--ease);
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn:hover{transform:translateY(-2px);text-decoration:none}
+.btn-primary{background:linear-gradient(135deg, var(--good), #16A34A);color:#06170B;box-shadow:0 8px 24px -8px rgba(34,197,94,.5)}
+.btn-secondary{background:var(--glass);border:1px solid var(--glass-border);color:var(--txt)}
+
+/* hero gradient strip -- mirrors the app's own severity ramp */
+.hero-strip{
+  max-width:640px;margin:0 auto;height:14px;border-radius:8px;
+  background:linear-gradient(90deg, var(--good) 0%, var(--good) 15%, var(--mid) 50%, var(--bad) 100%);
+  box-shadow:0 0 40px -4px rgba(34,197,94,.3);
+}
+.hero-strip-labels{display:flex;justify-content:space-between;max-width:640px;margin:8px auto 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-faint);text-transform:uppercase;letter-spacing:.08em}
+
+/* ============ cards ============ */
+.grid{display:grid;gap:20px}
+.grid-2{grid-template-columns:repeat(2,1fr)}
+.grid-3{grid-template-columns:repeat(3,1fr)}
+@media (max-width:760px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.card{
+  background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:26px;
+}
+.card h3{font-size:1.05rem;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.card p{font-size:.92rem;color:var(--txt-2)}
+.pill{
+  display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10.5px;font-weight:500;
+  padding:3px 9px;border-radius:99px;letter-spacing:.04em;
+}
+.pill-validated{background:rgba(34,197,94,.15);color:var(--good-glow);border:1px solid rgba(34,197,94,.3)}
+.pill-modeled{background:rgba(245,158,11,.15);color:var(--mid);border:1px solid rgba(245,158,11,.3)}
+
+/* ============ insight box ============ */
+.insight{
+  border-left:3px solid var(--bad);background:rgba(239,68,68,.06);border-radius:0 12px 12px 0;
+  padding:24px 28px;margin:28px 0;
+}
+.insight strong{color:var(--txt)}
+
+/* ============ number list ============ */
+.steps{counter-reset:step;display:flex;flex-direction:column;gap:20px}
+.step{display:flex;gap:20px}
+.step::before{
+  counter-increment:step;content:counter(step);
+  font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.1rem;color:var(--bg);
+  background:var(--good);width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.step-body h4{color:var(--txt);font-family:'Space Grotesk',sans-serif;font-size:1rem;margin-bottom:4px}
+.step-body p{font-size:.92rem}
+
+/* ============ succession diagram ============ */
+.lineage{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center;margin:32px 0}
+.lineage .node{
+  background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:18px 22px;text-align:center;min-width:180px;
+}
+.lineage .node.future{border-style:dashed;opacity:.75}
+.lineage .node .tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt-faint);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px}
+.lineage .node .name{font-family:'Space Grotesk',sans-serif;color:var(--txt);font-weight:600}
+.lineage .arrow{color:var(--txt-faint);font-size:1.4rem}
+
+footer{padding:56px 0 80px;text-align:center;color:var(--txt-faint);font-size:.85rem}
+footer a{color:var(--txt-2)}
+.disclaimer{
+  max-width:640px;margin:0 auto 40px;padding:16px 20px;border:1px solid var(--glass-border);
+  border-radius:10px;font-size:.82rem;color:var(--txt-faint);background:rgba(0,0,0,.2);
+}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Open source · MIT · $0 to run</span>
+    <h1>Your allergies don't follow a national pollen index. Neither should your map.</h1>
+    <p class="sub">Pick the exact allergens on your own panel. See a real, validated severity map of 168 US cities built around <em>you</em> — not a generic "pollen is high today" number that's mostly measuring plants you're not even allergic to.</p>
+    <div class="cta-row">
+      <a class="btn btn-primary" href="https://tools.mdostal.com/allergy-locator" target="_blank" rel="noreferrer">Open the map →</a>
+      <a class="btn btn-secondary" href="https://github.com/mdostal/allergy-locator" target="_blank" rel="noreferrer">View source on GitHub</a>
+    </div>
+    <div class="hero-strip"></div>
+    <div class="hero-strip-labels"><span>Low severity</span><span>Worst</span></div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="eyebrow">The problem</span>
+    <h2>Presence ≠ severity — and every generic index gets this backwards</h2>
+    <div class="insight">
+      <p><strong>USDA range maps tell you WHERE a species can grow — for grass, that's basically everywhere.</strong> Timothy and Kentucky bluegrass live in all 51 states; Bermuda grass covers 42. Coloring a map by "does this allergen exist here" turns the whole country red and tells you nothing.</p>
+    </div>
+    <p>What actually separates a place that wrecks you from one you barely notice is <strong>season length × climate load × how much of that plant is actually planted, irrigated, and farmed near where people live</strong> — not whether it exists on a botanical range map. Flagstaff and Phoenix both technically "have" grass. One is fine. One is rough. A presence map can't tell you which.</p>
+    <p style="margin-top:16px">And a public pollen index mixes in every allergen at once — if you're not allergic to ragweed or juniper, a city reading "HIGH" because of them means nothing for you, and a city reading "LOW" while your actual triggers spike will blindside you.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="eyebrow">How it's built</span>
+    <h2>One validated model, one honestly-labeled expansion</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Grass <span class="pill pill-validated">validated</span></h3>
+        <p>Fit against real, lived ground-truth reactions across an actual multi-state road trip — not just theory. Mean absolute error <strong>2.3</strong> on a 0–100 scale. Confirmed externally: AAFA's own 2026 city rankings independently name the same irrigated-turf/grass-seed-farm valleys (Boise, Provo, Ogden, Spokane) as the worst grass cities — for the same reason this model predicts them.</p>
+      </div>
+      <div class="card">
+        <h3>~28 more allergens <span class="pill pill-modeled">modeled</span></h3>
+        <p>Trees, weeds, and mold species extend the same season × climate approach, clearly labeled "modeled" rather than "validated" everywhere in the app — this project never blurs the two. No allergen's confidence level is hidden from you.</p>
+      </div>
+    </div>
+    <p style="margin-top:24px">Two densification layers make the map an actual continuous surface instead of 168 lonely dots: a real <strong>~3,143-county gradient</strong> built from Census, USGS irrigation, and USDA agricultural data, and a real <strong>per-city, day-by-day phenology curve</strong> driven by NOAA's 1991–2020 daily climate normals — so a Trip Planner can tell you the best and worst days for a specific date range, not just "spring is bad."</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="eyebrow">What you can do</span>
+    <h2>Beyond the map</h2>
+    <div class="grid grid-3">
+      <div class="card">
+        <h3>📄 Upload your real panel</h3>
+        <p>CSV, photo, or PDF of an actual lab report. Photo/PDF extraction runs through <strong>two independent AI passes</strong> — a generate pass, then a separate verify pass that re-checks the first against the source — because a wrong number in health data is worse than a missing one.</p>
+      </div>
+      <div class="card">
+        <h3>👪 Compare profiles</h3>
+        <p>Save named profiles (you, a partner, a kid) and view them together three ways: worst-case, a compounding-risk blend, or side-by-side — your choice, not one baked-in default.</p>
+      </div>
+      <div class="card">
+        <h3>🤖 Agent-friendly by design</h3>
+        <p>Beyond the compact shareable link, plain query params (<code class="mono">?mode=composite&amp;allergens=grass:80</code>) let a script, chatbot, or a person typing a URL drive the map directly — no binary encoding to reverse-engineer.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="eyebrow">Architecture</span>
+    <h2>Zero cost. Zero secrets. Genuinely.</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-body">
+          <h4>100% static — no server, no database</h4>
+          <p>Every data file is baked in at build time. The whole app deploys as static output, free on any static host.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-body">
+          <h4>Bring-your-own-key for AI features</h4>
+          <p>Photo/PDF panel extraction calls your chosen AI provider directly from your own browser, using your own saved key — this project never holds, sees, or pays for a single API call.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-body">
+          <h4>Open data only, fully credited</h4>
+          <p>USDA PLANTS, GBIF, NOAA climate normals, Census, USGS. Every methodology doc names its sources and its limitations — including where the AAAAI's real pollen-count network was <em>referenced but deliberately not embedded</em>, since their data-sharing terms are scoped to academic research this project doesn't qualify for.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <span class="eyebrow">Where this is going</span>
+    <h2>This project became the blueprint for something bigger</h2>
+    <p>Once a second real dataset (healthcare access — nearest hospital by drive time) got built the same way, the shared shape between the two became clear enough to actually generalize the map engine — rather than guessing at an abstraction from a single case.</p>
+    <div class="lineage">
+      <div class="node">
+        <span class="tag">This repo</span>
+        <span class="name">Allergy Locator</span>
+      </div>
+      <span class="arrow">→</span>
+      <div class="node future">
+        <span class="tag">Generalizes into</span>
+        <span class="name">Mapstack</span>
+      </div>
+    </div>
+    <p style="text-align:center"><a href="https://tools.mdostal.com/mapstack" target="_blank" rel="noreferrer">Mapstack →</a> takes the same US-city engine and makes it dataset-agnostic — any facet (allergy, crime, healthcare access, and more) becomes a pluggable layer on one shared map, eventually driven by natural-language chat instead of manual controls. Read the full writeup on <a href="https://mdostal.github.io/mapstack-us/" target="_blank" rel="noreferrer">Mapstack's own site</a>.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="disclaimer">⚠ <strong>Directional, not medical advice.</strong> Get your own panel read by a real allergist. This tool models patterns; it doesn't diagnose or replace clinical judgment.</div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="gradient-rule" style="max-width:200px;margin:0 auto 24px"></div>
+    <p>MIT licensed · <a href="https://github.com/mdostal/allergy-locator" target="_blank" rel="noreferrer">Source on GitHub</a> · <a href="https://tools.mdostal.com/allergy-locator" target="_blank" rel="noreferrer">Open the live map</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
