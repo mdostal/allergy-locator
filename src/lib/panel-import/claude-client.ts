@@ -1,5 +1,6 @@
 import type { ParsedRow } from "@/lib/panel-import/parse-csv";
 import { matchAllergenName, classToSensitivity } from "@/lib/panel-import/match-allergen";
+import { callClaudeTool } from "@/lib/claude-tool-call";
 
 /**
  * Direct browser -> Anthropic API calls for photo/PDF panel extraction (v2,
@@ -20,9 +21,6 @@ import { matchAllergenName, classToSensitivity } from "@/lib/panel-import/match-
  * specifically because a wrong number in health data is worse than a
  * missing one.
  */
-
-const ANTHROPIC_MODEL = "claude-sonnet-5";
-const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
 
 const EXTRACT_TOOL = {
   name: "record_allergy_panel",
@@ -73,38 +71,6 @@ function contentBlockForFile(mimeType: string, base64: string) {
   return { type: "image", source: { type: "base64", media_type: mimeType, data: base64 } };
 }
 
-async function callClaudeTool(
-  apiKey: string,
-  content: unknown[],
-): Promise<ClaudeToolResponse> {
-  const response = await fetch(ANTHROPIC_API_URL, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      "x-api-key": apiKey,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
-    },
-    body: JSON.stringify({
-      model: ANTHROPIC_MODEL,
-      max_tokens: 4096,
-      tools: [EXTRACT_TOOL],
-      tool_choice: { type: "tool", name: EXTRACT_TOOL.name },
-      messages: [{ role: "user", content }],
-    }),
-  });
-
-  if (!response.ok) {
-    const body = await response.text().catch(() => "");
-    throw new Error(`Anthropic API error (${response.status}): ${body.slice(0, 300)}`);
-  }
-
-  const data = await response.json();
-  const toolUse = data.content?.find((block: { type: string }) => block.type === "tool_use");
-  if (!toolUse) throw new Error("Claude didn't return a structured extraction.");
-  return toolUse.input as ClaudeToolResponse;
-}
-
 function toParsedRows(rows: Array<{ name: string; value: number }>): ParsedRow[] {
   return rows.map(({ name, value }) => {
     const { allergenId, confidence } = matchAllergenName(name);
@@ -121,7 +87,7 @@ const EXTRACT_PROMPT =
 export async function extractPanelFromFile(file: File, apiKey: string): Promise<ParsedRow[]> {
   const base64 = await fileToBase64(file);
   const content = [contentBlockForFile(file.type, base64), { type: "text", text: EXTRACT_PROMPT }];
-  const result = await callClaudeTool(apiKey, content);
+  const result = (await callClaudeTool(apiKey, content, EXTRACT_TOOL)) as unknown as ClaudeToolResponse;
   return toParsedRows(result.rows);
 }
 
@@ -139,6 +105,6 @@ export async function verifyExtraction(
     "remove any entries that aren't really in the report (fabrications), and add any real " +
     "entries that were missed. Record the corrected, complete list with the record_allergy_panel tool.";
   const content = [contentBlockForFile(file.type, base64), { type: "text", text: verifyPrompt }];
-  const result = await callClaudeTool(apiKey, content);
+  const result = (await callClaudeTool(apiKey, content, EXTRACT_TOOL)) as unknown as ClaudeToolResponse;
   return toParsedRows(result.rows);
 }

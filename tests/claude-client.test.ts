@@ -96,6 +96,6 @@ describe("claude-client (mocked -- no real network calls)", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const file = new File(["fake pdf bytes"], "test.pdf", { type: "application/pdf" });
-    await expect(extractPanelFromFile(file, "sk-ant-fake-key")).rejects.toThrow(/structured extraction/);
+    await expect(extractPanelFromFile(file, "sk-ant-fake-key")).rejects.toThrow(/structured record_allergy_panel response/);
   });
 });
