@@ -28,3 +28,5 @@ __pycache__/
 # city-relevant data/raw/city_daily_normals.json IS committed.
 data/raw/ghcnd-stations.txt
 data/raw/normals_station_ids.txt
+.vercel
+.env*
