@@ -49,6 +49,13 @@ feature, not a cross-device share — a saved profile's id only means anything
 in the browser that saved it, so opening that link on a different device or
 after clearing storage just shows an empty comparison, not an error.
 
+### MCP server
+
+For a tighter agent integration than URL construction, [`mcp-server/`](mcp-server/)
+exposes the real scoring engine (not a summary of it) as callable tools —
+`get_allergy_severity`, `get_composite_score`, `generate_report`, `build_shareable_url`,
+and more. See [`mcp-server/README.md`](mcp-server/README.md) for setup.
+
 ## Data & attribution
 
 - **USDA PLANTS** — species→state ranges (US Gov, public domain)
