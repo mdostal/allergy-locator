@@ -56,7 +56,7 @@ export function ChatSearch({ onApply }: Props) {
       <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">Ask in plain language</h3>
       <p className="text-xs text-zinc-500 dark:text-zinc-400">
         e.g. &ldquo;I&rsquo;m badly allergic to ragweed and a bit to grass, show me June&rdquo;. Sets your
-        allergy view below — directional/geographic modeling, not medical advice. Uses your own saved API
+        allergy view below — geographic modeling only, see the disclaimer below. Uses your own saved API
         key (About &rarr; Methodology).
       </p>
       <div className="flex gap-2">
