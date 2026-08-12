@@ -16,16 +16,24 @@ const geistMono = Geist_Mono({
 
 // Leaf mark in this app's own real grass-severity green (hsl(142 68% 45%),
 // see lib/severity/palette.ts's GRASS_HUE -- the one validated, headline
-// allergen) on a dark rounded square, matching the data-URI favicon pattern
-// already shipped for tools.mdostal.com (no binary .ico generation needed).
-const FAVICON =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0a0a'/%3E%3Cpath d='M50 14C80 30 80 70 50 86C20 70 20 30 50 14Z' fill='%2325c15e'/%3E%3Cpath d='M50 18 L50 82' stroke='%230a0a0a' stroke-width='4'/%3E%3C/svg%3E";
+// allergen) on a dark rounded square. Real files under public/ (favicon.ico
+// /.svg, apple-touch-icon.png) rendered from this same design, replacing the
+// old data-URI-only favicon. basePath isn't auto-applied to metadata.icons
+// string paths (only to <Link>/<Image>/router navigation), so it's prefixed
+// explicitly here, matching next.config.ts's own basePath logic exactly.
+const BASE_PATH = process.env.E2E_NO_BASE_PATH ? "" : "/allergy-locator";
 
 export const metadata: Metadata = {
   title: "Allergy Locator",
   description:
     "Pick your allergens, see where in the US is best or worst for you. Directional, not medical advice.",
-  icons: { icon: FAVICON },
+  icons: {
+    icon: [
+      { url: `${BASE_PATH}/favicon.ico`, sizes: "any" },
+      { url: `${BASE_PATH}/favicon.svg`, type: "image/svg+xml" },
+    ],
+    apple: `${BASE_PATH}/apple-touch-icon.png`,
+  },
 };
 
 export default function RootLayout({
