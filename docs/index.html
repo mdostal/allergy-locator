@@ -5,10 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Allergy Locator — find where your allergies don't follow you</title>
 <meta name="description" content="Pick your real allergens, see a validated severity map of the US built for YOU, not a generic pollen index. Open source, zero cost, zero secrets."/>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%2322c55e'/%3E%3C/svg%3E"/>
+<link rel="icon" href="assets/favicon.ico" sizes="any"/>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg"/>
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png"/>
+<link rel="canonical" href="https://mdostal.github.io/allergy-locator/"/>
 <meta property="og:title" content="Allergy Locator — find where your allergies don't follow you"/>
 <meta property="og:description" content="A validated, open-source severity map built on YOUR panel, not a generic pollen index."/>
+<meta property="og:url" content="https://mdostal.github.io/allergy-locator/"/>
+<meta property="og:image" content="https://mdostal.github.io/allergy-locator/assets/screenshot-hero.jpg"/>
+<meta property="og:image:width" content="1400"/>
+<meta property="og:image:height" content="900"/>
+<meta property="og:image:alt" content="Allergy Locator showing a real grass-severity gradient across the US, from near-zero in the high desert Southwest to worst in the Pacific Northwest and Gulf Coast."/>
 <meta property="og:type" content="website"/>
+<meta property="og:site_name" content="Allergy Locator"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:title" content="Allergy Locator — find where your allergies don't follow you"/>
+<meta name="twitter:description" content="A validated, open-source severity map built on YOUR panel, not a generic pollen index."/>
+<meta name="twitter:image" content="https://mdostal.github.io/allergy-locator/assets/screenshot-hero.jpg"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
@@ -76,6 +89,22 @@ section:first-of-type{padding-top:96px}
 }
 .hero-strip-labels{display:flex;justify-content:space-between;max-width:640px;margin:8px auto 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--txt-faint);text-transform:uppercase;letter-spacing:.08em}
 
+/* screenshot frame */
+.screenshot-frame{
+  max-width:900px;margin:48px auto 0;border-radius:16px;overflow:hidden;
+  background:var(--deck);border:1px solid var(--glass-border);
+  box-shadow:0 30px 80px -30px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.02);
+  text-align:left;
+}
+.screenshot-frame .chrome{display:flex;align-items:center;gap:6px;padding:11px 16px;border-bottom:1px solid var(--glass-border)}
+.screenshot-frame .chrome span{width:9px;height:9px;border-radius:50%;background:var(--txt-faint);opacity:.6}
+.screenshot-frame .chrome .url{
+  margin-left:10px;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--txt-faint);
+  background:rgba(255,255,255,.04);border-radius:6px;padding:3px 10px;white-space:nowrap;flex-shrink:0;
+}
+.screenshot-frame img{display:block;width:100%;height:auto}
+.hero-caption{max-width:640px;margin:18px auto 0;font-size:.85rem;color:var(--txt-faint)}
+
 /* ============ cards ============ */
 .grid{display:grid;gap:20px}
 .grid-2{grid-template-columns:repeat(2,1fr)}
@@ -117,7 +146,6 @@ section:first-of-type{padding-top:96px}
 .lineage .node{
   background:var(--glass);border:1px solid var(--glass-border);border-radius:12px;padding:18px 22px;text-align:center;min-width:180px;
 }
-.lineage .node.future{border-style:dashed;opacity:.75}
 .lineage .node .tag{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--txt-faint);text-transform:uppercase;letter-spacing:.06em;display:block;margin-bottom:6px}
 .lineage .node .name{font-family:'Space Grotesk',sans-serif;color:var(--txt);font-weight:600}
 .lineage .arrow{color:var(--txt-faint);font-size:1.4rem}
@@ -143,6 +171,11 @@ footer a{color:var(--txt-2)}
     </div>
     <div class="hero-strip"></div>
     <div class="hero-strip-labels"><span>Low severity</span><span>Worst</span></div>
+    <div class="screenshot-frame">
+      <div class="chrome"><span></span><span></span><span></span><span class="url">tools.mdostal.com/allergy-locator</span></div>
+      <img src="assets/screenshot-hero.jpg" alt="Allergy Locator showing the real, validated grass-severity gradient across the US -- worst in the Pacific Northwest and Gulf Coast, near-zero in the high-desert Southwest -- with the allergen checklist and playback controls." width="1400" height="900"/>
+    </div>
+    <p class="hero-caption">The real, ground-truth-fit grass model -- continuous gradient across 168 cities, playable month by month. Live at the link above.</p>
   </div>
 </section>
 
@@ -226,21 +259,21 @@ footer a{color:var(--txt-2)}
 
 <section>
   <div class="wrap">
-    <span class="eyebrow">Where this is going</span>
+    <span class="eyebrow">Where this led</span>
     <h2>This project became the blueprint for something bigger</h2>
-    <p>Once a second real dataset (healthcare access — nearest hospital by drive time) got built the same way, the shared shape between the two became clear enough to actually generalize the map engine — rather than guessing at an abstraction from a single case.</p>
+    <p>Once a second real dataset (healthcare access — nearest hospital by drive time) got built the same way, the shared shape between the two became clear enough to actually generalize the map engine — rather than guessing at an abstraction from a single case. That generalization shipped, and now runs 41 real datasets.</p>
     <div class="lineage">
       <div class="node">
         <span class="tag">This repo</span>
         <span class="name">Allergy Locator</span>
       </div>
       <span class="arrow">→</span>
-      <div class="node future">
-        <span class="tag">Generalizes into</span>
+      <div class="node">
+        <span class="tag">Generalized into</span>
         <span class="name">Mapstack</span>
       </div>
     </div>
-    <p style="text-align:center"><a href="https://tools.mdostal.com/mapstack" target="_blank" rel="noreferrer">Mapstack →</a> takes the same US-city engine and makes it dataset-agnostic — any facet (allergy, crime, healthcare access, and more) becomes a pluggable layer on one shared map, eventually driven by natural-language chat instead of manual controls. Read the full writeup on <a href="https://mdostal.github.io/mapstack-us/" target="_blank" rel="noreferrer">Mapstack's own site</a>.</p>
+    <p style="text-align:center"><a href="https://tools.mdostal.com/mapstack" target="_blank" rel="noreferrer">Mapstack →</a> takes the same US-city engine and makes it dataset-agnostic — any facet (allergy, crime, healthcare access, and more) is a pluggable layer on one shared map, with bring-your-own-key chat already live alongside the manual controls. Read the full writeup on <a href="https://mdostal.github.io/mapstack-us/" target="_blank" rel="noreferrer">Mapstack's own site</a>.</p>
   </div>
 </section>
 
